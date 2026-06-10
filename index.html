@@ -411,7 +411,7 @@ select{cursor:pointer}
 <div class="form-row2"><div class="form-row"><label>Phone</label><input id="al_phone" placeholder="+94 77 123 4567"></div><div class="form-row"><label>Email</label><input id="al_email" placeholder="email@company.com"></div></div>
 <div class="form-row2"><div class="form-row"><label>Industry</label><select id="al_industry"><option value="">Select...</option><option>Automotive</option><option>Food & Beverage</option><option>Fashion</option><option>Technology</option><option>Real Estate</option><option>Education</option><option>Healthcare</option><option>Hospitality</option><option>Retail</option><option>Service</option><option>Construction</option><option>Finance</option><option>Fitness</option><option>Beauty</option><option>Legal</option><option>Other</option></select></div><div class="form-row"><label>Source</label><select id="al_source"><option value="social_media">Social Media</option><option value="website">Website</option><option value="referral">Referral</option><option value="cold_call">Cold Call</option><option value="walk_in">Walk-in</option><option value="other">Other</option></select></div></div>
 <div class="form-row2"><div class="form-row"><label>Estimated Value (LKR)</label><input type="number" id="al_value" placeholder="150000"></div><div class="form-row"><label>Package Interest</label><select id="al_package"><option value="">Not sure yet</option><option>Spark (90K)</option><option>Ignite (150K)</option><option>Blaze (230K)</option><option>SEO Essential (40K)</option><option>SEO+Maintenance (50K)</option></select></div></div>
-<div class="form-row2"><div class="form-row"><label>Assign To</label><select id="al_owner"><option value="th">Thulaib</option><option value="sh">Shiara</option></select></div><div class="form-row"><label>Stage</label><select id="al_stage"><option value="new_lead">New Lead</option><option value="contacted">Contacted</option><option value="discovery">Discovery</option></select></div></div>
+<div class="form-row2"><div class="form-row"><label>Assign To</label><select id="al_owner"><option value="th">Thulaib</option><option value="sh">Shiara</option><option value="pv">Pavith</option><option value="nv">Nirvana</option></select></div><div class="form-row"><label>Stage</label><select id="al_stage"><option value="new_lead">New Lead</option><option value="contacted">Contacted</option><option value="discovery">Discovery</option></select></div></div>
 <div class="form-row"><label>Notes</label><textarea id="al_notes" placeholder="First impressions..."></textarea></div>
 </div>
 <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('addLeadModal')">Cancel</button><button class="btn btn-primary" id="addLeadBtn" onclick="saveLead()">Add Lead</button></div>
@@ -478,7 +478,7 @@ select{cursor:pointer}
 /* ===== CONFIG ===== */
 const SB_URL='https://yyviiwnqgphyklcoijyd.supabase.co/rest/v1';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5dmlpd25xZ3BoeWtsY29panlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MjE5OTEsImV4cCI6MjA5MTI5Nzk5MX0.I8YiBr-rfLVcc6DE8Z1PxEP2oxXCelv6mxqAY_wY7lc';
-const USERS={1031:{name:'Thulaib',code:'th',role:'CEO'},1006:{name:'Shiara',code:'sh',role:'COO'}};
+const USERS={1031:{name:'Thulaib',code:'th',role:'CEO'},1006:{name:'Shiara',code:'sh',role:'COO'},1111:{name:'Pavith',code:'pv',role:'Staff'},2222:{name:'Nirvana',code:'nv',role:'Staff'}};
 const STAGES=[{key:'new_lead',label:'New Lead',color:'var(--blue)',dot:'blue'},{key:'contacted',label:'Contacted',color:'var(--amber)',dot:'amber'},{key:'discovery',label:'Discovery',color:'var(--accent)',dot:'accent'},{key:'proposal_sent',label:'Proposal Sent',color:'var(--pink)',dot:'pink'},{key:'negotiation',label:'Negotiation',color:'var(--purple)',dot:'purple'}];
 const CLOSED_STAGES=[{key:'closed_won',label:'Closed Won',color:'var(--green)',dot:'green'},{key:'closed_lost',label:'Lost',color:'var(--red)',dot:'red'},{key:'on_hold',label:'On Hold',color:'var(--grey)',dot:'grey'}];
 const ALL_STAGES=[...STAGES,...CLOSED_STAGES];
@@ -540,7 +540,7 @@ function daysSinceContact(l){if(l.last_contact_at)return daysSince(l.last_contac
 function stageInfo(k){return ALL_STAGES.find(s=>s.key===k)||ALL_STAGES[0];}
 function stageBadge(k){const s=stageInfo(k);return `<span class="badge badge-${s.dot}">${s.label}</span>`;}
 function sourceBadge(s){return `<span class="badge badge-grey">${SOURCES[s]||s||'?'}</span>`;}
-function ownerLabel(c){return c==='th'?'Thulaib':c==='sh'?'Shiara':c||'—';}
+function ownerLabel(c){return c==='th'?'Thulaib':c==='sh'?'Shiara':c==='pv'?'Pavith':c==='nv'?'Nirvana':c||'—';}
 function ownerAvatar(c){return `<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--accent),#ea580c);color:#fff;font-size:9px;font-weight:700;font-family:Poppins">${(c||'?').toUpperCase().substring(0,2)}</span>`;}
 function fmtValue(v){if(!v)return'—';if(v>=1e6)return'LKR '+(v/1e6).toFixed(1)+'M';if(v>=1e3)return'LKR '+(v/1e3).toFixed(0)+'K';return'LKR '+v;}
 function fmtDate(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
@@ -673,7 +673,7 @@ pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;ju
 <div class="leads-toolbar"><div class="search-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search leads..." id="leadSearch" oninput="filterLeadsTable()"></div>
 <select id="filterStage" onchange="filterLeadsTable()"><option value="">All Stages</option>${ALL_STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('')}</select>
 <select id="filterSource" onchange="filterLeadsTable()"><option value="">All Sources</option>${Object.entries(SOURCES).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select>
-<select id="filterOwner" onchange="filterLeadsTable()"><option value="">All Owners</option><option value="th">Thulaib</option><option value="sh">Shiara</option></select></div>
+<select id="filterOwner" onchange="filterLeadsTable()"><option value="">All Owners</option><option value="th">Thulaib</option><option value="sh">Shiara</option><option value="pv">Pavith</option><option value="nv">Nirvana</option></select></div>
 <div class="section"><div class="section-body" style="overflow-x:auto"><table class="leads-table"><thead><tr><th>Lead</th><th>Stage</th><th>Source</th><th>Value</th><th>Score</th><th>Owner</th><th>Last</th><th>Days</th></tr></thead><tbody id="leadsBody"></tbody></table></div></div>`;
 filterLeadsTable();
 }
