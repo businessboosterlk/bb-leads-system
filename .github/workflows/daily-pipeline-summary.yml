@@ -1,0 +1,37 @@
+name: Daily Pipeline Summary Agent
+on:
+  schedule:
+    - cron: '30 3 * * 1-5'  # 9:00 AM IST weekdays
+  workflow_dispatch:
+
+jobs:
+  pipeline-summary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate pipeline summary
+        env:
+          SUPABASE_URL: https://yyviiwnqgphyklcoijyd.supabase.co
+          SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          LEADS=$(curl -s "${SUPABASE_URL}/rest/v1/pipeline?status=eq.active&select=id,stage,estimated_value" \
+            -H "apikey: ${SUPABASE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}")
+
+          TOTAL=$(echo "$LEADS" | jq length)
+          NEW=$(echo "$LEADS" | jq '[.[] | select(.stage == "new_lead")] | length')
+          CONTACTED=$(echo "$LEADS" | jq '[.[] | select(.stage == "contacted")] | length')
+          DISCOVERY=$(echo "$LEADS" | jq '[.[] | select(.stage == "discovery")] | length')
+          PROPOSAL=$(echo "$LEADS" | jq '[.[] | select(.stage == "proposal_sent")] | length')
+          NEGOTIATION=$(echo "$LEADS" | jq '[.[] | select(.stage == "negotiation")] | length')
+
+          MESSAGE="📊 Daily Pipeline Summary\n\nActive leads: ${TOTAL}\n• New Lead: ${NEW}\n• Contacted: ${CONTACTED}\n• Discovery: ${DISCOVERY}\n• Proposal Sent: ${PROPOSAL}\n• Negotiation: ${NEGOTIATION}"
+
+          curl -s "${SUPABASE_URL}/rest/v1/agent_alerts" \
+            -X POST \
+            -H "apikey: ${SUPABASE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=minimal" \
+            -d "{\"agent\":\"pipeline-summary\",\"system\":\"leads\",\"severity\":\"info\",\"message\":\"${MESSAGE}\"}"
+
+          echo "Pipeline summary alert created"

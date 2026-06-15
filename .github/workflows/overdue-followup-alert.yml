@@ -1,0 +1,43 @@
+name: Overdue Follow-Up Alert Agent
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 7:30 AM IST daily
+  workflow_dispatch:
+
+jobs:
+  overdue-followup-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for overdue follow-ups
+        env:
+          SUPABASE_URL: https://yyviiwnqgphyklcoijyd.supabase.co
+          SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+
+          OVERDUE=$(curl -s "${SUPABASE_URL}/rest/v1/lead_follow_ups?is_done=eq.false&due_date=lt.${TODAY}&select=id,pipeline_id,due_date,priority,note" \
+            -H "apikey: ${SUPABASE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}")
+
+          COUNT=$(echo "$OVERDUE" | jq length)
+
+          if [ "$COUNT" -gt 0 ]; then
+            URGENT=$(echo "$OVERDUE" | jq '[.[] | select(.priority == "urgent")] | length')
+            HIGH=$(echo "$OVERDUE" | jq '[.[] | select(.priority == "high")] | length')
+            SEV="warning"
+            if [ "$URGENT" -gt 0 ]; then SEV="critical"; fi
+
+            MESSAGE="⏰ ${COUNT} overdue follow-up(s) — ${URGENT} urgent, ${HIGH} high priority. Oldest due: $(echo "$OVERDUE" | jq -r 'sort_by(.due_date) | .[0].due_date')"
+
+            curl -s "${SUPABASE_URL}/rest/v1/agent_alerts" \
+              -X POST \
+              -H "apikey: ${SUPABASE_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_KEY}" \
+              -H "Content-Type: application/json" \
+              -H "Prefer: return=minimal" \
+              -d "{\"agent\":\"overdue-fu\",\"system\":\"leads\",\"severity\":\"${SEV}\",\"message\":\"${MESSAGE}\"}"
+
+            echo "Alert created for ${COUNT} overdue follow-ups"
+          else
+            echo "No overdue follow-ups"
+          fi

@@ -1,0 +1,39 @@
+name: Stale Lead Alert Agent
+on:
+  schedule:
+    - cron: '0 3 * * *'  # 8:30 AM IST daily
+  workflow_dispatch:
+
+jobs:
+  stale-lead-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for stale leads
+        env:
+          SUPABASE_URL: https://yyviiwnqgphyklcoijyd.supabase.co
+          SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          SEVEN_DAYS_AGO=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%S)
+
+          STALE=$(curl -s "${SUPABASE_URL}/rest/v1/pipeline?status=eq.active&stage=neq.closed_won&stage=neq.closed_lost&updated_at=lt.${SEVEN_DAYS_AGO}&select=id,name,contact_name,stage,updated_at" \
+            -H "apikey: ${SUPABASE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}")
+
+          COUNT=$(echo "$STALE" | jq length)
+
+          if [ "$COUNT" -gt 0 ]; then
+            NAMES=$(echo "$STALE" | jq -r '.[].name' | head -10 | paste -sd ', ')
+            MESSAGE="🔔 ${COUNT} stale lead(s) untouched for 7+ days: ${NAMES}"
+
+            curl -s "${SUPABASE_URL}/rest/v1/agent_alerts" \
+              -X POST \
+              -H "apikey: ${SUPABASE_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_KEY}" \
+              -H "Content-Type: application/json" \
+              -H "Prefer: return=minimal" \
+              -d "{\"agent\":\"stale-lead\",\"system\":\"leads\",\"severity\":\"warning\",\"message\":\"${MESSAGE}\"}"
+
+            echo "Alert created for ${COUNT} stale leads"
+          else
+            echo "No stale leads found"
+          fi

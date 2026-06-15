@@ -46,14 +46,33 @@ select{cursor:pointer}
 .login-wrap::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,0.06),transparent 70%);bottom:-80px;left:-80px;animation:float 10s ease-in-out infinite reverse}
 @keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-20px)}}
 .login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:48px 40px;width:360px;text-align:center;position:relative;z-index:1;backdrop-filter:blur(20px)}
+.login-logo{height:48px;width:auto;margin-bottom:16px;filter:brightness(0) invert(1)}
+.light .login-logo{filter:brightness(0)}
 .login-card h1{font-size:24px;font-weight:800;margin-bottom:4px;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.login-card .subtitle{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:3px;font-weight:600;margin-bottom:36px}
-.pin-inputs{display:flex;gap:12px;justify-content:center;margin-bottom:28px}
-.pin-inputs input{width:52px;height:60px;text-align:center;font-size:24px;font-family:'Poppins',sans-serif;font-weight:700;background:var(--surface-2);border:2px solid var(--border);border-radius:12px;color:var(--text);-webkit-text-security:disc;transition:all .2s}
-.pin-inputs input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-glow);transform:scale(1.05)}
+.login-card .subtitle{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:3px;font-weight:600;margin-bottom:8px}
+.login-date{font-size:11px;color:var(--text-3);margin-bottom:28px;font-family:'Poppins',sans-serif}
+.login-name{margin-bottom:16px}
+.login-name input{text-align:center;font-size:14px;padding:12px 16px;border-radius:10px}
+.login-pin{margin-bottom:28px}
+.login-pin input{text-align:center;font-size:24px;font-family:'Poppins',sans-serif;font-weight:700;padding:14px 16px;border-radius:10px;-webkit-text-security:disc;letter-spacing:8px}
 .login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),#ea580c);color:#fff;border-radius:10px;font-weight:700;font-size:14px;transition:all .2s;letter-spacing:.5px}
 .login-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(249,115,22,0.3)}
 .login-err{color:var(--red);font-size:12px;margin-top:14px;min-height:18px}
+.light .sb-logo-img{filter:brightness(0) !important}
+.light .login-logo{filter:brightness(0) !important}
+
+/* ===== AGENTS PAGE ===== */
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.agent-card{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;cursor:pointer;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s}
+.agent-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(249,115,22,0.18);border-color:var(--accent)}
+.agent-card-bar{position:absolute;top:0;left:0;right:0;height:3px}
+.agent-card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.agent-card-icon{font-size:22px;line-height:1;flex-shrink:0;margin-top:2px}
+.agent-card-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.agent-card-desc{font-size:11px;color:var(--text-2)}
+.agent-card-status{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.agent-card-foot{display:flex;align-items:center;justify-content:space-between}
+.agent-card-arrow{font-size:11px;color:var(--accent);font-weight:600}
 
 /* ===== APP SHELL ===== */
 .app{display:flex;height:100vh;display:none}
@@ -356,9 +375,12 @@ select{cursor:pointer}
 <!-- LOGIN -->
 <div class="login-wrap" id="loginScreen">
 <div class="login-card">
+<img src="bb-logo.png" class="login-logo" alt="Business Booster">
 <h1>Business Booster</h1>
 <div class="subtitle">Leads System</div>
-<div class="pin-inputs"><input type="tel" maxlength="1" id="p1" autofocus><input type="tel" maxlength="1" id="p2"><input type="tel" maxlength="1" id="p3"><input type="tel" maxlength="1" id="p4"></div>
+<div class="login-date" id="loginDate"></div>
+<div class="login-name"><input type="text" id="loginName" placeholder="YOUR NAME" autocomplete="off"></div>
+<div class="login-pin"><input type="tel" id="loginPin" maxlength="4" placeholder="PIN" autofocus></div>
 <button class="login-btn" onclick="doLogin()">Sign In</button>
 <div class="login-err" id="loginErr"></div>
 </div>
@@ -367,11 +389,11 @@ select{cursor:pointer}
 <!-- APP -->
 <div class="app" id="app">
 <div class="sb-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
-<div class="mobile-header"><div style="display:flex;align-items:center;gap:8px"><img src="data:image/png;base64,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" class="bb-logo-adaptive" style="height:24px;width:auto" alt="Business Booster"><div class="sb-sub" style="font-size:9px;color:var(--accent);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-top:1px">Leads System</div></div><button class="menu-btn" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button></div>
+<div class="mobile-header"><div style="display:flex;align-items:center;gap:8px"><img src="bb-logo.png" class="sb-logo-img" style="height:24px;width:auto;filter:brightness(0) invert(1)" alt="Business Booster"><div class="sb-sub" style="font-size:9px;color:var(--accent);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-top:1px">Leads System</div></div><button class="menu-btn" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button></div>
 
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
-<div class="sb-header" style="padding:18px 16px 12px"><img src="data:image/png;base64,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" style="height:40px;width:auto;display:block" alt="Business Booster"><div class="sb-sub" style="margin-top:4px">Leads System</div></div>
+<div class="sb-header" style="padding:18px 16px 12px"><img src="bb-logo.png" class="sb-logo-img" style="height:40px;width:auto;display:block;filter:brightness(0) invert(1)" alt="Business Booster"><div class="sb-sub" style="margin-top:4px">Leads System</div></div>
 <div class="sb-clock" id="sbClock"></div>
 <div class="sb-section">Pipeline</div>
 <div class="sb-link active" data-page="dashboard" onclick="nav('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard<span class="sb-badge" id="sbFuBadge" style="display:none">0</span></div>
@@ -381,6 +403,8 @@ select{cursor:pointer}
 <div class="sb-link" data-page="analytics" onclick="nav('analytics')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>Performance</div>
 <div class="sb-section">Team</div>
 <div class="sb-link" data-page="hours" onclick="nav('hours')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Hours Log</div>
+<div class="sb-section">System</div>
+<div class="sb-link" data-page="agents" onclick="nav('agents')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Agents<span class="sb-badge" id="sbAgentsBadge" style="display:none">0</span></div>
 <div class="sb-footer">
 <button class="sb-theme" onclick="toggleTheme()"><span id="themeIcon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span> <span id="themeLabel">Light mode</span></button>
 <div class="sb-user"><div class="sb-avatar" id="userAvatar">TH</div><div><div class="sb-uname" id="userName">Thulaib</div><div class="sb-urole" id="userRole">CEO</div></div></div>
@@ -395,6 +419,7 @@ select{cursor:pointer}
 <div class="page" id="page-leads"></div>
 <div class="page" id="page-analytics"></div>
 <div class="page" id="page-hours"></div>
+<div class="page" id="page-agents"></div>
 </div>
 </div>
 
@@ -475,6 +500,11 @@ select{cursor:pointer}
 <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('csvModal')">Cancel</button><button class="btn btn-primary" id="csvImportBtn" onclick="importCSV()" style="display:none">Import Leads</button></div>
 </div></div>
 
+<div class="modal-overlay" id="agentDrawerModal"><div class="modal" style="width:460px;max-height:80vh">
+<div class="modal-head"><h3>Agent Alerts</h3><button class="modal-close" onclick="closeModal('agentDrawerModal')">✕</button></div>
+<div class="modal-body" style="max-height:60vh;overflow-y:auto"></div>
+</div></div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -527,17 +557,20 @@ async function sbPost(t,d){try{const r=await fetch(`${SB_URL}/${t}`,{method:'POS
 async function sbPatch(t,id,d){try{const r=await fetch(`${SB_URL}/${t}?id=eq.${id}`,{method:'PATCH',headers:{...H,'Prefer':'return=representation'},body:JSON.stringify(d)});if(!r.ok){console.error(`DB patch failed: ${t} (${r.status})`);return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);return null;}}
 
 /* ===== AUTH ===== */
-function doLogin(){const pin=[...document.querySelectorAll('.pin-inputs input')].map(i=>i.value).join('');if(USERS[pin]){currentUser=USERS[pin];localStorage.setItem('bb_leads_user',JSON.stringify(currentUser));showApp();}else{document.getElementById('loginErr').textContent='Invalid PIN';document.querySelectorAll('.pin-inputs input').forEach(i=>i.value='');document.getElementById('p1').focus();}}
-function signOut(){localStorage.removeItem('bb_leads_user');currentUser=null;document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.querySelectorAll('.pin-inputs input').forEach(i=>i.value='');document.getElementById('p1').focus();}
-document.querySelectorAll('.pin-inputs input').forEach((inp,i,all)=>{inp.addEventListener('input',()=>{if(inp.value&&i<3)all[i+1].focus();if(i===3&&inp.value)doLogin();});inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!inp.value&&i>0)all[i-1].focus();});});
+function updateLoginDate(){const el=document.getElementById('loginDate');if(el){const n=new Date();el.textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});}}
+updateLoginDate();setInterval(updateLoginDate,60000);
+function doLogin(){const pin=document.getElementById('loginPin').value;if(USERS[pin]){currentUser=USERS[pin];localStorage.setItem('bb_leads_user',JSON.stringify(currentUser));showApp();}else{document.getElementById('loginErr').textContent='Invalid PIN';document.getElementById('loginPin').value='';document.getElementById('loginPin').focus();}}
+function signOut(){localStorage.removeItem('bb_leads_user');currentUser=null;document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginPin').value='';document.getElementById('loginName').value='';document.getElementById('loginPin').focus();}
+document.getElementById('loginPin').addEventListener('input',function(){if(this.value.length===4)doLogin();});
+document.getElementById('loginPin').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
 
 /* ===== APP INIT ===== */
-async function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('userName').textContent=currentUser.name;document.getElementById('userRole').textContent=currentUser.role;document.getElementById('userAvatar').textContent=currentUser.code.toUpperCase();startClock();await loadAllData();requestNotifPermission();nav('dashboard');}
+async function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('userName').textContent=currentUser.name;document.getElementById('userRole').textContent=currentUser.role;document.getElementById('userAvatar').textContent=currentUser.code.toUpperCase();startClock();await loadAllData();requestNotifPermission();nav('dashboard');loadLeadsAgentAlerts();}
 async function loadAllData(){const[leads,acts,fus]=await Promise.all([sb('pipeline','select=*&order=created_at.desc'),sb('lead_activities','select=*&order=created_at.desc'),sb('lead_follow_ups','select=*&order=due_date.asc,due_time.asc')]);allLeads=leads||[];allActivities=acts||[];allFollowUps=fus||[];if(!leads.length&&!acts.length&&!fus.length){toast('Could not load data — check connection','error');}todayActCount=allActivities.filter(a=>a.created_at&&a.created_at.startsWith(today())).length;updateFUBadge();}
 function updateFUBadge(){const c=allFollowUps.filter(f=>!f.is_done&&f.due_date<=today()).length;const b=document.getElementById('sbFuBadge');if(c>0){b.textContent=c;b.style.display='inline';}else{b.style.display='none';}}
 
 /* ===== NAV ===== */
-function nav(page){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));const pg=document.getElementById('page-'+page);if(pg)pg.classList.add('active');const ln=document.querySelector(`.sb-link[data-page="${page}"]`);if(ln)ln.classList.add('active');closeSidebar();if(page==='dashboard')renderDashboard();else if(page==='pipeline')renderPipeline();else if(page==='leads')renderLeads();else if(page==='analytics')renderAnalytics();else if(page==='hours')renderHours();}
+function nav(page){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));const pg=document.getElementById('page-'+page);if(pg)pg.classList.add('active');const ln=document.querySelector(`.sb-link[data-page="${page}"]`);if(ln)ln.classList.add('active');closeSidebar();if(page==='dashboard')renderDashboard();else if(page==='pipeline')renderPipeline();else if(page==='leads')renderLeads();else if(page==='analytics')renderAnalytics();else if(page==='hours')renderHours();else if(page==='agents')renderAgents();}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbOverlay').classList.toggle('open');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOverlay').classList.remove('open');}
 
@@ -982,6 +1015,103 @@ codes.forEach(c=>{const inp=document.getElementById(`hrs_h_${c}`);if(inp&&inp.va
 localStorage.setItem(HOURS_KEY,JSON.stringify(log));
 toast('Hours saved');
 renderHours();
+}
+
+/* ===== AGENTS ===== */
+let _leadsAlertData=[];
+const AGENT_META={
+'stale-lead':{icon:'💤',name:'Stale Lead',desc:'Leads untouched 7+ days'},
+'overdue-fu':{icon:'⏰',name:'Overdue Follow-Up',desc:'Follow-ups past due date'},
+'pipeline-summary':{icon:'📊',name:'Pipeline Summary',desc:'Daily pipeline health check'},
+'lead-score':{icon:'🎯',name:'Lead Score',desc:'Score changes & alerts'},
+'client-health':{icon:'❤️',name:'Client Health',desc:'At-risk client signals'}
+};
+async function loadLeadsAgentAlerts(){
+const el=document.getElementById('leads-agents-list');const btn=document.getElementById('agents-refresh-btn');
+if(!el)return;
+el.innerHTML='<div style="color:var(--text-3);font-size:13px;padding:32px 0;text-align:center;">Scanning...</div>';
+if(btn){btn.textContent='↻ Scanning...';btn.style.opacity='0.6';btn.style.pointerEvents='none';}
+try{
+const resp=await fetch(`${SB_URL.replace('/rest/v1','')}/rest/v1/agent_alerts?or=(system.eq.leads,system.eq.all)&order=created_at.desc&limit=50&select=*`,{headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}});
+const alerts=resp.ok?await resp.json():[];
+_leadsAlertData=alerts||[];
+renderAgentCards(alerts);
+updateLeadsAgentsBadge(alerts.filter(a=>!a.read_at).length);
+}catch(e){
+el.innerHTML='<div style="color:var(--text-3);font-size:13px;padding:24px 0;text-align:center;">No alerts — everything running smoothly.</div>';
+}finally{if(btn){btn.textContent='↻ Refresh';btn.style.opacity='';btn.style.pointerEvents='';}}
+}
+function renderAgentCards(alerts){
+const el=document.getElementById('leads-agents-list');if(!el)return;
+if(!alerts||!alerts.length){el.innerHTML='<div style="color:var(--text-3);font-size:13px;padding:32px 0;text-align:center;">No alerts — everything running smoothly.</div>';return;}
+const grouped={};alerts.forEach(a=>{if(!grouped[a.agent])grouped[a.agent]=[];grouped[a.agent].push(a);});
+const SEV_COLOR={critical:'#f87171',warning:'#fbbf24',info:'#60a5fa'};
+const cards=Object.keys(grouped).map(agent=>{
+const items=grouped[agent];const meta=AGENT_META[agent]||{icon:'⚡',name:agent,desc:'Agent monitor'};
+const unread=items.filter(a=>!a.read_at);
+const topSev=items.find(a=>a.severity==='critical')?'critical':items.find(a=>a.severity==='warning')?'warning':'info';
+const col=SEV_COLOR[topSev]||'#60a5fa';const hasIssues=unread.length>0;
+const d=new Date(items[0].created_at);
+const ts=d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+return`<div class="agent-card" onclick="openAgentDrawer('${agent}')">
+${hasIssues?`<div class="agent-card-bar" style="background:linear-gradient(90deg,${col},transparent)"></div>`:''}
+<div class="agent-card-top"><div class="agent-card-icon">${meta.icon}</div>
+<div style="flex:1;min-width:0"><div class="agent-card-name">${meta.name}</div><div class="agent-card-desc">${meta.desc}</div></div>
+<div class="agent-card-status" style="background:${col}22;color:${col}">${hasIssues?unread.length+' issue'+(unread.length!==1?'s':''):'✓ Clear'}</div></div>
+<div class="agent-card-foot"><span style="color:var(--text-3);font-size:10px">${ts}</span><span class="agent-card-arrow">View →</span></div></div>`;
+}).join('');
+el.innerHTML='<div class="agents-grid">'+cards+'</div>';
+}
+function renderAgents(){
+const pg=document.getElementById('page-agents');
+pg.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:24px">
+<div><div class="page-header" style="margin-bottom:0"><div class="page-label">System</div><h1>⚡ Agents</h1><div class="page-sub">Live alerts from all BB agents</div></div></div>
+<div style="display:flex;gap:8px">
+<button id="agents-refresh-btn" onclick="loadLeadsAgentAlerts()" style="padding:8px 14px;border-radius:8px;background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer">↻ Refresh</button>
+<button onclick="markAllLeadsAlertsRead()" style="padding:8px 14px;border-radius:8px;background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer">Mark all read</button>
+</div></div>
+<div id="leads-agents-list"><div style="color:var(--text-3);font-size:13px;padding:24px 0;text-align:center;">Loading...</div></div>`;
+loadLeadsAgentAlerts();
+}
+function openAgentDrawer(agent){
+const items=_leadsAlertData.filter(a=>a.agent===agent);
+const meta=AGENT_META[agent]||{icon:'⚡',name:agent};
+const SEV_COLOR={critical:'#f87171',warning:'#fbbf24',info:'#60a5fa'};
+const topSev=items.find(a=>a.severity==='critical')?'critical':items.find(a=>a.severity==='warning')?'warning':'info';
+const col=SEV_COLOR[topSev]||'#60a5fa';
+const body=!items.length?'<div style="color:var(--text-2);text-align:center;padding:40px 0;">No alerts for this agent.</div>':items.map(a=>{
+const d=new Date(a.created_at);const ts=d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+const sc=SEV_COLOR[a.severity]||'#60a5fa';const unread=!a.read_at;
+return`<div id="leads-alert-${a.id}" style="background:var(--surface-2);border:1px solid ${unread?sc:'var(--border)'};border-left:3px solid ${sc};border-radius:8px;padding:12px 14px;margin-bottom:10px;cursor:pointer" onclick="markLeadsAlertRead(${a.id})">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+<span style="font-size:10px;font-weight:700;color:${sc};text-transform:uppercase">${a.severity||'info'}</span>
+${unread?`<span style="font-size:9px;font-weight:700;background:${sc};color:#000;padding:1px 6px;border-radius:4px">NEW</span>`:''}
+<span style="font-size:10px;color:var(--text-3);margin-left:auto">${ts}</span></div>
+<div style="font-size:12.5px;white-space:pre-wrap;line-height:1.55;color:var(--text)">${(a.message||'').replace(/</g,'&lt;')}</div></div>`;
+}).join('');
+openModal('agentDrawerModal');
+const m=document.getElementById('agentDrawerModal');
+if(m){m.querySelector('.modal-body').innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+<div style="width:3px;height:22px;background:${col};border-radius:2px"></div>
+<div><div style="font-size:15px;font-weight:700">${meta.icon} ${meta.name}</div>
+<div style="font-size:11px;color:var(--text-2);margin-top:2px">${items.length} alert${items.length!==1?'s':''}</div></div></div>${body}`;}
+}
+async function markLeadsAlertRead(id){
+const card=document.getElementById('leads-alert-'+id);if(!card)return;
+try{await fetch(`${SB_URL.replace('/rest/v1','')}/rest/v1/agent_alerts?id=eq.${id}`,{method:'PATCH',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({read_at:new Date().toISOString()})});
+card.style.borderLeftColor='var(--border)';const badge=card.querySelector('span[style*="NEW"]');if(badge)badge.remove();
+updateLeadsAgentsBadge(document.querySelectorAll('[id^="leads-alert-"] span[style*="NEW"]').length);
+}catch(e){}
+}
+async function markAllLeadsAlertsRead(){
+try{await fetch(`${SB_URL.replace('/rest/v1','')}/rest/v1/agent_alerts?read_at=is.null&or=(system.eq.leads,system.eq.all)`,{method:'PATCH',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({read_at:new Date().toISOString()})});
+document.querySelectorAll('[id^="leads-alert-"]').forEach(c=>c.style.borderLeftColor='var(--border)');
+document.querySelectorAll('[id^="leads-alert-"] span[style*="NEW"]').forEach(b=>b.remove());
+updateLeadsAgentsBadge(0);
+}catch(e){}
+}
+function updateLeadsAgentsBadge(count){
+const b=document.getElementById('sbAgentsBadge');if(b){b.textContent=count;b.style.display=count>0?'':'none';}
 }
 
 /* ===== INIT ===== */
