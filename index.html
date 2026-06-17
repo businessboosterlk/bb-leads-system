@@ -494,6 +494,10 @@ input,select,textarea{font-size:14px;padding:10px 12px}
 .csv-dropzone{border:2px dashed var(--border);border-radius:var(--radius-lg);padding:32px;text-align:center;cursor:pointer;transition:all .2s;color:var(--text-3)}
 .csv-dropzone:hover,.csv-dropzone.dragover{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
 .csv-dropzone input{display:none}
+
+/* Demo banner */
+.demo-banner{display:none;background:linear-gradient(135deg,var(--amber),#d97706);color:#000;text-align:center;padding:6px 12px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;position:sticky;top:0;z-index:60}
+.demo-banner.show{display:block}
 </style>
 </head>
 <body>
@@ -508,6 +512,7 @@ input,select,textarea{font-size:14px;padding:10px 12px}
 <div class="login-pin"><input type="tel" id="loginPin" maxlength="4" placeholder="PIN" autofocus></div>
 <button class="login-btn" onclick="doLogin()">Sign In</button>
 <div class="login-err" id="loginErr"></div>
+<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><button onclick="demoLogin()" style="background:none;border:1px solid var(--border);color:var(--text-2);padding:8px 20px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;width:100%" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-2)'">Try Demo</button></div>
 </div>
 </div>
 
@@ -539,6 +544,7 @@ input,select,textarea{font-size:14px;padding:10px 12px}
 
 <!-- MAIN -->
 <div class="main" id="mainContent">
+<div class="demo-banner" id="demoBanner">Demo Mode — Sample Data Only</div>
 <div class="page active" id="page-dashboard"></div>
 <div class="page" id="page-pipeline"></div>
 <div class="page" id="page-leads"></div>
@@ -674,6 +680,60 @@ let currentUser=null,allLeads=[],allActivities=[],allFollowUps=[];
 let currentDetailId=null,activityLeadId=null,convertLeadId=null,lostLeadId=null,fuLeadId=null;
 let editingLeadId=null,csvData=null;
 let todayActCount=0;
+let isDemoMode=false;
+
+/* ===== DEMO DATA ===== */
+function generateDemoData(){
+const now=new Date();
+const d=(days)=>{const dt=new Date(now);dt.setDate(dt.getDate()-days);return dt.toISOString();};
+const dDate=(days)=>{const dt=new Date(now);dt.setDate(dt.getDate()+days);return localDateStr(dt);};
+const demoLeads=[
+{id:9001,name:'Sunrise Café',contact_name:'Amal Perera',contact_phone:'+94 77 123 4567',contact_email:'amal@sunrise.lk',industry:'Food & Beverage',source:'social_media',stage:'negotiation',status:'active',estimated_value:230000,package_interest:'Blaze (230K)',owner:'th',pain_points:'Low social media reach, no website',objections:'Budget concern',notes:'Very interested in full package',lead_score:85,is_hot:true,created_at:d(18),updated_at:d(2),last_contact_at:d(2)},
+{id:9002,name:'Peak Fitness Studio',contact_name:'Dinesh Kumar',contact_phone:'+94 76 234 5678',contact_email:'dinesh@peakfit.lk',industry:'Fitness',source:'referral',stage:'proposal_sent',status:'active',estimated_value:150000,package_interest:'Ignite (150K)',owner:'sh',pain_points:'Competitors getting more bookings',objections:null,notes:'Referred by client Rashmi',lead_score:72,is_hot:false,created_at:d(12),updated_at:d(3),last_contact_at:d(3)},
+{id:9003,name:'Lanka Auto Parts',contact_name:'Ruwan Silva',contact_phone:'+94 71 345 6789',contact_email:'ruwan@lankauto.lk',industry:'Automotive',source:'cold_call',stage:'discovery',status:'active',estimated_value:150000,package_interest:'Ignite (150K)',owner:'pv',pain_points:'Old website, no online orders',objections:'Wants to see portfolio first',notes:'Has 3 branches',lead_score:55,is_hot:false,created_at:d(8),updated_at:d(4),last_contact_at:d(4)},
+{id:9004,name:'Emerald Gems',contact_name:'Priya Wickrama',contact_phone:'+94 70 456 7890',contact_email:'priya@emeraldgems.lk',industry:'Retail',source:'website',stage:'contacted',status:'active',estimated_value:90000,package_interest:'Spark (90K)',owner:'nv',pain_points:null,objections:null,notes:'Found us via Google',lead_score:35,is_hot:false,created_at:d(5),updated_at:d(5),last_contact_at:d(5)},
+{id:9005,name:'Cloud Nine Travels',contact_name:'Sandun Jayasuriya',contact_phone:'+94 77 567 8901',contact_email:'sandun@c9travels.lk',industry:'Hospitality',source:'social_media',stage:'new_lead',status:'active',estimated_value:230000,package_interest:'Blaze (230K)',owner:'th',pain_points:null,objections:null,notes:'DM on Instagram, wants full branding',lead_score:20,is_hot:false,created_at:d(2),updated_at:d(2),last_contact_at:null},
+{id:9006,name:'Bright Minds Academy',contact_name:'Nirasha Fernando',contact_phone:'+94 76 678 9012',contact_email:'nirasha@brightminds.lk',industry:'Education',source:'referral',stage:'new_lead',status:'active',estimated_value:90000,package_interest:null,owner:'sh',pain_points:null,objections:null,notes:'Referred by a friend',lead_score:15,is_hot:false,created_at:d(1),updated_at:d(1),last_contact_at:null},
+{id:9007,name:'Golden Spice Restaurant',contact_name:'Kasun Bandara',contact_phone:'+94 71 789 0123',contact_email:'kasun@goldenspice.lk',industry:'Food & Beverage',source:'walk_in',stage:'contacted',status:'active',estimated_value:150000,package_interest:'Ignite (150K)',owner:'pv',pain_points:'Delivery apps taking commission',objections:'Timing — opening new branch soon',notes:'Wants to start after new branch opens',lead_score:40,is_hot:false,created_at:d(10),updated_at:d(6),last_contact_at:d(6)},
+{id:9008,name:'TechWave Solutions',contact_name:'Malith Ratnayake',contact_phone:'+94 70 890 1234',contact_email:'malith@techwave.lk',industry:'Technology',source:'website',stage:'closed_won',status:'active',estimated_value:230000,package_interest:'Blaze (230K)',owner:'th',pain_points:'No digital presence',objections:null,notes:'Signed Blaze package!',lead_score:100,is_hot:false,created_at:d(30),updated_at:d(7),last_contact_at:d(7)},
+{id:9009,name:'Serenity Spa',contact_name:'Chamari De Silva',contact_phone:'+94 77 901 2345',contact_email:null,industry:'Beauty',source:'cold_call',stage:'closed_lost',status:'active',estimated_value:90000,package_interest:'Spark (90K)',owner:'nv',pain_points:'Low bookings',objections:'Price too high',notes:'Went with cheaper competitor',lead_score:0,is_hot:false,lost_reason:'competitor',created_at:d(25),updated_at:d(10),last_contact_at:d(10)},
+{id:9010,name:'Metro Real Estate',contact_name:'Harsha Wijesinghe',contact_phone:'+94 76 012 3456',contact_email:'harsha@metrore.lk',industry:'Real Estate',source:'social_media',stage:'discovery',status:'active',estimated_value:230000,package_interest:'Blaze (230K)',owner:'th',pain_points:'Listings not getting views',objections:'Wants proof of ROI',notes:'Big potential — 50+ property listings',lead_score:60,is_hot:true,created_at:d(14),updated_at:d(1),last_contact_at:d(1)}
+];
+
+const demoActivities=[
+{id:8001,pipeline_id:9001,type:'call',outcome:'positive',summary:'Discussed Blaze package in detail. Amal loves the social media management component.',talking_points:'Wants Instagram reels, asked about content calendar',next_step:'Send final proposal with discount',logged_by:'THULAIB',created_at:d(2)},
+{id:8002,pipeline_id:9001,type:'meeting',outcome:'positive',summary:'Met at their café. Showed portfolio and case studies.',talking_points:'Impressed by F&B results, asked about timeline',next_step:'Follow up with proposal',logged_by:'THULAIB',created_at:d(5)},
+{id:8003,pipeline_id:9001,type:'call',outcome:'neutral',summary:'Initial call. Explained our packages.',talking_points:'Budget is tight but interested',next_step:'Schedule in-person meeting',logged_by:'THULAIB',created_at:d(12)},
+{id:8004,pipeline_id:9002,type:'proposal',outcome:'positive',summary:'Sent Ignite proposal via email.',talking_points:null,next_step:'Follow up in 3 days',logged_by:'SHIARA',created_at:d(3)},
+{id:8005,pipeline_id:9002,type:'call',outcome:'positive',summary:'Dinesh wants to grow Instagram following. Discussed content strategy.',talking_points:'Main competitor has 10K followers, he has 2K',next_step:'Prepare proposal',logged_by:'SHIARA',created_at:d(7)},
+{id:8006,pipeline_id:9003,type:'call',outcome:'neutral',summary:'Called Ruwan. He wants to see our auto industry work.',talking_points:'Has 3 branches, wants unified branding',next_step:'Send portfolio of auto clients',logged_by:'PAVITH',created_at:d(4)},
+{id:8007,pipeline_id:9004,type:'message',outcome:'neutral',summary:'Sent WhatsApp intro message. Priya responded asking for more info.',talking_points:null,next_step:'Call to discuss packages',logged_by:'NIRVANA',created_at:d(5)},
+{id:8008,pipeline_id:9007,type:'call',outcome:'neutral',summary:'Kasun says new branch opening in 2 months. Wants to start after.',talking_points:'Budget approved, just timing issue',next_step:'Follow up next month',logged_by:'PAVITH',created_at:d(6)},
+{id:8009,pipeline_id:9008,type:'call',outcome:'positive',summary:'Closed the deal! Malith signed Blaze package.',talking_points:'Starting next week',next_step:'Begin onboarding',logged_by:'THULAIB',created_at:d(7)},
+{id:8010,pipeline_id:9010,type:'meeting',outcome:'positive',summary:'Met Harsha at his office. Showed real estate case studies.',talking_points:'Wants property listing integration, virtual tours',next_step:'Prepare custom proposal for real estate',logged_by:'THULAIB',created_at:d(1)},
+{id:8011,pipeline_id:9010,type:'call',outcome:'positive',summary:'Initial discovery call. Big company with 50+ listings.',talking_points:'Currently using Facebook only, no website',next_step:'Schedule in-person meeting',logged_by:'THULAIB',created_at:d(8)},
+{id:8012,pipeline_id:9009,type:'call',outcome:'negative',summary:'Chamari said they went with another agency. Price was the issue.',talking_points:'Chose a cheaper local option',next_step:null,logged_by:'NIRVANA',created_at:d(10)}
+];
+
+const demoFollowUps=[
+{id:7001,pipeline_id:9001,due_date:dDate(1),due_time:'10:00',priority:'urgent',note:'Send final proposal with 10% discount',is_done:false,created_by:'THULAIB'},
+{id:7002,pipeline_id:9002,due_date:dDate(2),due_time:'14:00',priority:'high',note:'Follow up on Ignite proposal',is_done:false,created_by:'SHIARA'},
+{id:7003,pipeline_id:9003,due_date:dDate(3),due_time:null,priority:'normal',note:'Send auto industry portfolio',is_done:false,created_by:'PAVITH'},
+{id:7004,pipeline_id:9004,due_date:dDate(0),due_time:'11:00',priority:'normal',note:'Call to discuss Spark package',is_done:false,created_by:'NIRVANA'},
+{id:7005,pipeline_id:9010,due_date:dDate(1),due_time:'15:00',priority:'high',note:'Send real estate custom proposal',is_done:false,created_by:'THULAIB'},
+{id:7006,pipeline_id:9007,due_date:dDate(20),due_time:null,priority:'normal',note:'Check if new branch timeline is on track',is_done:false,created_by:'PAVITH'},
+{id:7007,pipeline_id:9005,due_date:dDate(0),due_time:'09:00',priority:'high',note:'Call Cloud Nine — they DMed on Instagram',is_done:false,created_by:'THULAIB'}
+];
+
+return{leads:demoLeads,activities:demoActivities,followUps:demoFollowUps};
+}
+
+function demoLogin(){
+isDemoMode=true;
+currentUser={name:'Demo User',code:'dm',role:'CEO'};
+localStorage.setItem('bb_leads_user',JSON.stringify({...currentUser,demo:true}));
+showApp();
+}
 
 /* ===== SUPABASE ===== */
 const H={'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'};
@@ -685,13 +745,14 @@ async function sbPatch(t,id,d){try{const r=await fetch(`${SB_URL}/${t}?id=eq.${i
 function updateLoginDate(){const el=document.getElementById('loginDate');if(el){const n=new Date();el.textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});}}
 updateLoginDate();setInterval(updateLoginDate,60000);
 function doLogin(){const pin=document.getElementById('loginPin').value;if(USERS[pin]){currentUser=USERS[pin];localStorage.setItem('bb_leads_user',JSON.stringify(currentUser));showApp();}else{document.getElementById('loginErr').textContent='Invalid PIN';document.getElementById('loginPin').value='';document.getElementById('loginPin').focus();}}
-function signOut(){localStorage.removeItem('bb_leads_user');currentUser=null;document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginPin').value='';document.getElementById('loginName').value='';document.getElementById('loginPin').focus();}
+function signOut(){localStorage.removeItem('bb_leads_user');currentUser=null;isDemoMode=false;document.getElementById('demoBanner').classList.remove('show');document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginPin').value='';document.getElementById('loginName').value='';document.getElementById('loginPin').focus();}
 document.getElementById('loginPin').addEventListener('input',function(){if(this.value.length===4)doLogin();});
 document.getElementById('loginPin').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
 
 /* ===== APP INIT ===== */
-async function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('userName').textContent=currentUser.name;document.getElementById('userRole').textContent=currentUser.role;document.getElementById('userAvatar').textContent=currentUser.code.toUpperCase();startClock();await loadAllData();requestNotifPermission();nav('dashboard');loadLeadsAgentAlerts();}
-async function loadAllData(){const[leads,acts,fus]=await Promise.all([sb('pipeline','select=*&order=created_at.desc'),sb('lead_activities','select=*&order=created_at.desc'),sb('lead_follow_ups','select=*&order=due_date.asc,due_time.asc')]);allLeads=leads||[];allActivities=acts||[];allFollowUps=fus||[];if(!leads.length&&!acts.length&&!fus.length){toast('Could not load data — check connection','error');}todayActCount=allActivities.filter(a=>a.created_at&&a.created_at.startsWith(today())).length;updateFUBadge();}
+async function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('userName').textContent=currentUser.name;document.getElementById('userRole').textContent=currentUser.role;document.getElementById('userAvatar').textContent=currentUser.code.toUpperCase();if(isDemoMode){document.getElementById('demoBanner').classList.add('show');}else{document.getElementById('demoBanner').classList.remove('show');}startClock();await loadAllData();requestNotifPermission();nav('dashboard');if(!isDemoMode)loadLeadsAgentAlerts();}
+async function loadAllData(){if(isDemoMode){const demo=generateDemoData();allLeads=demo.leads;allActivities=demo.activities;allFollowUps=demo.followUps;todayActCount=2;updateFUBadge();return;}const[leads,acts,fus]=await Promise.all([sb('pipeline','select=*&order=created_at.desc'),sb('lead_activities','select=*&order=created_at.desc'),sb('lead_follow_ups','select=*&order=due_date.asc,due_time.asc')]);allLeads=leads||[];allActivities=acts||[];allFollowUps=fus||[];if(!leads.length&&!acts.length&&!fus.length){toast('Could not load data — check connection','error');}todayActCount=allActivities.filter(a=>a.created_at&&a.created_at.startsWith(today())).length;updateFUBadge();}
+function demoGuard(){if(isDemoMode){toast('Demo mode — read only','error');return true;}return false;}
 function updateFUBadge(){const c=allFollowUps.filter(f=>!f.is_done&&f.due_date<=today()).length;const b=document.getElementById('sbFuBadge');if(c>0){b.textContent=c;b.style.display='inline';}else{b.style.display='none';}}
 
 /* ===== NAV ===== */
@@ -845,7 +906,7 @@ ${l.contact_phone?`<a href="${waLink(l.contact_phone)}" target="_blank" style="c
 `;
 }
 
-async function completeFU(id){const res=await sbPatch('lead_follow_ups',id,{is_done:true,completed_at:new Date().toISOString()});if(!res){toast('Failed','error');return;}const i=allFollowUps.findIndex(f=>f.id===id);if(i>=0)allFollowUps[i].is_done=true;toast('Follow-up done ✓');updateFUBadge();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function completeFU(id){if(demoGuard())return;const res=await sbPatch('lead_follow_ups',id,{is_done:true,completed_at:new Date().toISOString()});if(!res){toast('Failed','error');return;}const i=allFollowUps.findIndex(f=>f.id===id);if(i>=0)allFollowUps[i].is_done=true;toast('Follow-up done ✓');updateFUBadge();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== PIPELINE BOARD ===== */
 function renderPipeline(){
@@ -873,7 +934,7 @@ ${!leads.length?'<div class="section-empty" style="padding:20px;font-size:11px">
 }
 let draggedId=null;
 function dragCard(e,id){draggedId=id;e.target.classList.add('dragging');e.target.addEventListener('dragend',()=>{e.target.classList.remove('dragging');draggedId=null;},{once:true});}
-async function dropCard(e,stage){e.preventDefault();e.currentTarget.classList.remove('drag-over');if(!draggedId)return;const did=draggedId;draggedId=null;if(stage==='closed_won'){openConvert(did);return;}if(stage==='closed_lost'){openMarkLost(did);return;}const res=await sbPatch('pipeline',did,{stage});if(!res){toast('Move failed','error');return;}const l=allLeads.find(x=>x.id===did);if(l)l.stage=stage;toast('Moved to '+stageInfo(stage).label);renderPipeline();}
+async function dropCard(e,stage){e.preventDefault();e.currentTarget.classList.remove('drag-over');if(demoGuard())return;if(!draggedId)return;const did=draggedId;draggedId=null;if(stage==='closed_won'){openConvert(did);return;}if(stage==='closed_lost'){openMarkLost(did);return;}const res=await sbPatch('pipeline',did,{stage});if(!res){toast('Move failed','error');return;}const l=allLeads.find(x=>x.id===did);if(l)l.stage=stage;toast('Moved to '+stageInfo(stage).label);renderPipeline();}
 
 /* ===== ALL LEADS TABLE ===== */
 function renderLeads(){
@@ -940,12 +1001,12 @@ function switchTab(el,id){el.parentElement.querySelectorAll('.dp-tab').forEach(t
 async function saveIntel(id,f,v){const d={};const val=v.trim();d[f]=val===''||val==='Click to add...'?null:val;await sbPatch('pipeline',id,d);const l=allLeads.find(x=>x.id===id);if(l)l[f]=d[f];}
 document.addEventListener('focusin',e=>{if(e.target.classList?.contains('ic-val')&&e.target.textContent.trim()==='Click to add...'){e.target.textContent='';e.target.classList.remove('empty');}});
 document.addEventListener('focusout',e=>{if(e.target.classList?.contains('ic-val')&&!e.target.textContent.trim()){e.target.textContent='Click to add...';e.target.classList.add('empty');}});
-async function toggleHot(id){const l=allLeads.find(x=>x.id===id);if(!l)return;const newHot=!l.is_hot;const res=await sbPatch('pipeline',id,{is_hot:newHot});if(!res){toast('Failed to update','error');return;}l.is_hot=newHot;toast(l.is_hot?'🔥 Marked hot':'Unmarked');openDetail(id);}
+async function toggleHot(id){if(demoGuard())return;const l=allLeads.find(x=>x.id===id);if(!l)return;const newHot=!l.is_hot;const res=await sbPatch('pipeline',id,{is_hot:newHot});if(!res){toast('Failed to update','error');return;}l.is_hot=newHot;toast(l.is_hot?'🔥 Marked hot':'Unmarked');openDetail(id);}
 
 /* ===== ADD / EDIT LEAD ===== */
 function openAddLead(){editingLeadId=null;['al_name','al_contact','al_phone','al_email','al_notes'].forEach(x=>document.getElementById(x).value='');document.getElementById('al_value').value='';document.getElementById('al_industry').value='';document.getElementById('al_source').value='social_media';document.getElementById('al_package').value='';document.getElementById('al_owner').value=currentUser?.code||'th';document.getElementById('al_stage').value='new_lead';document.getElementById('addLeadTitle').textContent='Add New Lead';document.getElementById('addLeadBtn').textContent='Add Lead';openModal('addLeadModal');}
 function editLead(id){editingLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('al_name').value=l.name||'';document.getElementById('al_contact').value=l.contact_name||'';document.getElementById('al_phone').value=l.contact_phone||'';document.getElementById('al_email').value=l.contact_email||'';document.getElementById('al_industry').value=l.industry||'';document.getElementById('al_source').value=l.source||'social_media';document.getElementById('al_value').value=l.estimated_value||'';document.getElementById('al_package').value=l.package_interest||'';document.getElementById('al_owner').value=l.owner||'th';document.getElementById('al_stage').value=l.stage||'new_lead';document.getElementById('al_notes').value=l.notes||'';document.getElementById('addLeadTitle').textContent='Edit Lead';document.getElementById('addLeadBtn').textContent='Update Lead';closeDetail();openModal('addLeadModal');}
-async function saveLead(){const name=document.getElementById('al_name').value.trim();if(!name){toast('Name required','error');return;}
+async function saveLead(){if(demoGuard())return;const name=document.getElementById('al_name').value.trim();if(!name){toast('Name required','error');return;}
 const data={name,contact_name:document.getElementById('al_contact').value.trim()||null,contact_phone:document.getElementById('al_phone').value.trim()||null,contact_email:document.getElementById('al_email').value.trim()||null,industry:document.getElementById('al_industry').value||null,source:document.getElementById('al_source').value,estimated_value:document.getElementById('al_value').value?parseInt(document.getElementById('al_value').value):null,package_interest:document.getElementById('al_package').value||null,owner:document.getElementById('al_owner').value,stage:document.getElementById('al_stage').value,notes:document.getElementById('al_notes').value.trim()||null};
 if(data.estimated_value==null){const m=data.package_interest?.match(/\((\d+)K\)/);if(m)data.estimated_value=parseInt(m[1])*1000;}
 if(editingLeadId){await sbPatch('pipeline',editingLeadId,data);const l=allLeads.find(x=>x.id===editingLeadId);if(l)Object.assign(l,data);closeModal('addLeadModal');toast('Lead updated ✓');openDetail(editingLeadId);}else{data.status='active';data.temperature='cold';const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);closeModal('addLeadModal');toast('Lead added! 🎯');}else{toast('Failed','error');return;}}
@@ -963,7 +1024,7 @@ document.getElementById('act_schedFu').onchange=function(){document.getElementBy
 openModal('activityModal');}
 function checkStageSuggest(l){const t=document.getElementById('act_type').value;let sg=null;if(t==='proposal'&&l.stage!=='proposal_sent')sg={s:'proposal_sent',l:'Proposal Sent'};else if(t==='meeting'&&['new_lead','contacted'].includes(l.stage))sg={s:'discovery',l:'Discovery'};
 document.getElementById('stageSuggest').innerHTML=sg?`<div class="suggest-bar"><span class="sg-text">💡 Move to <strong>${sg.l}</strong>?</span><button class="btn btn-sm btn-primary" onclick="this.dataset.stage='${sg.s}';this.textContent='✓ Will move';this.disabled=true">Yes</button></div>`:'';}
-async function saveActivity(){if(!activityLeadId)return;const sum=document.getElementById('act_summary').value.trim();if(!sum){toast('Summary required','error');return;}
+async function saveActivity(){if(demoGuard())return;if(!activityLeadId)return;const sum=document.getElementById('act_summary').value.trim();if(!sum){toast('Summary required','error');return;}
 const data={pipeline_id:activityLeadId,type:document.getElementById('act_type').value,summary:sum,outcome:document.getElementById('act_outcome').value,talking_points:document.getElementById('act_talking').value.trim()||null,pain_points_discovered:document.getElementById('act_pain').value.trim()||null,objections_raised:document.getElementById('act_obj').value.trim()||null,next_step:document.getElementById('act_next').value.trim()||null,logged_by:currentUser?.name?.toUpperCase()};
 const r=await sbPost('lead_activities',data);if(!r){toast('Failed','error');return;}allActivities.unshift(r[0]);todayActCount++;
 const upd={last_contact_at:new Date().toISOString()};if(data.next_step)upd.next_action=data.next_step;
@@ -980,16 +1041,16 @@ const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)n
 
 /* ===== FOLLOW-UP ===== */
 function openScheduleFU(id){fuLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('fuLeadInfo').innerHTML=`<div style="font-size:14px;font-weight:700">${esc(l.name)}</div>`;const tom=new Date();tom.setDate(tom.getDate()+1);document.getElementById('fu_date').value=localDateStr(tom);document.getElementById('fu_time').value='10:00';document.getElementById('fu_priority').value='normal';document.getElementById('fu_note').value='';openModal('followUpModal');}
-async function saveFollowUp(){if(!fuLeadId)return;const d=document.getElementById('fu_date').value;if(!d){toast('Date required','error');return;}const data={pipeline_id:fuLeadId,due_date:d,due_time:document.getElementById('fu_time').value||null,priority:document.getElementById('fu_priority').value,note:document.getElementById('fu_note').value.trim()||null,created_by:currentUser?.name?.toUpperCase()};const r=await sbPost('lead_follow_ups',data);if(r){allFollowUps.push(r[0]);closeModal('followUpModal');toast('Follow-up scheduled ⏰');updateFUBadge();if(currentDetailId===fuLeadId)openDetail(fuLeadId);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg==='dashboard')renderDashboard();}}
+async function saveFollowUp(){if(demoGuard())return;if(!fuLeadId)return;const d=document.getElementById('fu_date').value;if(!d){toast('Date required','error');return;}const data={pipeline_id:fuLeadId,due_date:d,due_time:document.getElementById('fu_time').value||null,priority:document.getElementById('fu_priority').value,note:document.getElementById('fu_note').value.trim()||null,created_by:currentUser?.name?.toUpperCase()};const r=await sbPost('lead_follow_ups',data);if(r){allFollowUps.push(r[0]);closeModal('followUpModal');toast('Follow-up scheduled ⏰');updateFUBadge();if(currentDetailId===fuLeadId)openDetail(fuLeadId);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg==='dashboard')renderDashboard();}}
 
 /* ===== CONVERT ===== */
 function openConvert(id){convertLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('cv_name').value=l.name;document.getElementById('cv_industry').value=l.industry||'';document.getElementById('cv_contact').value=l.contact_name||l.contact_phone||'';document.getElementById('cv_start').value=today();const p=l.package_interest?.split(' (')[0]||'Spark';document.getElementById('cv_package').value=p;document.getElementById('cv_mrr').value=PKG_VALUES[p]||90000;openModal('convertModal');}
 document.getElementById('cv_package').addEventListener('change',function(){document.getElementById('cv_mrr').value=PKG_VALUES[this.value]||90000;});
-async function convertToClient(){if(!convertLeadId)return;const cd={name:document.getElementById('cv_name').value.trim(),package:document.getElementById('cv_package').value,mrr:parseInt(document.getElementById('cv_mrr').value)||0,industry:document.getElementById('cv_industry').value.trim()||null,contact:document.getElementById('cv_contact').value.trim()||null,start_date:document.getElementById('cv_start').value||null,status:'active',health:'green',client_type:'sm'};const cr=await sbPost('clients',cd);if(!cr){toast('Failed','error');return;}await sbPatch('pipeline',convertLeadId,{stage:'closed_won',closed_at:new Date().toISOString()});const l=allLeads.find(x=>x.id===convertLeadId);if(l){l.stage='closed_won';}await sbPost('lead_activities',{pipeline_id:convertLeadId,type:'note',summary:`🎉 Converted! ${cd.package} @ LKR ${cd.mrr}`,outcome:'positive',logged_by:currentUser?.name?.toUpperCase()});closeModal('convertModal');closeDetail();toast('🎉 Client converted!');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function convertToClient(){if(demoGuard())return;if(!convertLeadId)return;const cd={name:document.getElementById('cv_name').value.trim(),package:document.getElementById('cv_package').value,mrr:parseInt(document.getElementById('cv_mrr').value)||0,industry:document.getElementById('cv_industry').value.trim()||null,contact:document.getElementById('cv_contact').value.trim()||null,start_date:document.getElementById('cv_start').value||null,status:'active',health:'green',client_type:'sm'};const cr=await sbPost('clients',cd);if(!cr){toast('Failed','error');return;}await sbPatch('pipeline',convertLeadId,{stage:'closed_won',closed_at:new Date().toISOString()});const l=allLeads.find(x=>x.id===convertLeadId);if(l){l.stage='closed_won';}await sbPost('lead_activities',{pipeline_id:convertLeadId,type:'note',summary:`🎉 Converted! ${cd.package} @ LKR ${cd.mrr}`,outcome:'positive',logged_by:currentUser?.name?.toUpperCase()});closeModal('convertModal');closeDetail();toast('🎉 Client converted!');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== MARK LOST ===== */
 function openMarkLost(id){lostLeadId=id;document.getElementById('lost_reason').value='unresponsive';document.getElementById('lost_notes').value='';openModal('lostModal');}
-async function markLost(){if(!lostLeadId)return;const r=document.getElementById('lost_reason').value;const n=document.getElementById('lost_notes').value.trim();await sbPatch('pipeline',lostLeadId,{stage:'closed_lost',lost_reason:r,closed_at:new Date().toISOString()});await sbPost('lead_activities',{pipeline_id:lostLeadId,type:'note',summary:`Lost: ${r}${n?' — '+n:''}`,outcome:'negative',logged_by:currentUser?.name?.toUpperCase()});closeModal('lostModal');closeDetail();toast('Marked lost');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function markLost(){if(demoGuard())return;if(!lostLeadId)return;const r=document.getElementById('lost_reason').value;const n=document.getElementById('lost_notes').value.trim();await sbPatch('pipeline',lostLeadId,{stage:'closed_lost',lost_reason:r,closed_at:new Date().toISOString()});await sbPost('lead_activities',{pipeline_id:lostLeadId,type:'note',summary:`Lost: ${r}${n?' — '+n:''}`,outcome:'negative',logged_by:currentUser?.name?.toUpperCase()});closeModal('lostModal');closeDetail();toast('Marked lost');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== CSV IMPORT ===== */
 function openCSVImport(){csvData=null;document.getElementById('csvPreview').style.display='none';document.getElementById('csvImportBtn').style.display='none';document.getElementById('csvFile').value='';openModal('csvModal');}
@@ -998,7 +1059,7 @@ function handleCSVFile(file){if(!file)return;const reader=new FileReader();reade
 csvData=rows.map(r=>({name:r.name||r.business||r.company||'',contact_name:r.contact||r.contact_name||r.person||'',contact_phone:r.phone||r.contact_phone||r.mobile||r.tel||'',contact_email:r.email||r.contact_email||'',industry:r.industry||r.sector||r.category||'',source:r.source||'other'}));
 document.getElementById('csvPreview').style.display='block';document.getElementById('csvPreview').innerHTML=`<div style="font-size:13px;font-weight:600;margin-bottom:8px">${csvData.length} leads found</div><div style="max-height:200px;overflow-y:auto;font-size:12px;color:var(--text-2)">${csvData.slice(0,10).map(r=>`<div style="padding:4px 0;border-bottom:1px solid var(--border)">${esc(r.name)} ${r.contact_phone?' · '+esc(r.contact_phone):''}</div>`).join('')}${csvData.length>10?`<div style="color:var(--text-3);padding:4px 0">+${csvData.length-10} more</div>`:''}</div>`;
 document.getElementById('csvImportBtn').style.display='inline-flex';};reader.readAsText(file);}
-async function importCSV(){if(!csvData||!csvData.length)return;let imported=0;for(const row of csvData){const data={name:row.name,contact_name:row.contact_name||null,contact_phone:row.contact_phone||null,contact_email:row.contact_email||null,industry:row.industry||null,source:row.source||'other',stage:'new_lead',status:'active',owner:currentUser?.code||'th',estimated_value:null,temperature:'cold'};const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);imported++;}}closeModal('csvModal');toast(`${imported} leads imported! 🎯`);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function importCSV(){if(demoGuard())return;if(!csvData||!csvData.length)return;let imported=0;for(const row of csvData){const data={name:row.name,contact_name:row.contact_name||null,contact_phone:row.contact_phone||null,contact_email:row.contact_email||null,industry:row.industry||null,source:row.source||'other',stage:'new_lead',status:'active',owner:currentUser?.code||'th',estimated_value:null,temperature:'cold'};const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);imported++;}}closeModal('csvModal');toast(`${imported} leads imported! 🎯`);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== ANALYTICS ===== */
 function renderAnalytics(){
@@ -1129,7 +1190,7 @@ myCodes.forEach(c=>{const inp=document.getElementById(`hrs_h_${c}`);if(inp)inp.v
 });
 }
 
-function saveHours(){
+function saveHours(){if(demoGuard())return;
 const HOURS_KEY='bb_hours_log';
 const d=document.getElementById('hrs_date').value;if(!d){toast('Select a date','error');return;}
 const log=JSON.parse(localStorage.getItem(HOURS_KEY)||'{}');
@@ -1240,7 +1301,7 @@ const b=document.getElementById('sbAgentsBadge');if(b){b.textContent=count;b.sty
 }
 
 /* ===== INIT ===== */
-(function(){const u=localStorage.getItem('bb_leads_user');if(u){currentUser=JSON.parse(u);showApp();}else{document.getElementById('loginScreen').style.display='flex';}})();
+(function(){const u=localStorage.getItem('bb_leads_user');if(u){const parsed=JSON.parse(u);currentUser=parsed;if(parsed.demo)isDemoMode=true;showApp();}else{document.getElementById('loginScreen').style.display='flex';}})();
 </script>
 </body>
 </html>
