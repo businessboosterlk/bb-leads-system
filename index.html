@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://yyviiwnqgphyklcoijyd.supabase.co https://generativelanguage.googleapis.com; img-src 'self' data:;">
 <title>BB Leads System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@900&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
 --bg:#0a0a0f;--surface:#12121a;--surface-2:#1a1a26;--surface-3:#22222e;
 --border:#2a2a3a;--border-strong:#3a3a4e;
---text:#e8e8f0;--text-2:#a0a0b8;--text-3:#666680;
+--text:#e8e8f0;--text-2:#a0a0b8;--text-3:#8888a0;
 --accent:#f97316;--accent-soft:rgba(249,115,22,0.08);--accent-hover:#fb923c;--accent-glow:rgba(249,115,22,0.15);
 --green:#22c55e;--green-soft:rgba(34,197,94,0.08);
 --red:#ef4444;--red-soft:rgba(239,68,68,0.08);
@@ -89,6 +90,7 @@ select{cursor:pointer}
 .sb-link svg{width:18px;height:18px;flex-shrink:0}
 .sb-link .sb-badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;min-width:18px;text-align:center;animation:pulse-badge 2s infinite}
 @keyframes pulse-badge{0%,100%{opacity:1}50%{opacity:.7}}
+.sb-link .sb-badge{animation:pulse-badge .6s ease 3}
 .sb-footer{margin-top:auto;padding:12px;border-top:1px solid var(--border)}
 .sb-user{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;margin-bottom:8px}
 .sb-avatar{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#ea580c);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;font-family:'Poppins',sans-serif}
@@ -115,7 +117,7 @@ select{cursor:pointer}
 .stat-card:hover{border-color:var(--border-strong);transform:translateY(-2px);box-shadow:var(--shadow)}
 .stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--radius-lg) var(--radius-lg) 0 0}
 .stat-card.blue::after{background:var(--blue)}.stat-card.green::after{background:var(--green)}.stat-card.amber::after{background:var(--amber)}.stat-card.accent::after{background:var(--accent)}.stat-card.red::after{background:var(--red)}.stat-card.purple::after{background:var(--purple)}
-.stat-card .stat-label{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-3);font-weight:600;margin-bottom:8px}
+.stat-card .stat-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-3);font-weight:600;margin-bottom:8px}
 .stat-card .stat-val{font-size:30px;font-weight:800;color:var(--text);line-height:1}
 .stat-card .stat-sub{font-size:11px;color:var(--text-3);margin-top:6px}
 .stat-card .stat-icon{position:absolute;top:16px;right:16px;font-size:20px;opacity:.6}
@@ -123,7 +125,7 @@ select{cursor:pointer}
 /* ===== STREAK BAR ===== */
 .streak-bar{background:linear-gradient(135deg,var(--surface),var(--surface-2));border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;transition:all .3s}
 .streak-bar.fire{border-color:var(--accent);background:linear-gradient(135deg,var(--accent-soft),var(--surface))}
-.streak-icon{font-size:28px;animation:bounce 1s ease infinite}
+.streak-icon{font-size:28px;animation:bounce 1s ease 3}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 .streak-info{flex:1}
 .streak-title{font-size:14px;font-weight:700;font-family:'Poppins',sans-serif}
@@ -158,7 +160,13 @@ select{cursor:pointer}
 .section-head h3{font-size:14px;font-weight:700}
 .section-head .count{font-size:11px;color:var(--text-3);background:var(--surface-2);padding:2px 10px;border-radius:10px}
 .section-body{padding:0}
-.section-empty{padding:32px;text-align:center;color:var(--text-3);font-size:13px}
+.section-empty{padding:40px 32px;text-align:center;color:var(--text-3);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.section-empty::before{content:'📋';font-size:28px;opacity:.5}
+.pipe-col-body .section-empty::before{content:'🎯'}
+.skeleton{background:linear-gradient(90deg,var(--surface-2) 25%,var(--surface-3) 50%,var(--surface-2) 75%);background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:var(--radius);height:16px;margin-bottom:8px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes shake{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-4px)}20%,40%,60%,80%{transform:translateX(4px)}}
+.login-card.shake{animation:shake .4s ease}
 
 /* ===== BADGES ===== */
 .badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;font-size:9px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
@@ -190,10 +198,10 @@ select{cursor:pointer}
 .pipe-col-title .dot{width:8px;height:8px;border-radius:50%}
 .pipe-col-count{font-size:11px;color:var(--text-3);background:var(--surface-2);padding:2px 8px;border-radius:8px;font-weight:600}
 .pipe-col-body{flex:1;overflow-y:auto;padding:8px;min-height:60px}
-.pipe-col-body.drag-over{background:var(--accent-soft)}
-.pipe-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px;cursor:pointer;transition:all .2s;position:relative}
+.pipe-col-body.drag-over{background:rgba(249,115,22,0.15);border:2px dashed var(--accent);border-radius:var(--radius)}
+.pipe-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px;cursor:grab;transition:all .2s;position:relative}
 .pipe-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.2)}
-.pipe-card.dragging{opacity:.4}
+.pipe-card.dragging{opacity:.5;transform:rotate(2deg) scale(.95);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
 .pipe-card .pc-name{font-size:13px;font-weight:600;margin-bottom:2px;padding-right:30px}
 .pipe-card .pc-contact{font-size:11px;color:var(--text-2)}
 .pipe-card .pc-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
@@ -214,6 +222,11 @@ select{cursor:pointer}
 .leads-table tr{cursor:pointer;transition:background .15s}
 .leads-table tr:hover{background:var(--surface-2)}
 .leads-table .td-name{font-weight:600}
+.leads-table th[data-sort]:hover{color:var(--accent)}
+.leads-table th .sort-arrow{font-size:10px;opacity:.4;margin-left:2px}
+.leads-table th.sorted-asc .sort-arrow::after{content:'▲';opacity:1}
+.leads-table th.sorted-desc .sort-arrow::after{content:'▼';opacity:1}
+.leads-table th.sorted-asc .sort-arrow,.leads-table th.sorted-desc .sort-arrow{opacity:1;color:var(--accent)}
 .leads-table .td-phone{font-size:12px;color:var(--text-2)}
 
 /* ===== LEAD DETAIL PANEL ===== */
@@ -295,6 +308,13 @@ select{cursor:pointer}
 .btn-danger{background:var(--red-soft);color:var(--red);border:1px solid transparent}.btn-danger:hover{background:var(--red);color:#fff}
 .btn-success{background:var(--green-soft);color:var(--green);border:1px solid transparent}.btn-success:hover{background:var(--green);color:#fff}
 .btn-sm{padding:5px 12px;font-size:11px}
+.btn:active{transform:scale(.96) !important;box-shadow:none !important;transition:transform .05s}
+.btn:disabled,.btn.loading{opacity:.55;pointer-events:none;cursor:not-allowed}
+.btn.loading{position:relative;color:transparent}
+.btn.loading::after{content:'';position:absolute;width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:btn-spin .5s linear infinite;top:50%;left:50%;margin:-8px 0 0 -8px}
+@keyframes btn-spin{to{transform:rotate(360deg)}}
+.dp-action:active{transform:scale(.95);transition:transform .05s}
+.aq-btn:active{transform:scale(.94);transition:transform .05s}
 
 /* ===== COMMAND PALETTE ===== */
 .cmd-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;display:none;align-items:flex-start;justify-content:center;padding-top:120px;backdrop-filter:blur(6px)}
@@ -340,7 +360,7 @@ select{cursor:pointer}
 .mobile-header{display:none;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);align-items:center;justify-content:space-between}
 .mobile-header h2{font-size:15px;font-weight:800}
 .mobile-header .sb-sub{font-size:9px;color:var(--accent);text-transform:uppercase;letter-spacing:2px;font-weight:700}
-.menu-btn{background:none;border:none;color:var(--text);font-size:20px;cursor:pointer;padding:4px}
+.menu-btn{background:none;border:none;color:var(--text);font-size:20px;cursor:pointer;padding:10px}
 .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:49}
 @media(max-width:768px){
 /* Sidebar */
@@ -375,7 +395,7 @@ select{cursor:pointer}
 .aq-lead{font-size:13px}
 .aq-reason{font-size:11px}
 .aq-actions{width:100%;justify-content:flex-end}
-.aq-btn{padding:5px 10px;font-size:10px}
+.aq-btn{padding:8px 12px;font-size:10px}
 
 /* Sections */
 .section-head{padding:10px 14px}
@@ -491,6 +511,15 @@ input,select,textarea{font-size:14px;padding:10px 12px}
 .dash-full{grid-column:1/-1}
 
 /* CSV IMPORT */
+.lead-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.lead-tag{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;background:var(--purple-soft);color:var(--purple);cursor:default}
+.lead-tag .tag-x{cursor:pointer;opacity:.6;font-size:8px;margin-left:2px}.lead-tag .tag-x:hover{opacity:1}
+.wa-templates{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.wa-tpl{padding:10px 14px;border-radius:var(--radius);background:var(--surface-2);border:1px solid var(--border);cursor:pointer;font-size:12px;color:var(--text-2);transition:all .15s;display:flex;align-items:center;gap:8px}
+.wa-tpl:hover{border-color:#25D366;color:#25D366;background:rgba(37,211,102,0.05)}
+.wa-tpl .tpl-icon{font-size:16px}
+.stage-duration{font-size:10px;color:var(--text-3);margin-top:4px}
+.export-btn{display:inline-flex;align-items:center;gap:6px}
 .csv-dropzone{border:2px dashed var(--border);border-radius:var(--radius-lg);padding:32px;text-align:center;cursor:pointer;transition:all .2s;color:var(--text-3)}
 .csv-dropzone:hover,.csv-dropzone.dragover{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
 .csv-dropzone input{display:none}
@@ -508,10 +537,11 @@ input,select,textarea{font-size:14px;padding:10px 12px}
 <div class="subtitle">Leads System</div>
 <div class="login-date" id="loginDate"></div>
 <div class="login-name"><input type="text" id="loginName" placeholder="YOUR NAME" autocomplete="off"></div>
-<div class="login-pin"><input type="tel" id="loginPin" maxlength="4" placeholder="PIN" autofocus></div>
+<div class="login-pin"><input type="tel" id="loginPin" maxlength="4" placeholder="PIN" autofocus inputmode="numeric" pattern="[0-9]*" autocomplete="off"></div>
 <button class="login-btn" onclick="doLogin()">Sign In</button>
 <div class="login-err" id="loginErr"></div>
 <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><button onclick="demoLogin()" style="background:none;border:1px solid var(--border);color:var(--text-2);padding:8px 20px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;width:100%" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-2)'">Try Demo</button></div>
+<div style="margin-top:12px;text-align:center"><a href="#" onclick="event.preventDefault();openModal('privacyModal')" style="font-size:11px;color:var(--text-3)">Privacy Policy</a></div>
 </div>
 </div>
 
@@ -537,6 +567,9 @@ input,select,textarea{font-size:14px;padding:10px 12px}
 <div class="sb-footer">
 <button class="sb-theme" onclick="toggleTheme()"><span id="themeIcon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span> <span id="themeLabel">Light mode</span></button>
 <div class="sb-user"><div class="sb-avatar" id="userAvatar">TH</div><div><div class="sb-uname" id="userName">Thulaib</div><div class="sb-urole" id="userRole">CEO</div></div></div>
+<button class="sb-theme" onclick="setGeminiKey()" style="margin-bottom:0"><span>🤖</span> <span id="aiKeyStatus">Set AI Key</span></button>
+<button class="sb-theme" onclick="showAuditLog()" style="margin-bottom:0"><span>📋</span> Audit Log</button>
+<button class="sb-theme" onclick="openModal('privacyModal')" style="margin-bottom:0"><span>🔒</span> Privacy Policy</button>
 <button class="sb-signout" onclick="signOut()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
 </div>
 </div>
@@ -570,6 +603,7 @@ input,select,textarea{font-size:14px;padding:10px 12px}
 <div class="form-row2"><div class="form-row"><label>Industry</label><select id="al_industry"><option value="">Select...</option><option>Automotive</option><option>Food & Beverage</option><option>Fashion</option><option>Technology</option><option>Real Estate</option><option>Education</option><option>Healthcare</option><option>Hospitality</option><option>Retail</option><option>Service</option><option>Construction</option><option>Finance</option><option>Fitness</option><option>Beauty</option><option>Legal</option><option>Other</option></select></div><div class="form-row"><label>Source</label><select id="al_source"><option value="social_media">Social Media</option><option value="website">Website</option><option value="referral">Referral</option><option value="cold_call">Cold Call</option><option value="walk_in">Walk-in</option><option value="other">Other</option></select></div></div>
 <div class="form-row2"><div class="form-row"><label>Estimated Value (LKR)</label><input type="number" id="al_value" placeholder="150000"></div><div class="form-row"><label>Package Interest</label><select id="al_package"><option value="">Not sure yet</option><option>Spark (90K)</option><option>Ignite (150K)</option><option>Blaze (230K)</option><option>SEO Essential (40K)</option><option>SEO+Maintenance (50K)</option></select></div></div>
 <div class="form-row2"><div class="form-row"><label>Assign To</label><select id="al_owner"><option value="th">Thulaib</option><option value="sh">Shiara</option><option value="pv">Pavith</option><option value="nv">Nirvana</option></select></div><div class="form-row"><label>Stage</label><select id="al_stage"><option value="new_lead">New Lead</option><option value="contacted">Contacted</option><option value="discovery">Discovery</option></select></div></div>
+<div class="form-row"><label>Tags</label><input id="al_tags" placeholder="e.g. urgent, vip, follow-up (comma separated)"></div>
 <div class="form-row"><label>Notes</label><textarea id="al_notes" placeholder="First impressions..."></textarea></div>
 </div>
 <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('addLeadModal')">Cancel</button><button class="btn btn-primary" id="addLeadBtn" onclick="saveLead()">Add Lead</button></div>
@@ -635,17 +669,61 @@ input,select,textarea{font-size:14px;padding:10px 12px}
 <div class="modal-body" style="max-height:60vh;overflow-y:auto"></div>
 </div></div>
 
+<div class="modal-overlay" id="privacyModal"><div class="modal" style="width:600px;max-height:85vh">
+<div class="modal-head"><h3>Privacy Policy</h3><button class="modal-close" onclick="closeModal('privacyModal')">✕</button></div>
+<div class="modal-body" style="max-height:70vh;overflow-y:auto;font-size:12px;line-height:1.8;color:var(--text-2)">
+<h4 style="font-size:14px;color:var(--text);margin-bottom:8px">BB Leads System — Privacy Policy</h4>
+<p style="margin-bottom:12px"><strong>Last updated:</strong> June 2026</p>
+<p style="margin-bottom:12px"><strong>Data Controller:</strong> Business Booster (Pvt) Ltd, Sri Lanka</p>
+<h4 style="font-size:13px;color:var(--text);margin:16px 0 6px">1. Data We Collect</h4>
+<p style="margin-bottom:8px">We collect lead/prospect information entered by authorized users: business names, contact persons, phone numbers, email addresses, industry, deal values, activity logs, and follow-up schedules.</p>
+<h4 style="font-size:13px;color:var(--text);margin:16px 0 6px">2. How We Use Data</h4>
+<p style="margin-bottom:8px">Data is used exclusively for sales pipeline management, follow-up scheduling, team coordination, and business analytics within your organization.</p>
+<h4 style="font-size:13px;color:var(--text);margin:16px 0 6px">3. Data Storage & Security</h4>
+<p style="margin-bottom:8px">Data is stored on Supabase (AWS infrastructure). Access is protected by PIN-based authentication mapped to Supabase Auth with Row Level Security (RLS). Sessions expire after 8 hours. All connections use HTTPS/TLS encryption.</p>
+<h4 style="font-size:13px;color:var(--text);margin:16px 0 6px">4. AI Features</h4>
+<p style="margin-bottom:8px">Optional AI features use Google Gemini API. When enabled, lead context data is sent to Google's servers for processing. Your API key is stored locally in your browser. You can disable AI features at any time by removing your API key.</p>
+<h4 style="font-size:13px;color:var(--text);margin:16px 0 6px">5. Your Rights</h4>
+<p style="margin-bottom:8px">You have the right to: <strong>Access</strong> — export any lead's complete data. <strong>Rectification</strong> — edit any information. <strong>Erasure</strong> — permanently delete leads and all associated data. <strong>Portability</strong> — export all leads as CSV.</p>
+<h4 style="font-size:13px;color:var(--text);margin:16px 0 6px">6. Data Retention</h4>
+<p style="margin-bottom:8px">Lead data is retained until manually deleted. Closed-won leads are converted to clients. Closed-lost leads remain for analytics. Users can permanently delete any lead at any time, which cascades to all related activities and follow-ups.</p>
+<h4 style="font-size:13px;color:var(--text);margin:16px 0 6px">7. Third Parties</h4>
+<p style="margin-bottom:8px">We do not sell, share, or transfer your data to third parties. Data processors: Supabase (hosting), Google (AI features, optional), GitHub Pages (app delivery).</p>
+<h4 style="font-size:13px;color:var(--text);margin:16px 0 6px">8. Contact</h4>
+<p>For privacy inquiries: businessboosterlk@gmail.com</p>
+</div>
+</div></div>
+
+<div class="modal-overlay" id="auditLogModal"><div class="modal" style="width:560px;max-height:85vh">
+<div class="modal-head"><h3>Audit Log</h3><button class="modal-close" onclick="closeModal('auditLogModal')">✕</button></div>
+<div class="modal-body" id="auditLogBody" style="max-height:70vh;overflow-y:auto;font-size:12px"></div>
+<div class="modal-footer"><button class="btn btn-secondary" onclick="clearAuditLog()">Clear Log</button><button class="btn btn-secondary" onclick="exportAuditLog()">Export Log</button><button class="btn btn-primary" onclick="closeModal('auditLogModal')">Close</button></div>
+</div></div>
+
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 /* ===== CONFIG ===== */
 const SB_URL='https://yyviiwnqgphyklcoijyd.supabase.co/rest/v1';
+const SB_URL_BASE='https://yyviiwnqgphyklcoijyd.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5dmlpd25xZ3BoeWtsY29panlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MjE5OTEsImV4cCI6MjA5MTI5Nzk5MX0.I8YiBr-rfLVcc6DE8Z1PxEP2oxXCelv6mxqAY_wY7lc';
+const sbClient=window.supabase?window.supabase.createClient(SB_URL_BASE,SB_KEY):null;
+let authToken=null;
+const PIN_AUTH={1031:{email:'thulaib@bb-leads.app',pass:'pin1031secure',name:'Thulaib',code:'th',role:'CEO'},1006:{email:'shiara@bb-leads.app',pass:'pin1006secure',name:'Shiara',code:'sh',role:'COO'},1111:{email:'pavith@bb-leads.app',pass:'pin1111secure',name:'Pavith',code:'pv',role:'Staff'},2222:{email:'nirvana@bb-leads.app',pass:'pin2222secure',name:'Nirvana',code:'nv',role:'Staff'}};
 const USERS={1031:{name:'Thulaib',code:'th',role:'CEO'},1006:{name:'Shiara',code:'sh',role:'COO'},1111:{name:'Pavith',code:'pv',role:'Staff'},2222:{name:'Nirvana',code:'nv',role:'Staff'}};
 const STAGES=[{key:'new_lead',label:'New Lead',color:'var(--blue)',dot:'blue'},{key:'contacted',label:'Contacted',color:'var(--amber)',dot:'amber'},{key:'discovery',label:'Discovery',color:'var(--accent)',dot:'accent'},{key:'proposal_sent',label:'Proposal Sent',color:'var(--pink)',dot:'pink'},{key:'negotiation',label:'Negotiation',color:'var(--purple)',dot:'purple'}];
 const CLOSED_STAGES=[{key:'closed_won',label:'Closed Won',color:'var(--green)',dot:'green'},{key:'closed_lost',label:'Lost',color:'var(--red)',dot:'red'},{key:'on_hold',label:'On Hold',color:'var(--grey)',dot:'grey'}];
 const ALL_STAGES=[...STAGES,...CLOSED_STAGES];
 const SOURCES={social_media:'SM',website:'Web',referral:'Ref',cold_call:'Cold',walk_in:'Walk',other:'Other'};
+
+/* ===== AI CONFIG ===== */
+let GEMINI_KEY=localStorage.getItem('bb_gemini_key')||'';
+const GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+async function askGemini(prompt,maxTokens=500){if(!GEMINI_KEY){toast('Set your Gemini API key in Settings','error');return null;}try{const r=await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:maxTokens,temperature:0.7}})});if(!r.ok){const e=await r.text();console.error('Gemini error:',e);toast('AI request failed','error');return null;}const d=await r.json();return d.candidates?.[0]?.content?.parts?.[0]?.text||null;}catch(e){console.error('Gemini error:',e);toast('AI connection failed','error');return null;}}
+function setGeminiKey(){const key=prompt('Enter your free Google Gemini API key:\n(Get one at ai.google.dev)');if(key!==null){GEMINI_KEY=key.trim();localStorage.setItem('bb_gemini_key',GEMINI_KEY);toast(GEMINI_KEY?'API key saved ✓':'API key cleared');updateAIStatus();}}
+function updateAIStatus(){const el=document.getElementById('aiKeyStatus');if(el)el.textContent=GEMINI_KEY?'AI Connected':'Set AI Key';}
+function getLeadContext(lead){const acts=allActivities.filter(a=>a.pipeline_id===lead.id).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,5);const fus=allFollowUps.filter(f=>f.pipeline_id===lead.id&&!f.is_done);return `Lead: ${lead.name}\nContact: ${lead.contact_name||'Unknown'}\nIndustry: ${lead.industry||'Unknown'}\nStage: ${stageInfo(lead.stage).label}\nValue: ${lead.estimated_value?'LKR '+lead.estimated_value:'Not set'}\nPackage: ${lead.package_interest||'Not decided'}\nPain Points: ${lead.pain_points||'None recorded'}\nObjections: ${lead.objections||'None recorded'}\nDays Since Contact: ${daysSinceContact(lead)}\nScore: ${calcScore(lead)}/100\nIs Hot: ${lead.is_hot?'Yes':'No'}\nRecent Activities:\n${acts.length?acts.map(a=>`- ${a.type} (${a.outcome}): ${a.summary}`).join('\n'):'No activities yet'}\nPending Follow-ups: ${fus.length?fus.map(f=>`${f.due_date}: ${f.note||'No note'}`).join(', '):'None'}`;}
 
 /* ===== ICON SYSTEM ===== */
 function icon(n,s=16){const w=s,h=s;const icons={
@@ -735,21 +813,22 @@ showApp();
 }
 
 /* ===== SUPABASE ===== */
-const H={'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'};
-async function sb(t,p=''){try{const r=await fetch(`${SB_URL}/${t}?${p}`,{headers:H});if(!r.ok){console.error(`DB load failed: ${t} (${r.status})`);return[];}return r.json();}catch(e){console.error(`DB error: ${t}`,e);return[];}}
-async function sbPost(t,d){try{const r=await fetch(`${SB_URL}/${t}`,{method:'POST',headers:{...H,'Prefer':'return=representation'},body:JSON.stringify(d)});if(!r.ok){console.error(`DB post failed: ${t} (${r.status})`);return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);return null;}}
-async function sbPatch(t,id,d){try{const r=await fetch(`${SB_URL}/${t}?id=eq.${id}`,{method:'PATCH',headers:{...H,'Prefer':'return=representation'},body:JSON.stringify(d)});if(!r.ok){console.error(`DB patch failed: ${t} (${r.status})`);return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);return null;}}
+function getHeaders(){const token=authToken||SB_KEY;return{'apikey':SB_KEY,'Authorization':`Bearer ${token}`,'Content-Type':'application/json'};}
+const H_LEGACY={'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'};
+async function sb(t,p=''){try{const r=await fetch(`${SB_URL}/${t}?${p}`,{headers:getHeaders()});if(!r.ok){console.error(`DB load failed: ${t} (${r.status})`);return[];}return r.json();}catch(e){console.error(`DB error: ${t}`,e);return[];}}
+async function sbPost(t,d){try{const r=await fetch(`${SB_URL}/${t}`,{method:'POST',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});if(!r.ok){console.error(`DB post failed: ${t} (${r.status})`);return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);return null;}}
+async function sbPatch(t,id,d){try{const r=await fetch(`${SB_URL}/${t}?id=eq.${id}`,{method:'PATCH',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});if(!r.ok){console.error(`DB patch failed: ${t} (${r.status})`);return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);return null;}}
 
 /* ===== AUTH ===== */
 function updateLoginDate(){const el=document.getElementById('loginDate');if(el){const n=new Date();el.textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});}}
 updateLoginDate();setInterval(updateLoginDate,60000);
-function doLogin(){const pin=document.getElementById('loginPin').value;if(USERS[pin]){currentUser=USERS[pin];localStorage.setItem('bb_leads_user',JSON.stringify(currentUser));showApp();}else{document.getElementById('loginErr').textContent='Invalid PIN';document.getElementById('loginPin').value='';document.getElementById('loginPin').focus();}}
-function signOut(){localStorage.removeItem('bb_leads_user');currentUser=null;isDemoMode=false;document.getElementById('demoBanner').classList.remove('show');document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginPin').value='';document.getElementById('loginName').value='';document.getElementById('loginPin').focus();}
+async function doLogin(){const loginBtn=document.querySelector('.login-btn');loginBtn.classList.add('loading');loginBtn.disabled=true;const pin=document.getElementById('loginPin').value;const authInfo=PIN_AUTH[pin];if(!authInfo){document.getElementById('loginErr').textContent='Invalid PIN';document.getElementById('loginPin').value='';document.getElementById('loginPin').focus();loginBtn.classList.remove('loading');loginBtn.disabled=false;const card=document.querySelector('.login-card');card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');return;}if(sbClient){try{const{data,error}=await sbClient.auth.signInWithPassword({email:authInfo.email,password:authInfo.pass});if(data?.session){authToken=data.session.access_token;currentUser={name:authInfo.name,code:authInfo.code,role:authInfo.role};localStorage.setItem('bb_leads_user',JSON.stringify({...currentUser,loginAt:Date.now()}));showApp();return;}}catch(e){console.warn('Auth fallback:',e);}}if(USERS[pin]){currentUser=USERS[pin];localStorage.setItem('bb_leads_user',JSON.stringify({...currentUser,loginAt:Date.now()}));showApp();}else{loginBtn.classList.remove('loading');loginBtn.disabled=false;}}
+async function signOut(){auditLog('LOGOUT',`${currentUser?.name}`);if(sbClient)await sbClient.auth.signOut().catch(()=>{});authToken=null;localStorage.removeItem('bb_leads_user');currentUser=null;isDemoMode=false;document.getElementById('demoBanner').classList.remove('show');document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginPin').value='';document.getElementById('loginName').value='';document.getElementById('loginPin').focus();}
 document.getElementById('loginPin').addEventListener('input',function(){if(this.value.length===4)doLogin();});
 document.getElementById('loginPin').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
 
 /* ===== APP INIT ===== */
-async function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('userName').textContent=currentUser.name;document.getElementById('userRole').textContent=currentUser.role;document.getElementById('userAvatar').textContent=currentUser.code.toUpperCase();if(isDemoMode){document.getElementById('demoBanner').classList.add('show');}else{document.getElementById('demoBanner').classList.remove('show');}startClock();await loadAllData();requestNotifPermission();nav('dashboard');if(!isDemoMode)loadLeadsAgentAlerts();}
+async function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('userName').textContent=currentUser.name;document.getElementById('userRole').textContent=currentUser.role;document.getElementById('userAvatar').textContent=currentUser.code.toUpperCase();if(isDemoMode){document.getElementById('demoBanner').classList.add('show');}else{document.getElementById('demoBanner').classList.remove('show');}startClock();await loadAllData();requestNotifPermission();updateAIStatus();auditLog('LOGIN',`${currentUser.name} (${currentUser.role})`);nav('dashboard');if(!isDemoMode)loadLeadsAgentAlerts();}
 async function loadAllData(){if(isDemoMode){const demo=generateDemoData();allLeads=demo.leads;allActivities=demo.activities;allFollowUps=demo.followUps;todayActCount=2;updateFUBadge();return;}const[leads,acts,fus]=await Promise.all([sb('pipeline','select=*&order=created_at.desc'),sb('lead_activities','select=*&order=created_at.desc'),sb('lead_follow_ups','select=*&order=due_date.asc,due_time.asc')]);allLeads=leads||[];allActivities=acts||[];allFollowUps=fus||[];if(!leads.length&&!acts.length&&!fus.length){toast('Could not load data — check connection','error');}todayActCount=allActivities.filter(a=>a.created_at&&a.created_at.startsWith(today())).length;updateFUBadge();}
 function demoGuard(){if(isDemoMode){toast('Demo mode — read only','error');return true;}return false;}
 function updateFUBadge(){const c=allFollowUps.filter(f=>!f.is_done&&f.due_date<=today()).length;const b=document.getElementById('sbFuBadge');if(c>0){b.textContent=c;b.style.display='inline';}else{b.style.display='none';}}
@@ -775,9 +854,10 @@ document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){
 function openCmd(){document.getElementById('cmdOverlay').classList.add('open');const inp=document.getElementById('cmdInput');inp.value='';inp.focus();renderCmd();}
 function closeCmd(){document.getElementById('cmdOverlay').classList.remove('open');}
 function renderCmd(){const q=(document.getElementById('cmdInput').value||'').toLowerCase();const el=document.getElementById('cmdResults');let items=[];
-if(!q){items=[{icon:icon('plus',16),label:'Add new lead',action:'openAddLead()'},{icon:icon('phone',16),label:'Log activity',action:'pickLeadForActivity()'},{icon:icon('chart',16),label:'Go to Dashboard',action:"nav('dashboard')"},{icon:icon('fire',16),label:'Go to Pipeline',action:"nav('pipeline')"},{icon:icon('users',16),label:'Go to All Leads',action:"nav('leads')"},{icon:icon('trending',16),label:'Go to Analytics',action:"nav('analytics')"},{icon:icon('import',16),label:'Import CSV',action:"openCSVImport()"}];}
+if(!q){items=[{icon:icon('plus',16),label:'Add new lead',action:'openAddLead()'},{icon:icon('phone',16),label:'Log activity',action:'pickLeadForActivity()'},{icon:icon('chart',16),label:'Go to Dashboard',action:"nav('dashboard')"},{icon:icon('fire',16),label:'Go to Pipeline',action:"nav('pipeline')"},{icon:icon('users',16),label:'Go to All Leads',action:"nav('leads')"},{icon:icon('trending',16),label:'Go to Analytics',action:"nav('analytics')"},{icon:icon('import',16),label:'Import CSV',action:"openCSVImport()"},{icon:'📥',label:'Export leads to CSV',action:"exportLeadsCSV()"}];}
 else{const matched=allLeads.filter(l=>l.name?.toLowerCase().includes(q)||l.contact_name?.toLowerCase().includes(q)||l.industry?.toLowerCase().includes(q)).slice(0,8);items=matched.map(l=>({icon:icon('users',16),label:l.name+(l.contact_name?' · '+l.contact_name:''),hint:stageInfo(l.stage).label,action:`openDetail(${l.id})`}));if(!items.length)items=[{icon:icon('alert',16),label:'No leads found',action:''}];}
-el.innerHTML=items.map((i,idx)=>`<div class="cmd-item" data-cmd="${idx}"><div class="cmd-icon">${i.icon}</div><div class="cmd-label">${esc(i.label)}</div>${i.hint?`<div class="cmd-hint">${i.hint}</div>`:''}</div>`).join('');el.querySelectorAll('.cmd-item').forEach((el,idx)=>{el.onclick=()=>{const fn=items[idx].action;if(fn){new Function(fn)();}closeCmd();};});}
+const CMD_ACTIONS={'openAddLead()':()=>openAddLead(),'pickLeadForActivity()':()=>pickLeadForActivity(),"nav('dashboard')":()=>nav('dashboard'),"nav('pipeline')":()=>nav('pipeline'),"nav('leads')":()=>nav('leads'),"nav('analytics')":()=>nav('analytics'),"openCSVImport()":()=>openCSVImport(),"exportLeadsCSV()":()=>exportLeadsCSV()};
+el.innerHTML=items.map((i,idx)=>`<div class="cmd-item" data-cmd="${idx}"><div class="cmd-icon">${i.icon}</div><div class="cmd-label">${esc(i.label)}</div>${i.hint?`<div class="cmd-hint">${i.hint}</div>`:''}</div>`).join('');el.querySelectorAll('.cmd-item').forEach((el,idx)=>{el.onclick=()=>{const fn=items[idx].action;if(fn){if(CMD_ACTIONS[fn])CMD_ACTIONS[fn]();else if(fn.startsWith('openDetail('))openDetail(parseInt(fn.match(/\d+/)[0]));}closeCmd();};});}
 function pickLeadForActivity(){closeCmd();const leads=activeLeads().sort((a,b)=>calcScore(b)-calcScore(a));if(leads.length)openLogActivity(leads[0].id);else toast('No active leads','error');}
 
 /* ===== HELPERS ===== */
@@ -800,7 +880,11 @@ function today(){return localDateStr(new Date());}
 function localDateStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 function waLink(phone){if(!phone)return'';const clean=phone.replace(/[^0-9+]/g,'');return `https://wa.me/${clean.startsWith('+')? clean.substring(1):clean}`;}
-function calcScore(l){let s=0;if(l.contact_phone)s+=10;if(l.contact_email)s+=10;if(l.contact_name)s+=5;const acts=allActivities.filter(a=>a.pipeline_id===l.id);s+=Math.min(acts.length*5,30);s+=acts.filter(a=>a.outcome==='positive').length*10;if(l.estimated_value>0)s+=10;if(l.package_interest)s+=5;if(l.pain_points)s+=5;if(l.is_hot)s+=15;const d=daysSince(l.created_at);if(d>30)s-=Math.min((d-30)*2,20);return Math.max(0,Math.min(100,s));}
+function calcScore(l){let s=0;if(l.contact_phone)s+=10;if(l.contact_email)s+=10;if(l.contact_name)s+=5;const acts=allActivities.filter(a=>a.pipeline_id===l.id);s+=Math.min(acts.length*5,30);s+=Math.min(acts.filter(a=>a.outcome==='positive').length*10,30);if(l.estimated_value>0)s+=10;if(l.package_interest)s+=5;if(l.pain_points)s+=5;if(l.is_hot)s+=15;if(l.tags?.length)s+=3;if(l.decision_maker)s+=5;
+const dsc=daysSinceContact(l);if(dsc>14)s-=20;else if(dsc>7)s-=10;else if(dsc>3)s-=5;
+const recentActs=acts.filter(a=>{const d=daysSince(a.created_at);return d<=7;});if(recentActs.length>=3)s+=10;else if(recentActs.length>=1)s+=5;
+const stageIdx=STAGES.findIndex(st=>st.key===l.stage);if(stageIdx>=3)s+=5;
+return Math.max(0,Math.min(100,s));}
 function scoreClass(s){return s>=60?'score-high':s>=30?'score-mid':'score-low';}
 
 /* ===== DASHBOARD ===== */
@@ -923,35 +1007,43 @@ return `<div class="pipe-card" draggable="true" ondragstart="dragCard(event,${l.
 ${l.is_hot?'<div class="pc-hot"></div>':''}
 <div class="pc-score ${scoreClass(sc)}">${sc}</div>
 <div class="pc-name">${esc(l.name)}</div>
-<div class="pc-contact">${esc(l.contact_name||'')}</div>
+<div class="pc-contact">${esc(l.contact_name||'')}${l.stage_changed_at?` · <span class="stage-duration">${daysSince(l.stage_changed_at)}d in stage</span>`:''}</div>
 <div class="pc-meta">${sourceBadge(l.source)} ${ownerAvatar(l.owner)} ${l.estimated_value?`<span class="pc-value">${fmtValue(l.estimated_value)}</span>`:''}</div>
 ${stale?`<div class="pc-warn badge badge-${dsc>=10?'red':'amber'}">⚠ ${dsc}d silent</div>`:''}
 ${fu?`<div style="font-size:10px;color:var(--amber);margin-top:4px">⏰ ${fu.due_date<=today()?'Due TODAY':fu.due_date}</div>`:''}
+${(l.tags||[]).length?`<div class="lead-tags">${l.tags.slice(0,3).map(t=>`<span class="lead-tag">${esc(t)}</span>`).join('')}</div>`:''}
 </div>`;}).join('')}
 ${!leads.length?'<div class="section-empty" style="padding:20px;font-size:11px">Empty</div>':''}
 </div></div>`;}).join('')}</div>`;
 }
 let draggedId=null;
 function dragCard(e,id){draggedId=id;e.target.classList.add('dragging');e.target.addEventListener('dragend',()=>{e.target.classList.remove('dragging');draggedId=null;},{once:true});}
-async function dropCard(e,stage){e.preventDefault();e.currentTarget.classList.remove('drag-over');if(demoGuard())return;if(!draggedId)return;const did=draggedId;draggedId=null;if(stage==='closed_won'){openConvert(did);return;}if(stage==='closed_lost'){openMarkLost(did);return;}const res=await sbPatch('pipeline',did,{stage});if(!res){toast('Move failed','error');return;}const l=allLeads.find(x=>x.id===did);if(l)l.stage=stage;toast('Moved to '+stageInfo(stage).label);renderPipeline();}
+const AUTO_FU_DAYS={contacted:1,discovery:2,proposal_sent:2,negotiation:1};
+async function dropCard(e,stage){e.preventDefault();e.currentTarget.classList.remove('drag-over');if(demoGuard())return;if(!draggedId)return;const did=draggedId;draggedId=null;if(stage==='closed_won'){openConvert(did);return;}if(stage==='closed_lost'){openMarkLost(did);return;}const l=allLeads.find(x=>x.id===did);const oldStage=l?.stage;const res=await sbPatch('pipeline',did,{stage,stage_changed_at:new Date().toISOString()});if(!res){toast('Move failed','error');return;}if(l){l.stage=stage;l.stage_changed_at=new Date().toISOString();}
+if(AUTO_FU_DAYS[stage]&&oldStage!==stage){const fuDate=new Date();fuDate.setDate(fuDate.getDate()+AUTO_FU_DAYS[stage]);const fuData={pipeline_id:did,due_date:localDateStr(fuDate),due_time:'10:00',note:`Follow up after moving to ${stageInfo(stage).label}`,created_by:currentUser?.name?.toUpperCase()};const fr=await sbPost('lead_follow_ups',fuData);if(fr&&fr[0]){allFollowUps.push(fr[0]);updateFUBadge();}}
+auditLog('MOVE_STAGE',`Lead ID:${did} → ${stageInfo(stage).label}`);toast('Moved to '+stageInfo(stage).label+(AUTO_FU_DAYS[stage]?' · Follow-up scheduled':''));renderPipeline();}
 
 /* ===== ALL LEADS TABLE ===== */
 function renderLeads(){
 const pg=document.getElementById('page-leads');
-pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="page-label">CRM</div><h1>All Leads <span style="color:var(--text-3);font-weight:500;font-size:16px">${allLeads.length}</span></h1></div><div style="display:flex;gap:8px"><button class="btn btn-secondary" onclick="openCSVImport()">📄 Import</button><button class="btn btn-primary" onclick="openAddLead()">+ Add Lead</button></div></div>
+pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="page-label">CRM</div><h1>All Leads <span style="color:var(--text-3);font-weight:500;font-size:16px">${allLeads.length}</span></h1></div><div style="display:flex;gap:8px"><button class="btn btn-secondary export-btn" onclick="exportLeadsCSV()">📥 Export</button><button class="btn btn-secondary" onclick="openCSVImport()">📄 Import</button><button class="btn btn-primary" onclick="openAddLead()">+ Add Lead</button></div></div>
 <div class="leads-toolbar"><div class="search-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search leads..." id="leadSearch" oninput="filterLeadsTable()"></div>
 <select id="filterStage" onchange="filterLeadsTable()"><option value="">All Stages</option>${ALL_STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('')}</select>
 <select id="filterSource" onchange="filterLeadsTable()"><option value="">All Sources</option>${Object.entries(SOURCES).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select>
 <select id="filterOwner" onchange="filterLeadsTable()"><option value="">All Owners</option><option value="th">Thulaib</option><option value="sh">Shiara</option><option value="pv">Pavith</option><option value="nv">Nirvana</option></select></div>
-<div class="section"><div class="section-body" style="overflow-x:auto"><table class="leads-table"><thead><tr><th>Lead</th><th>Stage</th><th>Source</th><th>Value</th><th>Score</th><th>Owner</th><th>Last</th><th>Days</th></tr></thead><tbody id="leadsBody"></tbody></table></div></div>`;
+<div class="section"><div class="section-body" style="overflow-x:auto"><table class="leads-table"><thead><tr><th data-sort="name" onclick="sortLeadsTable('name')" style="cursor:pointer">Lead <span class="sort-arrow"></span></th><th data-sort="stage" onclick="sortLeadsTable('stage')" style="cursor:pointer">Stage <span class="sort-arrow"></span></th><th data-sort="source" onclick="sortLeadsTable('source')" style="cursor:pointer">Source <span class="sort-arrow"></span></th><th data-sort="value" onclick="sortLeadsTable('value')" style="cursor:pointer">Value <span class="sort-arrow"></span></th><th data-sort="score" onclick="sortLeadsTable('score')" style="cursor:pointer">Score <span class="sort-arrow"></span></th><th data-sort="owner" onclick="sortLeadsTable('owner')" style="cursor:pointer">Owner <span class="sort-arrow"></span></th><th data-sort="last" onclick="sortLeadsTable('last')" style="cursor:pointer">Last <span class="sort-arrow"></span></th><th data-sort="days" onclick="sortLeadsTable('days')" style="cursor:pointer">Days <span class="sort-arrow"></span></th></tr></thead><tbody id="leadsBody"></tbody></table></div></div>`;
 filterLeadsTable();
 }
+let leadSortCol='',leadSortDir='asc';
+function sortLeadsTable(col){if(leadSortCol===col){leadSortDir=leadSortDir==='asc'?'desc':'asc';}else{leadSortCol=col;leadSortDir='asc';}document.querySelectorAll('.leads-table th').forEach(th=>{th.classList.remove('sorted-asc','sorted-desc');});const th=document.querySelector(`.leads-table th[data-sort="${col}"]`);if(th)th.classList.add('sorted-'+leadSortDir);filterLeadsTable();}
 function filterLeadsTable(){
 const q=(document.getElementById('leadSearch')?.value||'').toLowerCase();
 const fs=document.getElementById('filterStage')?.value||'';
 const fo=document.getElementById('filterSource')?.value||'';
 const fw=document.getElementById('filterOwner')?.value||'';
 let filtered=allLeads.filter(l=>{if(q&&!l.name?.toLowerCase().includes(q)&&!l.contact_name?.toLowerCase().includes(q)&&!l.industry?.toLowerCase().includes(q))return false;if(fs&&l.stage!==fs)return false;if(fo&&l.source!==fo)return false;if(fw&&l.owner?.toLowerCase()!==fw.toLowerCase())return false;return true;});
+if(leadSortCol){const dir=leadSortDir==='asc'?1:-1;filtered.sort((a,b)=>{let va,vb;switch(leadSortCol){case 'name':va=(a.name||'').toLowerCase();vb=(b.name||'').toLowerCase();break;case 'stage':va=a.stage||'';vb=b.stage||'';break;case 'source':va=a.source||'';vb=b.source||'';break;case 'value':va=parseFloat(a.estimated_value)||0;vb=parseFloat(b.estimated_value)||0;return(va-vb)*dir;case 'score':va=calcScore(a);vb=calcScore(b);return(va-vb)*dir;case 'owner':va=(a.owner||'').toLowerCase();vb=(b.owner||'').toLowerCase();break;case 'last':va=a.last_contact_at||a.created_at||'';vb=b.last_contact_at||b.created_at||'';break;case 'days':va=daysSinceContact(a);vb=daysSinceContact(b);return(va-vb)*dir;default:return 0;}if(va<vb)return -dir;if(va>vb)return dir;return 0;});}
+if(!filtered.length){document.getElementById('leadsBody').innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-3)">No leads match your filters</td></tr>';return;}
 document.getElementById('leadsBody').innerHTML=filtered.map(l=>{const sc=calcScore(l);const dsc=daysSinceContact(l);return `<tr onclick="openDetail(${l.id})"><td><div class="td-name">${l.is_hot?'🔥 ':''}${esc(l.name)}</div><div class="td-phone">${esc(l.contact_name||'')}${l.contact_phone?' · '+esc(l.contact_phone):''}</div></td><td>${stageBadge(l.stage)}</td><td>${sourceBadge(l.source)}</td><td style="font-family:Poppins;font-weight:600;font-size:12px">${fmtValue(l.estimated_value)}</td><td><span class="badge ${scoreClass(sc)}">${sc}</span></td><td>${ownerAvatar(l.owner)}</td><td style="font-size:12px;color:var(--text-3)">${fmtDate(l.last_contact_at||l.created_at)}</td><td style="color:${dsc>=10?'var(--red)':dsc>=5?'var(--amber)':'var(--text-3)'};font-weight:${dsc>=5?'600':'400'}">${dsc}d</td></tr>`;}).join('');
 }
 
@@ -966,7 +1058,8 @@ panel.innerHTML=`
 <div class="dp-header"><button class="dp-close" onclick="closeDetail()">✕</button>
 <div class="dp-name">${lead.is_hot?'🔥 ':''}${esc(lead.name)}</div>
 <div class="dp-company">${esc(lead.contact_name||'')}${lead.industry?' · '+esc(lead.industry):''}${lead.decision_maker?' · DM: '+esc(lead.decision_maker):''}</div>
-<div class="dp-badges">${stageBadge(lead.stage)} ${sourceBadge(lead.source)} <span class="badge ${scoreClass(sc)}">${sc}pts</span> <span class="badge badge-grey">${WIN_PROB[lead.stage]||0}% win</span> ${lead.estimated_value?`<span class="badge badge-green">${fmtValue(lead.estimated_value)}</span>`:''} ${lead.package_interest?`<span class="badge badge-accent">${esc(lead.package_interest)}</span>`:''} ${dsc>=5?`<span class="badge badge-red">${dsc}d silent</span>`:''}</div>
+<div class="dp-badges">${stageBadge(lead.stage)} ${sourceBadge(lead.source)} <span class="badge ${scoreClass(sc)}">${sc}pts</span> <span class="badge badge-grey">${WIN_PROB[lead.stage]||0}% win</span> ${lead.estimated_value?`<span class="badge badge-green">${fmtValue(lead.estimated_value)}</span>`:''} ${lead.package_interest?`<span class="badge badge-accent">${esc(lead.package_interest)}</span>`:''} ${dsc>=5?`<span class="badge badge-red">${dsc}d silent</span>`:''} ${(lead.tags||[]).map(t=>`<span class="lead-tag">${esc(t)} <span class="tag-x" onclick="event.stopPropagation();removeTag(${id},'${esc(t)}')">✕</span></span>`).join('')}</div>
+${lead.stage_changed_at?`<div class="stage-duration">${icon('clock',11)} In ${stageInfo(lead.stage).label} for ${daysSince(lead.stage_changed_at)}d</div>`:''}
 <div class="dp-contact">${lead.contact_phone?`<span>${icon('phone',12)} <a href="tel:${lead.contact_phone}">${esc(lead.contact_phone)}</a> · <a href="${waLink(lead.contact_phone)}" target="_blank" style="color:#25D366">WhatsApp</a></span>`:''} ${lead.contact_email?`<span>${icon('email',12)} <a href="mailto:${lead.contact_email}">${esc(lead.contact_email)}</a></span>`:''} <span>${icon('users',12)} ${ownerLabel(lead.owner)}</span> <span>${icon('note',12)} ${fmtDate(lead.created_at)}</span></div>
 </div>
 <div class="dp-actions">
@@ -977,8 +1070,10 @@ ${lead.contact_phone?`<a class="dp-action" href="${waLink(lead.contact_phone)}" 
 ${!['closed_won','closed_lost'].includes(lead.stage)?`<button class="dp-action" onclick="openConvert(${id})">${icon('trophy',13)} Convert</button>`:''}
 ${!['closed_won','closed_lost'].includes(lead.stage)?`<button class="dp-action danger" onclick="openMarkLost(${id})">${icon('alert',13)} Lost</button>`:''}
 <button class="dp-action" onclick="editLead(${id})">${icon('note',13)} Edit</button>
+<button class="dp-action" onclick="exportLeadData(${id})" style="margin-left:auto">${icon('chart',13)} Export</button>
+<button class="dp-action danger" onclick="deleteLead(${id})">${icon('alert',13)} Delete</button>
 </div>
-<div class="dp-tabs"><div class="dp-tab active" onclick="switchTab(this,'tab-prep')">Call Prep</div><div class="dp-tab" onclick="switchTab(this,'tab-activity')">Activity (${acts.length})</div><div class="dp-tab" onclick="switchTab(this,'tab-fu')">Follow-Ups (${fus.filter(f=>!f.is_done).length})</div><div class="dp-tab" onclick="switchTab(this,'tab-intel')">Intel</div></div>
+<div class="dp-tabs"><div class="dp-tab active" onclick="switchTab(this,'tab-prep')">Call Prep</div><div class="dp-tab" onclick="switchTab(this,'tab-activity')">Activity (${acts.length})</div><div class="dp-tab" onclick="switchTab(this,'tab-fu')">Follow-Ups (${fus.filter(f=>!f.is_done).length})</div><div class="dp-tab" onclick="switchTab(this,'tab-intel')">Intel</div>${lead.contact_phone?`<div class="dp-tab" onclick="switchTab(this,'tab-wa')">WhatsApp</div>`:''}</div>
 <div class="dp-tab-content">
 <div class="dp-tab-pane active" id="tab-prep">
 <div class="call-prep"><h4>📋 Call Preparation</h4>
@@ -987,28 +1082,121 @@ ${!['closed_won','closed_lost'].includes(lead.stage)?`<button class="dp-action d
 <div class="cp-row"><div class="cp-label">Their pain points</div><div class="cp-val ${lead.pain_points?'':'empty'}">${lead.pain_points?esc(lead.pain_points):'Not discovered yet'}</div></div>
 <div class="cp-row"><div class="cp-label">Objections to address</div><div class="cp-val ${lead.objections?'':'empty'}">${lead.objections?esc(lead.objections):'None recorded'}</div></div>
 <div class="cp-row"><div class="cp-label">Talking points from last call</div><div class="cp-val ${lastAct?.talking_points?'':'empty'}">${lastAct?.talking_points?esc(lastAct.talking_points):'None'}</div></div>
-</div></div>
+</div>
+<button class="btn btn-sm btn-secondary" onclick="aiCallPrep(${id})" style="margin-top:10px;width:100%">🤖 AI: Generate Call Strategy</button>
+<div id="aiCallPrep-${id}" style="margin-top:10px;display:none;background:var(--surface-2);border:1px solid var(--accent);border-radius:var(--radius);padding:14px;font-size:12px;line-height:1.7;color:var(--text-2);white-space:pre-wrap"></div>
+</div>
 <div class="dp-tab-pane" id="tab-activity">${acts.length?`<div class="timeline">${acts.map(a=>`<div class="tl-item"><div class="tl-dot ${a.type}"></div><div class="tl-card"><div class="tl-head"><div class="tl-type">${ACT_ICONS[a.type]||'📝'} ${a.type}</div><div class="tl-time">${fmtDateTime(a.created_at)} · ${ownerLabel(a.logged_by)}</div></div><div class="tl-sum">${esc(a.summary)}</div>${a.outcome?`<span class="badge badge-${a.outcome==='positive'?'green':a.outcome==='negative'?'red':'amber'}" style="margin-top:6px">${a.outcome}</span>`:''} ${a.talking_points?`<div style="font-size:11px;color:var(--text-3);margin-top:6px"><strong>Talking:</strong> ${esc(a.talking_points)}</div>`:''} ${a.pain_points_discovered?`<div style="font-size:11px;color:var(--text-3);margin-top:4px"><strong>Pain:</strong> ${esc(a.pain_points_discovered)}</div>`:''} ${a.objections_raised?`<div style="font-size:11px;color:var(--text-3);margin-top:4px"><strong>Objections:</strong> ${esc(a.objections_raised)}</div>`:''} ${a.next_step?`<div class="tl-next">→ ${esc(a.next_step)}</div>`:''}</div></div>`).join('')}</div>`:'<div class="section-empty">No activity yet</div>'}</div>
 <div class="dp-tab-pane" id="tab-fu"><div style="margin-bottom:12px"><button class="btn btn-sm btn-primary" onclick="openScheduleFU(${id})">+ Schedule</button></div>${fus.length?fus.map(f=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)"><div style="width:8px;height:8px;border-radius:50%;background:${f.is_done?'var(--green)':f.due_date<today()?'var(--red)':'var(--amber)'}"></div><div style="flex:1"><div style="font-size:13px;font-weight:${f.is_done?'400':'600'};${f.is_done?'text-decoration:line-through;color:var(--text-3)':''}">${f.due_date} ${f.due_time||''}</div><div style="font-size:12px;color:var(--text-2)">${esc(f.note||'')}</div></div>${f.is_done?'<span class="badge badge-green">Done</span>':f.due_date<today()?'<span class="badge badge-red">Overdue</span>':'<span class="badge badge-amber">Pending</span>'} ${!f.is_done?`<button class="btn btn-sm btn-success" onclick="completeFU(${f.id});openDetail(${id})">✓</button>`:''}</div>`).join(''):'<div class="section-empty">No follow-ups</div>'}</div>
 <div class="dp-tab-pane" id="tab-intel"><div class="intel-grid"><div class="intel-card"><div class="ic-label">Pain Points</div><div class="ic-val ${lead.pain_points?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'pain_points',this.textContent)">${esc(lead.pain_points||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Objections</div><div class="ic-val ${lead.objections?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'objections',this.textContent)">${esc(lead.objections||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Decision Maker</div><div class="ic-val ${lead.decision_maker?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'decision_maker',this.textContent)">${esc(lead.decision_maker||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Notes</div><div class="ic-val ${lead.notes?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'notes',this.textContent)">${esc(lead.notes||'Click to add...')}</div></div></div>
 <h4 style="font-size:12px;margin:16px 0 10px">Score Breakdown</h4><div style="font-size:11px;color:var(--text-2);line-height:2.2">${lead.contact_phone?'✅':'❌'} Phone (10) · ${lead.contact_email?'✅':'❌'} Email (10) · ${lead.contact_name?'✅':'❌'} Contact (5) · Acts: ${Math.min(acts.length*5,30)}/30 · Positive: ${acts.filter(a=>a.outcome==='positive').length}×10 · ${lead.estimated_value>0?'✅':'❌'} Value (10) · ${lead.pain_points?'✅':'❌'} Pain (5) · ${lead.is_hot?'✅':'❌'} Hot (15)</div></div>
+${lead.contact_phone?`<div class="dp-tab-pane" id="tab-wa"><div style="font-size:13px;font-weight:600;margin-bottom:10px">Quick Message Templates</div><div class="wa-templates">${getWATemplates(lead).map(t=>`<a class="wa-tpl" href="${waLink(lead.contact_phone)}?text=${encodeURIComponent(t.msg)}" target="_blank"><span class="tpl-icon">${t.icon}</span><div><div style="font-weight:600;font-size:12px;color:var(--text);margin-bottom:2px">${t.label}</div><div style="font-size:11px;opacity:.7">${esc(t.msg.substring(0,80))}...</div></div></a>`).join('')}</div>
+<div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px"><div style="font-size:13px;font-weight:600;margin-bottom:8px">🤖 AI Custom Message</div>
+<input id="aiMsgTone-${id}" placeholder="Tone: friendly, formal, urgent..." value="friendly" style="margin-bottom:8px">
+<button class="btn btn-sm btn-secondary" onclick="aiDraftMessage(${id})" style="width:100%">Generate Custom Message</button>
+<div id="aiMsg-${id}" style="margin-top:10px;display:none"><textarea id="aiMsgText-${id}" rows="4" style="font-size:12px"></textarea><a id="aiMsgSend-${id}" class="btn btn-sm btn-success" style="margin-top:6px;display:inline-flex;text-decoration:none" target="_blank">Send via WhatsApp</a></div>
+</div></div>`:''}
 </div>`;
 document.getElementById('detailOverlay').classList.add('open');
 }
 function closeDetail(){document.getElementById('detailOverlay').classList.remove('open');currentDetailId=null;}
+
+/* ===== AUDIT LOG ===== */
+function auditLog(action,detail){const log=JSON.parse(localStorage.getItem('bb_audit_log')||'[]');log.unshift({ts:new Date().toISOString(),user:currentUser?.name||'System',action,detail});if(log.length>500)log.length=500;localStorage.setItem('bb_audit_log',JSON.stringify(log));}
+function showAuditLog(){const log=JSON.parse(localStorage.getItem('bb_audit_log')||'[]');const el=document.getElementById('auditLogBody');el.innerHTML=log.length?log.map(e=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;gap:10px"><div style="min-width:120px;color:var(--text-3);font-size:11px">${new Date(e.ts).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div><div style="min-width:70px"><span class="badge badge-blue">${esc(e.user)}</span></div><div style="flex:1"><strong>${esc(e.action)}</strong> ${esc(e.detail||'')}</div></div>`).join(''):'<div class="section-empty">No audit entries yet</div>';openModal('auditLogModal');}
+function clearAuditLog(){if(confirm('Clear all audit log entries?')){localStorage.removeItem('bb_audit_log');showAuditLog();toast('Audit log cleared');}}
+function exportAuditLog(){const log=JSON.parse(localStorage.getItem('bb_audit_log')||'[]');const csv=['Timestamp,User,Action,Detail',...log.map(e=>`"${e.ts}","${e.user}","${e.action}","${(e.detail||'').replace(/"/g,'""')}"`)].join('\n');const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='bb-audit-log-'+today()+'.csv';a.click();URL.revokeObjectURL(url);toast('Audit log exported');}
+
+/* ===== DELETE LEAD (CASCADE) ===== */
+async function deleteLead(id){if(demoGuard())return;const lead=allLeads.find(l=>l.id===id);if(!lead)return;if(!confirm(`Permanently delete "${lead.name}" and ALL related activities, follow-ups, and data?\n\nThis cannot be undone.`))return;
+const acts=allActivities.filter(a=>a.pipeline_id===id);const fus=allFollowUps.filter(f=>f.pipeline_id===id);
+try{
+if(acts.length)await fetch(`${SB_URL}/lead_activities?pipeline_id=eq.${id}`,{method:'DELETE',headers:{...getHeaders(),Prefer:'return=minimal'}});
+if(fus.length)await fetch(`${SB_URL}/lead_follow_ups?pipeline_id=eq.${id}`,{method:'DELETE',headers:{...getHeaders(),Prefer:'return=minimal'}});
+await fetch(`${SB_URL}/pipeline?id=eq.${id}`,{method:'DELETE',headers:{...getHeaders(),Prefer:'return=minimal'}});
+allLeads=allLeads.filter(l=>l.id!==id);allActivities=allActivities.filter(a=>a.pipeline_id!==id);allFollowUps=allFollowUps.filter(f=>f.pipeline_id!==id);
+auditLog('DELETE_LEAD',`${lead.name} (ID:${id}) — ${acts.length} activities, ${fus.length} follow-ups removed`);
+closeDetail();toast('Lead permanently deleted');updateFUBadge();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);
+}catch(e){toast('Delete failed','error');console.error(e);}}
+
+/* ===== EXPORT SINGLE LEAD DATA ===== */
+function exportLeadData(id){const lead=allLeads.find(l=>l.id===id);if(!lead)return;const acts=allActivities.filter(a=>a.pipeline_id===id);const fus=allFollowUps.filter(f=>f.pipeline_id===id);
+const data={lead:{...lead},activities:acts,follow_ups:fus,exported_at:new Date().toISOString(),exported_by:currentUser?.name};
+const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`lead-${lead.name.replace(/[^a-zA-Z0-9]/g,'-')}-${today()}.json`;a.click();URL.revokeObjectURL(url);
+auditLog('EXPORT_LEAD',`${lead.name} (ID:${id})`);toast('Lead data exported as JSON');}
 function switchTab(el,id){el.parentElement.querySelectorAll('.dp-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');el.closest('.detail-panel').querySelectorAll('.dp-tab-pane').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
 async function saveIntel(id,f,v){const d={};const val=v.trim();d[f]=val===''||val==='Click to add...'?null:val;await sbPatch('pipeline',id,d);const l=allLeads.find(x=>x.id===id);if(l)l[f]=d[f];}
 document.addEventListener('focusin',e=>{if(e.target.classList?.contains('ic-val')&&e.target.textContent.trim()==='Click to add...'){e.target.textContent='';e.target.classList.remove('empty');}});
 document.addEventListener('focusout',e=>{if(e.target.classList?.contains('ic-val')&&!e.target.textContent.trim()){e.target.textContent='Click to add...';e.target.classList.add('empty');}});
 async function toggleHot(id){if(demoGuard())return;const l=allLeads.find(x=>x.id===id);if(!l)return;const newHot=!l.is_hot;const res=await sbPatch('pipeline',id,{is_hot:newHot});if(!res){toast('Failed to update','error');return;}l.is_hot=newHot;toast(l.is_hot?'🔥 Marked hot':'Unmarked');openDetail(id);}
+async function removeTag(id,tag){if(demoGuard())return;const l=allLeads.find(x=>x.id===id);if(!l)return;const tags=(l.tags||[]).filter(t=>t!==tag);const res=await sbPatch('pipeline',id,{tags:tags.length?tags:null});if(!res){toast('Failed','error');return;}l.tags=tags.length?tags:null;openDetail(id);}
+function getWATemplates(lead){const name=lead.contact_name||lead.name;return[
+{icon:'👋',label:'Introduction',msg:`Hi ${name}, this is ${currentUser?.name} from Business Booster. We help businesses grow their online presence with digital marketing. Would you be open to a quick chat about how we can help ${lead.name}?`},
+{icon:'📋',label:'Follow-up',msg:`Hi ${name}, just following up on our conversation about ${lead.name}. Have you had a chance to think about our proposal? Happy to answer any questions!`},
+{icon:'🎁',label:'Special Offer',msg:`Hi ${name}, we have a special offer running this month for our ${lead.package_interest||'digital marketing'} package. Would you like to hear the details?`},
+{icon:'📅',label:'Meeting Request',msg:`Hi ${name}, I'd love to schedule a quick 15-min call to discuss how we can help ${lead.name} grow online. When would be a good time for you?`},
+{icon:'🙏',label:'Thank You',msg:`Hi ${name}, thank you for your time today! As discussed, I'll send over the proposal for ${lead.name}. Looking forward to working together!`},
+{icon:'⏰',label:'Gentle Reminder',msg:`Hi ${name}, hope you're doing well! Just a gentle reminder about our discussion regarding ${lead.package_interest||'digital marketing services'} for ${lead.name}. Let me know if you have any questions.`}
+];}
+async function aiCallPrep(id){const lead=allLeads.find(l=>l.id===id);if(!lead)return;const el=document.getElementById('aiCallPrep-'+id);if(!el)return;el.style.display='block';el.textContent='🤖 Thinking...';const ctx=getLeadContext(lead);const prompt=`You are a sales coach for Business Booster, a digital marketing agency in Sri Lanka. Based on this lead data, generate a brief call strategy (max 200 words). Include:
+1. Opening line (personalized)
+2. Key questions to ask (3-4)
+3. Value proposition angle based on their industry
+4. How to handle their known objections
+5. Closing move / next step to push for
+
+${ctx}
+
+Be specific, practical, and conversational. No generic advice.`;const result=await askGemini(prompt,400);el.textContent=result||'Could not generate — check your API key.';}
+
+async function aiDraftMessage(id){const lead=allLeads.find(l=>l.id===id);if(!lead)return;const tone=document.getElementById('aiMsgTone-'+id)?.value||'friendly';const ctx=getLeadContext(lead);const prompt=`You are writing a WhatsApp message for Business Booster (digital marketing agency, Sri Lanka) to send to a lead. Write a short, ${tone} WhatsApp message (max 80 words). Keep it natural, no emojis overload. Must feel personal, not templated.
+
+${ctx}
+
+Write ONLY the message text, nothing else.`;const result=await askGemini(prompt,200);if(result){const msgEl=document.getElementById('aiMsg-'+id);const textEl=document.getElementById('aiMsgText-'+id);const sendEl=document.getElementById('aiMsgSend-'+id);if(msgEl)msgEl.style.display='block';if(textEl)textEl.value=result;if(sendEl)sendEl.href=waLink(lead.contact_phone)+'?text='+encodeURIComponent(result);}}
+
+function generateSmartAlerts(){const alerts=[];const now=Date.now();
+allLeads.filter(l=>!['closed_won','closed_lost'].includes(l.stage)).forEach(l=>{
+const dsc=daysSinceContact(l);const sc=calcScore(l);const acts=allActivities.filter(a=>a.pipeline_id===l.id);
+const negCount=acts.filter(a=>a.outcome==='negative').length;
+const pendingFU=allFollowUps.filter(f=>f.pipeline_id===l.id&&!f.is_done&&f.due_date<today());
+if(dsc>=14)alerts.push({sev:'critical',icon:'🚨',msg:`${l.name} has gone silent for ${dsc} days — at risk of going cold`,leadId:l.id});
+else if(dsc>=7)alerts.push({sev:'warning',icon:'⚠️',msg:`${l.name} — no contact in ${dsc} days. Follow up soon.`,leadId:l.id});
+if(l.stage==='proposal_sent'&&dsc>=5)alerts.push({sev:'warning',icon:'📋',msg:`${l.name} — proposal sent ${dsc}d ago with no response. Time to follow up.`,leadId:l.id});
+if(l.stage==='negotiation'&&l.estimated_value>=200000)alerts.push({sev:'info',icon:'💎',msg:`${l.name} — high-value deal (${fmtValue(l.estimated_value)}) in negotiation. Prioritize closing.`,leadId:l.id});
+if(negCount>=2&&l.stage!=='on_hold')alerts.push({sev:'warning',icon:'👎',msg:`${l.name} — ${negCount} negative outcomes. Consider adjusting approach or putting on hold.`,leadId:l.id});
+if(pendingFU.length>=2)alerts.push({sev:'warning',icon:'⏰',msg:`${l.name} — ${pendingFU.length} overdue follow-ups! Clear backlog.`,leadId:l.id});
+if(sc>=70&&!l.is_hot)alerts.push({sev:'info',icon:'🔥',msg:`${l.name} scores ${sc}/100 but isn't marked hot. Consider flagging.`,leadId:l.id});
+if(l.stage==='new_lead'&&dsc>=3)alerts.push({sev:'warning',icon:'🆕',msg:`${l.name} — new lead sitting for ${dsc}d without being contacted.`,leadId:l.id});
+});
+const overdueFUs=allFollowUps.filter(f=>!f.is_done&&f.due_date<today());
+if(overdueFUs.length>=5)alerts.push({sev:'critical',icon:'📌',msg:`${overdueFUs.length} overdue follow-ups across all leads. Inbox is getting backed up.`});
+const todayActs=allActivities.filter(a=>a.created_at?.startsWith(today())).length;
+if(todayActs===0){const hour=new Date().getHours();if(hour>=11)alerts.push({sev:'info',icon:'📞',msg:`No activities logged today yet. Start making calls!`});}
+alerts.sort((a,b)=>(a.sev==='critical'?0:a.sev==='warning'?1:2)-(b.sev==='critical'?0:b.sev==='warning'?1:2));
+return alerts;}
+
+async function aiAnalyzeLeads(){if(!GEMINI_KEY){toast('Set Gemini API key first','error');return;}const el=document.getElementById('aiInsightsBox');if(!el)return;el.style.display='block';el.innerHTML='<div style="color:var(--accent);font-size:13px">🤖 Analyzing your pipeline...</div>';
+const active=activeLeads();const summary=`Pipeline: ${active.length} active leads, ${allLeads.filter(l=>l.stage==='closed_won').length} won, ${allLeads.filter(l=>l.stage==='closed_lost').length} lost.
+Stages: ${STAGES.map(s=>s.label+': '+allLeads.filter(l=>l.stage===s.key).length).join(', ')}
+Top leads: ${active.sort((a,b)=>calcScore(b)-calcScore(a)).slice(0,5).map(l=>`${l.name}(score:${calcScore(l)},stage:${l.stage},${daysSinceContact(l)}d silent)`).join('; ')}
+Activities today: ${allActivities.filter(a=>a.created_at?.startsWith(today())).length}
+Overdue FUs: ${allFollowUps.filter(f=>!f.is_done&&f.due_date<today()).length}`;
+const prompt=`You are an AI sales manager for Business Booster (digital marketing agency, Sri Lanka). Analyze this pipeline data and give 3-5 specific, actionable insights. Be direct, use names. Max 150 words.\n\n${summary}`;
+const result=await askGemini(prompt,300);el.innerHTML=result?`<div style="font-size:12px;line-height:1.7;color:var(--text-2);white-space:pre-wrap">${esc(result)}</div>`:'<div style="color:var(--text-3)">Could not analyze — check API key</div>';}
+
+function exportLeadsCSV(){const headers=['Name','Contact','Phone','Email','Industry','Source','Stage','Value','Score','Owner','Tags','Created','Last Contact'];const rows=allLeads.map(l=>[l.name,l.contact_name,l.contact_phone,l.contact_email,l.industry,SOURCES[l.source]||l.source,stageInfo(l.stage).label,l.estimated_value||'',calcScore(l),ownerLabel(l.owner),(l.tags||[]).join(';'),l.created_at?.split('T')[0]||'',l.last_contact_at?.split('T')[0]||''].map(v=>`"${String(v||'').replace(/"/g,'""')}"`));const csv=[headers.join(','),...rows.map(r=>r.join(','))].join('\n');const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`bb-leads-export-${today()}.csv`;a.click();URL.revokeObjectURL(url);auditLog('EXPORT_ALL',`${allLeads.length} leads exported as CSV`);toast('Exported '+allLeads.length+' leads ✓');}
 
 /* ===== ADD / EDIT LEAD ===== */
-function openAddLead(){editingLeadId=null;['al_name','al_contact','al_phone','al_email','al_notes'].forEach(x=>document.getElementById(x).value='');document.getElementById('al_value').value='';document.getElementById('al_industry').value='';document.getElementById('al_source').value='social_media';document.getElementById('al_package').value='';document.getElementById('al_owner').value=currentUser?.code||'th';document.getElementById('al_stage').value='new_lead';document.getElementById('addLeadTitle').textContent='Add New Lead';document.getElementById('addLeadBtn').textContent='Add Lead';openModal('addLeadModal');}
-function editLead(id){editingLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('al_name').value=l.name||'';document.getElementById('al_contact').value=l.contact_name||'';document.getElementById('al_phone').value=l.contact_phone||'';document.getElementById('al_email').value=l.contact_email||'';document.getElementById('al_industry').value=l.industry||'';document.getElementById('al_source').value=l.source||'social_media';document.getElementById('al_value').value=l.estimated_value||'';document.getElementById('al_package').value=l.package_interest||'';document.getElementById('al_owner').value=l.owner||'th';document.getElementById('al_stage').value=l.stage||'new_lead';document.getElementById('al_notes').value=l.notes||'';document.getElementById('addLeadTitle').textContent='Edit Lead';document.getElementById('addLeadBtn').textContent='Update Lead';closeDetail();openModal('addLeadModal');}
+function openAddLead(){editingLeadId=null;['al_name','al_contact','al_phone','al_email','al_notes','al_tags'].forEach(x=>document.getElementById(x).value='');document.getElementById('al_value').value='';document.getElementById('al_industry').value='';document.getElementById('al_source').value='social_media';document.getElementById('al_package').value='';document.getElementById('al_owner').value=currentUser?.code||'th';document.getElementById('al_stage').value='new_lead';document.getElementById('addLeadTitle').textContent='Add New Lead';document.getElementById('addLeadBtn').textContent='Add Lead';openModal('addLeadModal');}
+function editLead(id){editingLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('al_name').value=l.name||'';document.getElementById('al_contact').value=l.contact_name||'';document.getElementById('al_phone').value=l.contact_phone||'';document.getElementById('al_email').value=l.contact_email||'';document.getElementById('al_industry').value=l.industry||'';document.getElementById('al_source').value=l.source||'social_media';document.getElementById('al_value').value=l.estimated_value||'';document.getElementById('al_package').value=l.package_interest||'';document.getElementById('al_owner').value=l.owner||'th';document.getElementById('al_stage').value=l.stage||'new_lead';document.getElementById('al_tags').value=(l.tags||[]).join(', ');document.getElementById('al_notes').value=l.notes||'';document.getElementById('addLeadTitle').textContent='Edit Lead';document.getElementById('addLeadBtn').textContent='Update Lead';closeDetail();openModal('addLeadModal');}
 async function saveLead(){if(demoGuard())return;const name=document.getElementById('al_name').value.trim();if(!name){toast('Name required','error');return;}
-const data={name,contact_name:document.getElementById('al_contact').value.trim()||null,contact_phone:document.getElementById('al_phone').value.trim()||null,contact_email:document.getElementById('al_email').value.trim()||null,industry:document.getElementById('al_industry').value||null,source:document.getElementById('al_source').value,estimated_value:document.getElementById('al_value').value?parseInt(document.getElementById('al_value').value):null,package_interest:document.getElementById('al_package').value||null,owner:document.getElementById('al_owner').value,stage:document.getElementById('al_stage').value,notes:document.getElementById('al_notes').value.trim()||null};
+const tagsRaw=document.getElementById('al_tags').value.trim();const tags=tagsRaw?tagsRaw.split(',').map(t=>t.trim().toLowerCase()).filter(Boolean):[];
+const phone=document.getElementById('al_phone').value.trim()||null;const email=document.getElementById('al_email').value.trim()||null;
+if(!editingLeadId){const dupes=allLeads.filter(l=>{if(phone&&l.contact_phone&&l.contact_phone.replace(/\D/g,'')===phone.replace(/\D/g,''))return true;if(email&&l.contact_email&&l.contact_email.toLowerCase()===email.toLowerCase())return true;return false;});if(dupes.length){const dupNames=dupes.map(d=>d.name).join(', ');if(!confirm(`Possible duplicate detected: ${dupNames}\n\nAdd anyway?`))return;}}
+const data={name,contact_name:document.getElementById('al_contact').value.trim()||null,contact_phone:phone,contact_email:email,industry:document.getElementById('al_industry').value||null,source:document.getElementById('al_source').value,estimated_value:document.getElementById('al_value').value?parseInt(document.getElementById('al_value').value):null,package_interest:document.getElementById('al_package').value||null,owner:document.getElementById('al_owner').value,stage:document.getElementById('al_stage').value,tags:tags.length?tags:null,notes:document.getElementById('al_notes').value.trim()||null};
 if(data.estimated_value==null){const m=data.package_interest?.match(/\((\d+)K\)/);if(m)data.estimated_value=parseInt(m[1])*1000;}
-if(editingLeadId){await sbPatch('pipeline',editingLeadId,data);const l=allLeads.find(x=>x.id===editingLeadId);if(l)Object.assign(l,data);closeModal('addLeadModal');toast('Lead updated ✓');openDetail(editingLeadId);}else{data.status='active';data.temperature='cold';const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);closeModal('addLeadModal');toast('Lead added! 🎯');}else{toast('Failed','error');return;}}
+if(editingLeadId){await sbPatch('pipeline',editingLeadId,data);const l=allLeads.find(x=>x.id===editingLeadId);if(l)Object.assign(l,data);closeModal('addLeadModal');toast('Lead updated ✓');auditLog('UPDATE_LEAD',`${name} (ID:${editingLeadId})`);openDetail(editingLeadId);}else{data.status='active';data.temperature='cold';data.stage_changed_at=new Date().toISOString();const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);closeModal('addLeadModal');toast('Lead added! 🎯');auditLog('ADD_LEAD',`${name} (ID:${r[0].id})`);}else{toast('Failed','error');return;}}
 const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== LOG ACTIVITY ===== */
@@ -1032,10 +1220,10 @@ if(data.pain_points_discovered)upd.pain_points=lead?.pain_points?lead.pain_point
 if(data.objections_raised)upd.objections=lead?.objections?lead.objections+'; '+data.objections_raised:data.objections_raised;
 const ac=allActivities.filter(a=>a.pipeline_id===activityLeadId).length;const pc=allActivities.filter(a=>a.pipeline_id===activityLeadId&&a.outcome==='positive').length;
 upd.temperature=pc>=2||ac>=4?'hot':ac>=2?'warm':'cold';
-const sgBtn=document.querySelector('#stageSuggest .btn-primary');if(sgBtn?.dataset?.stage)upd.stage=sgBtn.dataset.stage;
+const sgBtn=document.querySelector('#stageSuggest .btn-primary');if(sgBtn?.dataset?.stage){upd.stage=sgBtn.dataset.stage;upd.stage_changed_at=new Date().toISOString();}
 await sbPatch('pipeline',activityLeadId,upd);if(lead)Object.assign(lead,upd);
 if(document.getElementById('act_schedFu').checked){const fd=document.getElementById('act_fuDate').value;if(fd){const fu={pipeline_id:activityLeadId,due_date:fd,due_time:document.getElementById('act_fuTime').value||null,note:document.getElementById('act_fuNote').value.trim()||data.next_step||'Follow up',created_by:currentUser?.name?.toUpperCase()};const fr=await sbPost('lead_follow_ups',fu);if(fr)allFollowUps.push(fr[0]);}}
-closeModal('activityModal');toast('Activity logged ✓');updateFUBadge();
+closeModal('activityModal');toast('Activity logged ✓');auditLog('LOG_ACTIVITY',`${data.type} on lead ID:${activityLeadId}`);updateFUBadge();
 const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);if(currentDetailId===activityLeadId)openDetail(activityLeadId);}
 
 /* ===== FOLLOW-UP ===== */
@@ -1045,32 +1233,37 @@ async function saveFollowUp(){if(demoGuard())return;if(!fuLeadId)return;const d=
 /* ===== CONVERT ===== */
 function openConvert(id){convertLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('cv_name').value=l.name;document.getElementById('cv_industry').value=l.industry||'';document.getElementById('cv_contact').value=l.contact_name||l.contact_phone||'';document.getElementById('cv_start').value=today();const p=l.package_interest?.split(' (')[0]||'Spark';document.getElementById('cv_package').value=p;document.getElementById('cv_mrr').value=PKG_VALUES[p]||90000;openModal('convertModal');}
 document.getElementById('cv_package').addEventListener('change',function(){document.getElementById('cv_mrr').value=PKG_VALUES[this.value]||90000;});
-async function convertToClient(){if(demoGuard())return;if(!convertLeadId)return;const cd={name:document.getElementById('cv_name').value.trim(),package:document.getElementById('cv_package').value,mrr:parseInt(document.getElementById('cv_mrr').value)||0,industry:document.getElementById('cv_industry').value.trim()||null,contact:document.getElementById('cv_contact').value.trim()||null,start_date:document.getElementById('cv_start').value||null,status:'active',health:'green',client_type:'sm'};const cr=await sbPost('clients',cd);if(!cr){toast('Failed','error');return;}await sbPatch('pipeline',convertLeadId,{stage:'closed_won',closed_at:new Date().toISOString()});const l=allLeads.find(x=>x.id===convertLeadId);if(l){l.stage='closed_won';}await sbPost('lead_activities',{pipeline_id:convertLeadId,type:'note',summary:`🎉 Converted! ${cd.package} @ LKR ${cd.mrr}`,outcome:'positive',logged_by:currentUser?.name?.toUpperCase()});closeModal('convertModal');closeDetail();toast('🎉 Client converted!');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function convertToClient(){if(demoGuard())return;if(!convertLeadId)return;const cd={name:document.getElementById('cv_name').value.trim(),package:document.getElementById('cv_package').value,mrr:parseInt(document.getElementById('cv_mrr').value)||0,industry:document.getElementById('cv_industry').value.trim()||null,contact:document.getElementById('cv_contact').value.trim()||null,start_date:document.getElementById('cv_start').value||null,status:'active',health:'green',client_type:'sm'};const cr=await sbPost('clients',cd);if(!cr){toast('Failed','error');return;}await sbPatch('pipeline',convertLeadId,{stage:'closed_won',closed_at:new Date().toISOString()});const l=allLeads.find(x=>x.id===convertLeadId);if(l){l.stage='closed_won';}await sbPost('lead_activities',{pipeline_id:convertLeadId,type:'note',summary:`🎉 Converted! ${cd.package} @ LKR ${cd.mrr}`,outcome:'positive',logged_by:currentUser?.name?.toUpperCase()});closeModal('convertModal');closeDetail();auditLog('CONVERT_CLIENT',`${cd.name} — ${cd.package} @ LKR ${cd.mrr}`);toast('🎉 Client converted!');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== MARK LOST ===== */
 function openMarkLost(id){lostLeadId=id;document.getElementById('lost_reason').value='unresponsive';document.getElementById('lost_notes').value='';openModal('lostModal');}
-async function markLost(){if(demoGuard())return;if(!lostLeadId)return;const r=document.getElementById('lost_reason').value;const n=document.getElementById('lost_notes').value.trim();await sbPatch('pipeline',lostLeadId,{stage:'closed_lost',lost_reason:r,closed_at:new Date().toISOString()});await sbPost('lead_activities',{pipeline_id:lostLeadId,type:'note',summary:`Lost: ${r}${n?' — '+n:''}`,outcome:'negative',logged_by:currentUser?.name?.toUpperCase()});closeModal('lostModal');closeDetail();toast('Marked lost');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function markLost(){if(demoGuard())return;if(!lostLeadId)return;const r=document.getElementById('lost_reason').value;const n=document.getElementById('lost_notes').value.trim();await sbPatch('pipeline',lostLeadId,{stage:'closed_lost',lost_reason:r,closed_at:new Date().toISOString()});await sbPost('lead_activities',{pipeline_id:lostLeadId,type:'note',summary:`Lost: ${r}${n?' — '+n:''}`,outcome:'negative',logged_by:currentUser?.name?.toUpperCase()});closeModal('lostModal');closeDetail();auditLog('MARK_LOST',`Lead ID:${lostLeadId} — ${r}`);toast('Marked lost');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== CSV IMPORT ===== */
 function openCSVImport(){csvData=null;document.getElementById('csvPreview').style.display='none';document.getElementById('csvImportBtn').style.display='none';document.getElementById('csvFile').value='';openModal('csvModal');}
 function handleCSVDrop(e){e.preventDefault();e.currentTarget.classList.remove('dragover');if(e.dataTransfer.files.length)handleCSVFile(e.dataTransfer.files[0]);}
-function handleCSVFile(file){if(!file)return;const reader=new FileReader();reader.onload=e=>{const lines=e.target.result.split('\n').filter(l=>l.trim());if(lines.length<2){toast('Empty CSV','error');return;}const headers=lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/['"]/g,''));const rows=lines.slice(1).map(line=>{const vals=line.split(',').map(v=>v.trim().replace(/^["']|["']$/g,''));const obj={};headers.forEach((h,i)=>obj[h]=vals[i]||'');return obj;}).filter(r=>r.name||r.business||r.company);
+function handleCSVFile(file){if(!file)return;if(file.size>1048576){toast('File too large — max 1MB','error');return;}const reader=new FileReader();reader.onload=e=>{const lines=e.target.result.split('\n').filter(l=>l.trim());if(lines.length<2){toast('Empty CSV','error');return;}if(lines.length>501){toast('Too many rows — max 500 leads','error');return;}const headers=lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/['"]/g,''));const rows=lines.slice(1).map(line=>{const vals=line.split(',').map(v=>v.trim().replace(/^["']|["']$/g,''));const obj={};headers.forEach((h,i)=>obj[h]=vals[i]||'');return obj;}).filter(r=>r.name||r.business||r.company);
 csvData=rows.map(r=>({name:r.name||r.business||r.company||'',contact_name:r.contact||r.contact_name||r.person||'',contact_phone:r.phone||r.contact_phone||r.mobile||r.tel||'',contact_email:r.email||r.contact_email||'',industry:r.industry||r.sector||r.category||'',source:r.source||'other'}));
 document.getElementById('csvPreview').style.display='block';document.getElementById('csvPreview').innerHTML=`<div style="font-size:13px;font-weight:600;margin-bottom:8px">${csvData.length} leads found</div><div style="max-height:200px;overflow-y:auto;font-size:12px;color:var(--text-2)">${csvData.slice(0,10).map(r=>`<div style="padding:4px 0;border-bottom:1px solid var(--border)">${esc(r.name)} ${r.contact_phone?' · '+esc(r.contact_phone):''}</div>`).join('')}${csvData.length>10?`<div style="color:var(--text-3);padding:4px 0">+${csvData.length-10} more</div>`:''}</div>`;
 document.getElementById('csvImportBtn').style.display='inline-flex';};reader.readAsText(file);}
-async function importCSV(){if(demoGuard())return;if(!csvData||!csvData.length)return;let imported=0;for(const row of csvData){const data={name:row.name,contact_name:row.contact_name||null,contact_phone:row.contact_phone||null,contact_email:row.contact_email||null,industry:row.industry||null,source:row.source||'other',stage:'new_lead',status:'active',owner:currentUser?.code||'th',estimated_value:null,temperature:'cold'};const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);imported++;}}closeModal('csvModal');toast(`${imported} leads imported! 🎯`);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function importCSV(){if(demoGuard())return;if(!csvData||!csvData.length)return;let imported=0;for(const row of csvData){const data={name:row.name,contact_name:row.contact_name||null,contact_phone:row.contact_phone||null,contact_email:row.contact_email||null,industry:row.industry||null,source:row.source||'other',stage:'new_lead',status:'active',owner:currentUser?.code||'th',estimated_value:null,temperature:'cold'};const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);imported++;}}closeModal('csvModal');auditLog('IMPORT_CSV',`${imported} leads imported`);toast(`${imported} leads imported! 🎯`);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== ANALYTICS ===== */
+let analyticsPeriod='all';
 function renderAnalytics(){
-const total=allLeads.length;const won=allLeads.filter(l=>l.stage==='closed_won');const lost=allLeads.filter(l=>l.stage==='closed_lost');const active=activeLeads();
+const pg=document.getElementById('page-analytics');
+const periodStart=analyticsPeriod==='7d'?new Date(Date.now()-7*864e5):analyticsPeriod==='30d'?new Date(Date.now()-30*864e5):analyticsPeriod==='90d'?new Date(Date.now()-90*864e5):null;
+const pLeads=periodStart?allLeads.filter(l=>new Date(l.created_at)>=periodStart):allLeads;
+const pActs=periodStart?allActivities.filter(a=>new Date(a.created_at)>=periodStart):allActivities;
+const total=pLeads.length;const won=pLeads.filter(l=>l.stage==='closed_won');const lost=pLeads.filter(l=>l.stage==='closed_lost');const active=pLeads.filter(l=>!['closed_won','closed_lost'].includes(l.stage));
 const conv=total>0?((won.length/total)*100).toFixed(1):0;
 const avgClose=won.length?Math.round(won.reduce((s,l)=>s+(l.closed_at?daysSince(l.created_at)-daysSince(l.closed_at):daysSince(l.created_at)),0)/won.length):0;
 const pipeVal=active.reduce((s,l)=>s+(l.estimated_value||0),0);
-const funnel=ALL_STAGES.map(s=>({...s,count:allLeads.filter(l=>l.stage===s.key).length}));const mx=Math.max(...funnel.map(f=>f.count),1);
-const sources=Object.keys(SOURCES).map(k=>({k,l:SOURCES[k],c:allLeads.filter(l=>l.source===k).length})).filter(s=>s.c>0).sort((a,b)=>b.c-a.c);
-const actTypes=['call','message','meeting','email','proposal','note'].map(t=>({t,c:allActivities.filter(a=>a.type===t).length})).filter(t=>t.c>0);
-const pg=document.getElementById('page-analytics');
-pg.innerHTML=`<div class="page-header"><div class="page-label">Analytics</div><h1>Performance</h1></div>
+const funnel=ALL_STAGES.map(s=>({...s,count:pLeads.filter(l=>l.stage===s.key).length}));const mx=Math.max(...funnel.map(f=>f.count),1);
+const sources=Object.keys(SOURCES).map(k=>({k,l:SOURCES[k],c:pLeads.filter(l=>l.source===k).length})).filter(s=>s.c>0).sort((a,b)=>b.c-a.c);
+const actTypes=['call','message','meeting','email','proposal','note'].map(t=>({t,c:pActs.filter(a=>a.type===t).length})).filter(t=>t.c>0);
+const stageFlow=STAGES.slice(0,-1).map((s,i)=>{const next=STAGES[i+1];const inStage=allLeads.filter(l=>ALL_STAGES.findIndex(x=>x.key===l.stage)>=i+1).length;const fromStage=allLeads.filter(l=>ALL_STAGES.findIndex(x=>x.key===l.stage)>=i).length;return{from:s.label,to:next.label,rate:fromStage>0?((inStage/fromStage)*100).toFixed(0):0};});
+pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="page-label">Analytics</div><h1>Performance</h1></div><div style="display:flex;gap:6px">${[{v:'all',l:'All Time'},{v:'7d',l:'7 Days'},{v:'30d',l:'30 Days'},{v:'90d',l:'90 Days'}].map(p=>`<button class="btn btn-sm ${analyticsPeriod===p.v?'btn-primary':'btn-secondary'}" onclick="analyticsPeriod='${p.v}';renderAnalytics()">${p.l}</button>`).join('')}</div></div>
 <div class="stats-row">
 <div class="stat-card green"><div class="stat-icon" style="color:var(--green)">${icon('trending',20)}</div><div class="stat-label">Conversion Rate</div><div class="stat-val">${conv}%</div><div class="stat-sub">${won.length} won / ${total}</div></div>
 <div class="stat-card blue"><div class="stat-icon" style="color:var(--blue)">${icon('clock',20)}</div><div class="stat-label">Avg Days to Close</div><div class="stat-val">${avgClose}</div><div class="stat-sub">days</div></div>
@@ -1082,6 +1275,7 @@ pg.innerHTML=`<div class="page-header"><div class="page-label">Analytics</div><h
 <div class="chart-card"><h3>Key Metrics</h3><div class="metric-row"><span class="mr-label">Active Leads</span><span class="mr-val">${active.length}</span></div><div class="metric-row"><span class="mr-label">Pipeline Value</span><span class="mr-val">${fmtValue(pipeVal)}</span></div><div class="metric-row"><span class="mr-label">Weighted Value</span><span class="mr-val">${fmtValue(Math.round(active.reduce((s,l)=>s+(l.estimated_value||0)*(WIN_PROB[l.stage]||10)/100,0)))}</span></div><div class="metric-row"><span class="mr-label">Avg Score</span><span class="mr-val">${active.length?Math.round(active.reduce((s,l)=>s+calcScore(l),0)/active.length):0}</span></div><div class="metric-row"><span class="mr-label">Hot Leads</span><span class="mr-val">${active.filter(l=>l.is_hot).length}</span></div><div class="metric-row"><span class="mr-label">Overdue FUs</span><span class="mr-val" style="color:var(--red)">${allFollowUps.filter(f=>!f.is_done&&f.due_date<today()).length}</span></div></div>
 <div class="chart-card"><h3>Lead Sources</h3>${sources.map(s=>`<div class="funnel-bar"><div class="fb-label">${s.l}</div><div class="fb-track"><div class="fb-fill" style="width:${(s.c/Math.max(...sources.map(x=>x.c),1))*100}%;background:var(--accent)">${s.c}</div></div></div>`).join('')}${!sources.length?'<div class="section-empty">No data</div>':''}</div>
 <div class="chart-card"><h3>Activity Types</h3>${actTypes.map(t=>`<div class="funnel-bar"><div class="fb-label">${ACT_ICONS[t.t]||''} ${t.t}</div><div class="fb-track"><div class="fb-fill" style="width:${(t.c/Math.max(...actTypes.map(x=>x.c),1))*100}%;background:var(--blue)">${t.c}</div></div></div>`).join('')}${!actTypes.length?'<div class="section-empty">No data</div>':''}</div>
+<div class="chart-card"><h3>Stage Conversion Rates</h3>${stageFlow.map(s=>`<div class="metric-row"><span class="mr-label">${s.from} → ${s.to}</span><span class="mr-val" style="color:${parseInt(s.rate)>=60?'var(--green)':parseInt(s.rate)>=30?'var(--amber)':'var(--red)'}">${s.rate}%</span></div>`).join('')}</div>
 <div class="chart-card"><h3>Owner Performance</h3>${(()=>{const nameMap={'th':'THULAIB','sh':'SHIARA','pv':'PAVITH','nv':'NIRVANA'};return['th','sh','pv','nv'].map(o=>{const ol=allLeads.filter(l=>{if(!l.owner)return false;const ow=l.owner.toLowerCase();return ow===o||ow===nameMap[o].toLowerCase();});const ow=ol.filter(l=>l.stage==='closed_won');const oa=allActivities.filter(a=>a.logged_by===nameMap[o]);return`<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)"><div style="font-size:14px;font-weight:600;margin-bottom:8px">${ownerAvatar(o)} ${ownerLabel(o)}</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px;color:var(--text-2);text-align:center"><div><span style="font-size:20px;font-weight:800;color:var(--text);display:block;font-family:Poppins">${ol.length}</span>Leads</div><div><span style="font-size:20px;font-weight:800;color:var(--green);display:block;font-family:Poppins">${ow.length}</span>Won</div><div><span style="font-size:20px;font-weight:800;color:var(--accent);display:block;font-family:Poppins">${oa.length}</span>Activities</div></div></div>`;}).join('');})()}</div>
 <div class="chart-card"><h3>Loss Reasons</h3>${lost.length?Object.entries(lost.reduce((a,l)=>{const r=l.lost_reason||'unknown';a[r]=(a[r]||0)+1;return a;},{})).sort((a,b)=>b[1]-a[1]).map(([r,c])=>`<div class="metric-row"><span class="mr-label">${r}</span><span class="mr-val">${c}</span></div>`).join(''):'<div class="section-empty">No lost leads</div>'}</div>
 </div>`;
@@ -1217,7 +1411,7 @@ if(!el)return;
 el.innerHTML='<div style="color:var(--text-3);font-size:13px;padding:32px 0;text-align:center;">Scanning...</div>';
 if(btn){btn.textContent='↻ Scanning...';btn.style.opacity='0.6';btn.style.pointerEvents='none';}
 try{
-const resp=await fetch(`${SB_URL.replace('/rest/v1','')}/rest/v1/agent_alerts?or=(system.eq.leads,system.eq.all)&order=created_at.desc&limit=50&select=*`,{headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}});
+const resp=await fetch(`${SB_URL.replace('/rest/v1','')}/rest/v1/agent_alerts?or=(system.eq.leads,system.eq.all)&order=created_at.desc&limit=50&select=*`,{headers:getHeaders()});
 const alerts=resp.ok?await resp.json():[];
 _leadsAlertData=alerts||[];
 renderAgentCards(alerts);
@@ -1249,12 +1443,19 @@ el.innerHTML='<div class="agents-grid">'+cards+'</div>';
 }
 function renderAgents(){
 const pg=document.getElementById('page-agents');
+const smartAlerts=generateSmartAlerts();
+const SEV_COLOR={critical:'#f87171',warning:'#fbbf24',info:'#60a5fa'};
 pg.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:24px">
-<div><div class="page-header" style="margin-bottom:0"><div class="page-label">System</div><h1>⚡ Agents</h1><div class="page-sub">Live alerts from all BB agents</div></div></div>
-<div style="display:flex;gap:8px">
+<div><div class="page-header" style="margin-bottom:0"><div class="page-label">System</div><h1>⚡ Agents & AI</h1><div class="page-sub">Smart alerts, AI insights & agent monitors</div></div></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn btn-sm btn-secondary" onclick="setGeminiKey()">🔑 API Key</button>
+<button class="btn btn-sm btn-secondary" onclick="aiAnalyzeLeads()">🤖 AI Insights</button>
 <button id="agents-refresh-btn" onclick="loadLeadsAgentAlerts()" style="padding:8px 14px;border-radius:8px;background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer">↻ Refresh</button>
 <button onclick="markAllLeadsAlertsRead()" style="padding:8px 14px;border-radius:8px;background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer">Mark all read</button>
 </div></div>
+<div id="aiInsightsBox" style="display:none;background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius-lg);padding:18px;margin-bottom:20px"><h4 style="font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:700">🤖 AI Pipeline Analysis</h4></div>
+${smartAlerts.length?`<div class="section" style="margin-bottom:20px"><div class="section-head"><h3>🧠 Smart Alerts</h3><span class="count">${smartAlerts.length}</span></div><div class="section-body">${smartAlerts.map(a=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);border-left:3px solid ${SEV_COLOR[a.sev]};cursor:${a.leadId?'pointer':'default'}" ${a.leadId?`onclick="openDetail(${a.leadId})"`:''}><span style="font-size:18px;flex-shrink:0">${a.icon}</span><div style="flex:1"><div style="font-size:12px;color:var(--text)">${esc(a.msg)}</div></div><span style="font-size:9px;font-weight:700;color:${SEV_COLOR[a.sev]};text-transform:uppercase">${a.sev}</span></div>`).join('')}</div></div>`:'<div style="background:var(--green-soft);border:1px solid var(--green);border-radius:var(--radius-lg);padding:18px;margin-bottom:20px;text-align:center;font-size:13px;color:var(--green)">✅ All clear — no smart alerts. Your pipeline is healthy!</div>'}
+<h3 style="font-size:14px;font-weight:700;margin-bottom:12px">Agent Monitors</h3>
 <div id="leads-agents-list"><div style="color:var(--text-3);font-size:13px;padding:24px 0;text-align:center;">Loading...</div></div>`;
 loadLeadsAgentAlerts();
 }
@@ -1272,7 +1473,7 @@ return`<div id="leads-alert-${a.id}" style="background:var(--surface-2);border:1
 <span style="font-size:10px;font-weight:700;color:${sc};text-transform:uppercase">${a.severity||'info'}</span>
 ${unread?`<span style="font-size:9px;font-weight:700;background:${sc};color:#000;padding:1px 6px;border-radius:4px">NEW</span>`:''}
 <span style="font-size:10px;color:var(--text-3);margin-left:auto">${ts}</span></div>
-<div style="font-size:12.5px;white-space:pre-wrap;line-height:1.55;color:var(--text)">${(a.message||'').replace(/</g,'&lt;')}</div></div>`;
+<div style="font-size:12.5px;white-space:pre-wrap;line-height:1.55;color:var(--text)">${esc(a.message||'')}</div></div>`;
 }).join('');
 openModal('agentDrawerModal');
 const m=document.getElementById('agentDrawerModal');
@@ -1283,13 +1484,13 @@ if(m){m.querySelector('.modal-body').innerHTML=`<div style="display:flex;align-i
 }
 async function markLeadsAlertRead(id){
 const card=document.getElementById('leads-alert-'+id);if(!card)return;
-try{await fetch(`${SB_URL.replace('/rest/v1','')}/rest/v1/agent_alerts?id=eq.${id}`,{method:'PATCH',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({read_at:new Date().toISOString()})});
+try{await fetch(`${SB_URL.replace('/rest/v1','')}/rest/v1/agent_alerts?id=eq.${id}`,{method:'PATCH',headers:{...getHeaders(),Prefer:'return=minimal'},body:JSON.stringify({read_at:new Date().toISOString()})});
 card.style.borderLeftColor='var(--border)';const badge=card.querySelector('span[style*="NEW"]');if(badge)badge.remove();
 updateLeadsAgentsBadge(document.querySelectorAll('[id^="leads-alert-"] span[style*="NEW"]').length);
 }catch(e){}
 }
 async function markAllLeadsAlertsRead(){
-try{await fetch(`${SB_URL.replace('/rest/v1','')}/rest/v1/agent_alerts?read_at=is.null&or=(system.eq.leads,system.eq.all)`,{method:'PATCH',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({read_at:new Date().toISOString()})});
+try{await fetch(`${SB_URL.replace('/rest/v1','')}/rest/v1/agent_alerts?read_at=is.null&or=(system.eq.leads,system.eq.all)`,{method:'PATCH',headers:{...getHeaders(),Prefer:'return=minimal'},body:JSON.stringify({read_at:new Date().toISOString()})});
 document.querySelectorAll('[id^="leads-alert-"]').forEach(c=>c.style.borderLeftColor='var(--border)');
 document.querySelectorAll('[id^="leads-alert-"] span[style*="NEW"]').forEach(b=>b.remove());
 updateLeadsAgentsBadge(0);
@@ -1300,7 +1501,7 @@ const b=document.getElementById('sbAgentsBadge');if(b){b.textContent=count;b.sty
 }
 
 /* ===== INIT ===== */
-(function(){const u=localStorage.getItem('bb_leads_user');if(u){const parsed=JSON.parse(u);currentUser=parsed;if(parsed.demo)isDemoMode=true;showApp();}else{document.getElementById('loginScreen').style.display='flex';}})();
+(async function(){const u=localStorage.getItem('bb_leads_user');if(u){const parsed=JSON.parse(u);const SESSION_MAX=8*60*60*1000;if(parsed.loginAt&&(Date.now()-parsed.loginAt)>SESSION_MAX){localStorage.removeItem('bb_leads_user');if(sbClient)await sbClient.auth.signOut().catch(()=>{});document.getElementById('loginScreen').style.display='flex';return;}if(sbClient&&!parsed.demo){const{data}=await sbClient.auth.getSession();if(data?.session)authToken=data.session.access_token;}currentUser=parsed;if(parsed.demo)isDemoMode=true;showApp();}else{document.getElementById('loginScreen').style.display='flex';}})();
 </script>
 </body>
 </html>
