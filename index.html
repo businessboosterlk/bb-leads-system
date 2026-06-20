@@ -161,8 +161,8 @@ select{cursor:pointer}
 .section-head .count{font-size:11px;color:var(--text-3);background:var(--surface-2);padding:2px 10px;border-radius:10px}
 .section-body{padding:0}
 .section-empty{padding:40px 32px;text-align:center;color:var(--text-3);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:8px}
-.section-empty::before{content:'📋';font-size:28px;opacity:.5}
-.pipe-col-body .section-empty::before{content:'🎯'}
+.section-empty::before{content:'';display:block;width:28px;height:28px;opacity:.5;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2'/%3E%3Crect x='8' y='2' width='8' height='4' rx='1'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2'/%3E%3Crect x='8' y='2' width='8' height='4' rx='1'/%3E%3C/svg%3E") center/contain no-repeat}
+.pipe-col-body .section-empty::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Ccircle cx='12' cy='12' r='6'/%3E%3Ccircle cx='12' cy='12' r='2'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Ccircle cx='12' cy='12' r='6'/%3E%3Ccircle cx='12' cy='12' r='2'/%3E%3C/svg%3E")}
 .skeleton{background:linear-gradient(90deg,var(--surface-2) 25%,var(--surface-3) 50%,var(--surface-2) 75%);background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:var(--radius);height:16px;margin-bottom:8px}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 @keyframes shake{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-4px)}20%,40%,60%,80%{transform:translateX(4px)}}
@@ -594,9 +594,9 @@ input,select,textarea{font-size:16px;padding:12px 14px;border-radius:10px}
 <div class="sb-footer">
 <button class="sb-theme" onclick="toggleTheme()"><span id="themeIcon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span> <span id="themeLabel">Light mode</span></button>
 <div class="sb-user"><div class="sb-avatar" id="userAvatar">TH</div><div><div class="sb-uname" id="userName">Thulaib</div><div class="sb-urole" id="userRole">CEO</div></div></div>
-<button class="sb-theme" onclick="setGeminiKey()" style="margin-bottom:0"><span>🤖</span> <span id="aiKeyStatus">Set AI Key</span></button>
-<button class="sb-theme" onclick="showAuditLog()" style="margin-bottom:0"><span>📋</span> Audit Log</button>
-<button class="sb-theme" onclick="openModal('privacyModal')" style="margin-bottom:0"><span>🔒</span> Privacy Policy</button>
+<button class="sb-theme" onclick="setGeminiKey()" style="margin-bottom:0"><span style="display:inline-flex;color:var(--accent)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 014 4v1h2a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V9a2 2 0 012-2h2V6a4 4 0 014-4z"/><circle cx="9" cy="13" r="1.5" fill="currentColor" stroke="none"/><circle cx="15" cy="13" r="1.5" fill="currentColor" stroke="none"/><path d="M9 17h6"/></svg></span> <span id="aiKeyStatus">Set AI Key</span></button>
+<button class="sb-theme" onclick="showAuditLog()" style="margin-bottom:0"><span style="display:inline-flex;color:var(--text-3)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span> Audit Log</button>
+<button class="sb-theme" onclick="openModal('privacyModal')" style="margin-bottom:0"><span style="display:inline-flex;color:var(--text-3)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span> Privacy Policy</button>
 <button class="sb-signout" onclick="signOut()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
 </div>
 </div>
@@ -664,9 +664,9 @@ input,select,textarea{font-size:16px;padding:12px 14px;border-radius:10px}
 
 <!-- CONVERT MODAL -->
 <div class="modal-overlay" id="convertModal"><div class="modal">
-<div class="modal-head"><h3>🎉 Convert to Client</h3><button class="modal-close" onclick="closeModal('convertModal')">✕</button></div>
+<div class="modal-head"><h3>Convert to Client</h3><button class="modal-close" onclick="closeModal('convertModal')">✕</button></div>
 <div class="modal-body"><div class="form-row"><label>Client Name</label><input id="cv_name"></div><div class="form-row2"><div class="form-row"><label>Package</label><select id="cv_package"><option value="Spark">Spark (90K)</option><option value="Ignite">Ignite (150K)</option><option value="Blaze">Blaze (230K)</option><option value="SEO Essential">SEO Essential (40K)</option><option value="SEO+Maintenance">SEO+Maintenance (50K)</option></select></div><div class="form-row"><label>MRR (LKR)</label><input type="number" id="cv_mrr" value="90000"></div></div><div class="form-row2"><div class="form-row"><label>Industry</label><input id="cv_industry"></div><div class="form-row"><label>Start Date</label><input type="date" id="cv_start"></div></div><div class="form-row"><label>Contact</label><input id="cv_contact"></div></div>
-<div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('convertModal')">Cancel</button><button class="btn btn-success" onclick="convertToClient()">🎉 Convert</button></div>
+<div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('convertModal')">Cancel</button><button class="btn btn-success" onclick="convertToClient()">Convert</button></div>
 </div></div>
 
 <!-- LOST MODAL -->
@@ -746,7 +746,7 @@ const SOURCES={social_media:'SM',website:'Web',referral:'Ref',cold_call:'Cold',w
 
 /* ===== AI CONFIG ===== */
 let GEMINI_KEY=localStorage.getItem('bb_gemini_key')||'';
-const GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent';
 async function askGemini(prompt,maxTokens=500){if(!GEMINI_KEY){toast('Set your Gemini API key in Settings','error');return null;}try{const r=await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:maxTokens,temperature:0.7}})});if(!r.ok){const e=await r.text();console.error('Gemini error:',e);toast('AI request failed','error');return null;}const d=await r.json();return d.candidates?.[0]?.content?.parts?.[0]?.text||null;}catch(e){console.error('Gemini error:',e);toast('AI connection failed','error');return null;}}
 function setGeminiKey(){const key=prompt('Enter your free Google Gemini API key:\n(Get one at ai.google.dev)');if(key!==null){GEMINI_KEY=key.trim();localStorage.setItem('bb_gemini_key',GEMINI_KEY);toast(GEMINI_KEY?'API key saved ✓':'API key cleared');updateAIStatus();}}
 function updateAIStatus(){const el=document.getElementById('aiKeyStatus');if(el)el.textContent=GEMINI_KEY?'AI Connected':'Set AI Key';}
@@ -774,6 +774,24 @@ star:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="cu
 check:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>`,
 plus:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
 import:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>`,
+ai:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 014 4v1h2a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V9a2 2 0 012-2h2V6a4 4 0 014-4z"/><circle cx="9" cy="13" r="1.5" fill="currentColor" stroke="none"/><circle cx="15" cy="13" r="1.5" fill="currentColor" stroke="none"/><path d="M9 17h6"/></svg>`,
+shield:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+clipboard:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>`,
+target:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
+sparkle:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8L12 2z"/></svg>`,
+lock:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>`,
+export:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
+warning:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+pin:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4.5L7.5 12 3 16.5V21h4.5L12 16.5 19.5 9"/><path d="M15 4.5l4.5 4.5"/><line x1="9" y1="15" x2="4.5" y2="19.5"/></svg>`,
+bolt:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+key:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.78 7.78 5.5 5.5 0 017.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>`,
+brain:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 015 5c0 .7-.1 1.4-.4 2a5 5 0 012.4 4.3c0 2.8-2.2 5-5 5H12m0-16.3a5 5 0 00-5 5c0 .7.1 1.4.4 2A5 5 0 005 11.3c0 2.8 2.2 5 5 5H12m0-14.3v16.3"/></svg>`,
+lightbulb:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14"/></svg>`,
+checkcircle:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+sleep:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h2l2-4 3 8 2-4h2"/><path d="M17 4l3 0"/><path d="M18 7l2 0"/><path d="M19 10l1 0"/></svg>`,
+xcircle:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+bell:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>`,
+download:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
 };return icons[n]||icons.note;}
 
 const ACT_ICONS={call:icon('phone',15),message:icon('message',15),meeting:icon('meeting',15),email:icon('email',15),proposal:icon('proposal',15),note:icon('note',15),follow_up:icon('clock',15)};
@@ -874,14 +892,14 @@ if(localStorage.getItem('bb_leads_theme')==='light')toggleTheme();
 
 /* ===== BROWSER NOTIFICATIONS ===== */
 function requestNotifPermission(){if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();}
-function fireNotif(title,body){if('Notification' in window&&Notification.permission==='granted')new Notification(title,{body,icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔥</text></svg>'});}
+function fireNotif(title,body){if('Notification' in window&&Notification.permission==='granted')new Notification(title,{body,icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23f97316" stroke-width="2"><path d="M12 2c0 0-6 8-6 13a6 6 0 0012 0c0-5-6-13-6-13z"/></svg>'});}
 
 /* ===== COMMAND PALETTE ===== */
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openCmd();}if(e.key==='Escape'){closeCmd();closeDetail();}});
 function openCmd(){document.getElementById('cmdOverlay').classList.add('open');const inp=document.getElementById('cmdInput');inp.value='';inp.focus();renderCmd();}
 function closeCmd(){document.getElementById('cmdOverlay').classList.remove('open');}
 function renderCmd(){const q=(document.getElementById('cmdInput').value||'').toLowerCase();const el=document.getElementById('cmdResults');let items=[];
-if(!q){items=[{icon:icon('plus',16),label:'Add new lead',action:'openAddLead()'},{icon:icon('phone',16),label:'Log activity',action:'pickLeadForActivity()'},{icon:icon('chart',16),label:'Go to Dashboard',action:"nav('dashboard')"},{icon:icon('fire',16),label:'Go to Pipeline',action:"nav('pipeline')"},{icon:icon('users',16),label:'Go to All Leads',action:"nav('leads')"},{icon:icon('trending',16),label:'Go to Analytics',action:"nav('analytics')"},{icon:icon('import',16),label:'Import CSV',action:"openCSVImport()"},{icon:'📥',label:'Export leads to CSV',action:"exportLeadsCSV()"}];}
+if(!q){items=[{icon:icon('plus',16),label:'Add new lead',action:'openAddLead()'},{icon:icon('phone',16),label:'Log activity',action:'pickLeadForActivity()'},{icon:icon('chart',16),label:'Go to Dashboard',action:"nav('dashboard')"},{icon:icon('fire',16),label:'Go to Pipeline',action:"nav('pipeline')"},{icon:icon('users',16),label:'Go to All Leads',action:"nav('leads')"},{icon:icon('trending',16),label:'Go to Analytics',action:"nav('analytics')"},{icon:icon('import',16),label:'Import CSV',action:"openCSVImport()"},{icon:icon('download',16),label:'Export leads to CSV',action:"exportLeadsCSV()"}];}
 else{const matched=allLeads.filter(l=>l.name?.toLowerCase().includes(q)||l.contact_name?.toLowerCase().includes(q)||l.industry?.toLowerCase().includes(q)).slice(0,8);items=matched.map(l=>({icon:icon('users',16),label:l.name+(l.contact_name?' · '+l.contact_name:''),hint:stageInfo(l.stage).label,action:`openDetail(${l.id})`}));if(!items.length)items=[{icon:icon('alert',16),label:'No leads found',action:''}];}
 const CMD_ACTIONS={'openAddLead()':()=>openAddLead(),'pickLeadForActivity()':()=>pickLeadForActivity(),"nav('dashboard')":()=>nav('dashboard'),"nav('pipeline')":()=>nav('pipeline'),"nav('leads')":()=>nav('leads'),"nav('analytics')":()=>nav('analytics'),"openCSVImport()":()=>openCSVImport(),"exportLeadsCSV()":()=>exportLeadsCSV()};
 el.innerHTML=items.map((i,idx)=>`<div class="cmd-item" data-cmd="${idx}"><div class="cmd-icon">${i.icon}</div><div class="cmd-label">${esc(i.label)}</div>${i.hint?`<div class="cmd-hint">${i.hint}</div>`:''}</div>`).join('');el.querySelectorAll('.cmd-item').forEach((el,idx)=>{el.onclick=()=>{const fn=items[idx].action;if(fn){if(CMD_ACTIONS[fn])CMD_ACTIONS[fn]();else if(fn.startsWith('openDetail('))openDetail(parseInt(fn.match(/\d+/)[0]));}closeCmd();};});}
@@ -1022,7 +1040,7 @@ async function completeFU(id){if(demoGuard())return;const res=await sbPatch('lea
 function renderPipeline(){
 const pg=document.getElementById('page-pipeline');
 const allStgs=[...STAGES,...CLOSED_STAGES];
-pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="page-label">Sales</div><h1>Pipeline Board</h1></div><div style="display:flex;gap:8px"><button class="btn btn-secondary" onclick="openCSVImport()">📄 Import</button><button class="btn btn-primary" onclick="openAddLead()">+ Add Lead</button></div></div>
+pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="page-label">Sales</div><h1>Pipeline Board</h1></div><div style="display:flex;gap:8px"><button class="btn btn-secondary" onclick="openCSVImport()">${icon('import',14)} Import</button><button class="btn btn-primary" onclick="openAddLead()">+ Add Lead</button></div></div>
 <div class="pipeline-board">${allStgs.map(stg=>{
 const leads=allLeads.filter(l=>l.stage===stg.key).sort((a,b)=>calcScore(b)-calcScore(a));
 const isClosed=['closed_won','closed_lost','on_hold'].includes(stg.key);
@@ -1037,7 +1055,7 @@ ${l.is_hot?'<div class="pc-hot"></div>':''}
 <div class="pc-contact">${esc(l.contact_name||'')}${l.stage_changed_at?` · <span class="stage-duration">${daysSince(l.stage_changed_at)}d in stage</span>`:''}</div>
 <div class="pc-meta">${sourceBadge(l.source)} ${ownerAvatar(l.owner)} ${l.estimated_value?`<span class="pc-value">${fmtValue(l.estimated_value)}</span>`:''}</div>
 ${stale?`<div class="pc-warn badge badge-${dsc>=10?'red':'amber'}">⚠ ${dsc}d silent</div>`:''}
-${fu?`<div style="font-size:10px;color:var(--amber);margin-top:4px">⏰ ${fu.due_date<=today()?'Due TODAY':fu.due_date}</div>`:''}
+${fu?`<div style="font-size:10px;color:var(--amber);margin-top:4px">${icon('clock',14)} ${fu.due_date<=today()?'Due TODAY':fu.due_date}</div>`:''}
 ${(l.tags||[]).length?`<div class="lead-tags">${l.tags.slice(0,3).map(t=>`<span class="lead-tag">${esc(t)}</span>`).join('')}</div>`:''}
 </div>`;}).join('')}
 ${!leads.length?'<div class="section-empty" style="padding:20px;font-size:11px">Empty</div>':''}
@@ -1053,7 +1071,7 @@ auditLog('MOVE_STAGE',`Lead ID:${did} → ${stageInfo(stage).label}`);toast('Mov
 /* ===== ALL LEADS TABLE ===== */
 function renderLeads(){
 const pg=document.getElementById('page-leads');
-pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="page-label">CRM</div><h1>All Leads <span style="color:var(--text-3);font-weight:500;font-size:16px">${allLeads.length}</span></h1></div><div style="display:flex;gap:8px"><button class="btn btn-secondary export-btn" onclick="exportLeadsCSV()">📥 Export</button><button class="btn btn-secondary" onclick="openCSVImport()">📄 Import</button><button class="btn btn-primary" onclick="openAddLead()">+ Add Lead</button></div></div>
+pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="page-label">CRM</div><h1>All Leads <span style="color:var(--text-3);font-weight:500;font-size:16px">${allLeads.length}</span></h1></div><div style="display:flex;gap:8px"><button class="btn btn-secondary export-btn" onclick="exportLeadsCSV()">${icon('download',14)} Export</button><button class="btn btn-secondary" onclick="openCSVImport()">${icon('import',14)} Import</button><button class="btn btn-primary" onclick="openAddLead()">+ Add Lead</button></div></div>
 <div class="leads-toolbar"><div class="search-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search leads..." id="leadSearch" oninput="filterLeadsTable()"></div>
 <select id="filterStage" onchange="filterLeadsTable()"><option value="">All Stages</option>${ALL_STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('')}</select>
 <select id="filterSource" onchange="filterLeadsTable()"><option value="">All Sources</option>${Object.entries(SOURCES).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select>
@@ -1071,7 +1089,7 @@ const fw=document.getElementById('filterOwner')?.value||'';
 let filtered=allLeads.filter(l=>{if(q&&!l.name?.toLowerCase().includes(q)&&!l.contact_name?.toLowerCase().includes(q)&&!l.industry?.toLowerCase().includes(q))return false;if(fs&&l.stage!==fs)return false;if(fo&&l.source!==fo)return false;if(fw&&l.owner?.toLowerCase()!==fw.toLowerCase())return false;return true;});
 if(leadSortCol){const dir=leadSortDir==='asc'?1:-1;filtered.sort((a,b)=>{let va,vb;switch(leadSortCol){case 'name':va=(a.name||'').toLowerCase();vb=(b.name||'').toLowerCase();break;case 'stage':va=a.stage||'';vb=b.stage||'';break;case 'source':va=a.source||'';vb=b.source||'';break;case 'value':va=parseFloat(a.estimated_value)||0;vb=parseFloat(b.estimated_value)||0;return(va-vb)*dir;case 'score':va=calcScore(a);vb=calcScore(b);return(va-vb)*dir;case 'owner':va=(a.owner||'').toLowerCase();vb=(b.owner||'').toLowerCase();break;case 'last':va=a.last_contact_at||a.created_at||'';vb=b.last_contact_at||b.created_at||'';break;case 'days':va=daysSinceContact(a);vb=daysSinceContact(b);return(va-vb)*dir;default:return 0;}if(va<vb)return -dir;if(va>vb)return dir;return 0;});}
 if(!filtered.length){document.getElementById('leadsBody').innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-3)">No leads match your filters</td></tr>';return;}
-document.getElementById('leadsBody').innerHTML=filtered.map(l=>{const sc=calcScore(l);const dsc=daysSinceContact(l);return `<tr onclick="openDetail(${l.id})"><td><div class="td-name">${l.is_hot?'🔥 ':''}${esc(l.name)}</div><div class="td-phone">${esc(l.contact_name||'')}${l.contact_phone?' · '+esc(l.contact_phone):''}</div></td><td>${stageBadge(l.stage)}</td><td>${sourceBadge(l.source)}</td><td style="font-family:Poppins;font-weight:600;font-size:12px">${fmtValue(l.estimated_value)}</td><td><span class="badge ${scoreClass(sc)}">${sc}</span></td><td>${ownerAvatar(l.owner)}</td><td style="font-size:12px;color:var(--text-3)">${fmtDate(l.last_contact_at||l.created_at)}</td><td style="color:${dsc>=10?'var(--red)':dsc>=5?'var(--amber)':'var(--text-3)'};font-weight:${dsc>=5?'600':'400'}">${dsc}d</td></tr>`;}).join('');
+document.getElementById('leadsBody').innerHTML=filtered.map(l=>{const sc=calcScore(l);const dsc=daysSinceContact(l);return `<tr onclick="openDetail(${l.id})"><td><div class="td-name">${l.is_hot?icon('fire',14)+' ':''}${esc(l.name)}</div><div class="td-phone">${esc(l.contact_name||'')}${l.contact_phone?' · '+esc(l.contact_phone):''}</div></td><td>${stageBadge(l.stage)}</td><td>${sourceBadge(l.source)}</td><td style="font-family:Poppins;font-weight:600;font-size:12px">${fmtValue(l.estimated_value)}</td><td><span class="badge ${scoreClass(sc)}">${sc}</span></td><td>${ownerAvatar(l.owner)}</td><td style="font-size:12px;color:var(--text-3)">${fmtDate(l.last_contact_at||l.created_at)}</td><td style="color:${dsc>=10?'var(--red)':dsc>=5?'var(--amber)':'var(--text-3)'};font-weight:${dsc>=5?'600':'400'}">${dsc}d</td></tr>`;}).join('');
 }
 
 /* ===== LEAD DETAIL ===== */
@@ -1083,7 +1101,7 @@ const sc=calcScore(lead);const si=stageInfo(lead.stage);const lastAct=acts[0];co
 const panel=document.getElementById('detailPanel');
 panel.innerHTML=`
 <div class="dp-header"><button class="dp-close" onclick="closeDetail()">✕</button>
-<div class="dp-name">${lead.is_hot?'🔥 ':''}${esc(lead.name)}</div>
+<div class="dp-name">${lead.is_hot?icon('fire',14)+' ':''}${esc(lead.name)}</div>
 <div class="dp-company">${esc(lead.contact_name||'')}${lead.industry?' · '+esc(lead.industry):''}${lead.decision_maker?' · DM: '+esc(lead.decision_maker):''}</div>
 <div class="dp-badges">${stageBadge(lead.stage)} ${sourceBadge(lead.source)} <span class="badge ${scoreClass(sc)}">${sc}pts</span> <span class="badge badge-grey">${WIN_PROB[lead.stage]||0}% win</span> ${lead.estimated_value?`<span class="badge badge-green">${fmtValue(lead.estimated_value)}</span>`:''} ${lead.package_interest?`<span class="badge badge-accent">${esc(lead.package_interest)}</span>`:''} ${dsc>=5?`<span class="badge badge-red">${dsc}d silent</span>`:''} ${(lead.tags||[]).map(t=>`<span class="lead-tag">${esc(t)} <span class="tag-x" onclick="event.stopPropagation();removeTag(${id},'${esc(t)}')">✕</span></span>`).join('')}</div>
 ${lead.stage_changed_at?`<div class="stage-duration">${icon('clock',11)} In ${stageInfo(lead.stage).label} for ${daysSince(lead.stage_changed_at)}d</div>`:''}
@@ -1103,22 +1121,22 @@ ${!['closed_won','closed_lost'].includes(lead.stage)?`<button class="dp-action d
 <div class="dp-tabs"><div class="dp-tab active" onclick="switchTab(this,'tab-prep')">Call Prep</div><div class="dp-tab" onclick="switchTab(this,'tab-activity')">Activity (${acts.length})</div><div class="dp-tab" onclick="switchTab(this,'tab-fu')">Follow-Ups (${fus.filter(f=>!f.is_done).length})</div><div class="dp-tab" onclick="switchTab(this,'tab-intel')">Intel</div>${lead.contact_phone?`<div class="dp-tab" onclick="switchTab(this,'tab-wa')">WhatsApp</div>`:''}</div>
 <div class="dp-tab-content">
 <div class="dp-tab-pane active" id="tab-prep">
-<div class="call-prep"><h4>📋 Call Preparation</h4>
+<div class="call-prep"><h4>${icon('clipboard',14)} Call Preparation</h4>
 <div class="cp-row"><div class="cp-label">Last interaction</div><div class="cp-val ${lastAct?'':'empty'}">${lastAct?esc(lastAct.summary):'No interactions yet'}</div></div>
 <div class="cp-row"><div class="cp-label">Next step</div><div class="cp-val ${lastAct?.next_step?'':'empty'}">${lastAct?.next_step?esc(lastAct.next_step):'Not defined'}</div></div>
 <div class="cp-row"><div class="cp-label">Their pain points</div><div class="cp-val ${lead.pain_points?'':'empty'}">${lead.pain_points?esc(lead.pain_points):'Not discovered yet'}</div></div>
 <div class="cp-row"><div class="cp-label">Objections to address</div><div class="cp-val ${lead.objections?'':'empty'}">${lead.objections?esc(lead.objections):'None recorded'}</div></div>
 <div class="cp-row"><div class="cp-label">Talking points from last call</div><div class="cp-val ${lastAct?.talking_points?'':'empty'}">${lastAct?.talking_points?esc(lastAct.talking_points):'None'}</div></div>
 </div>
-<button class="btn btn-sm btn-secondary" onclick="aiCallPrep(${id})" style="margin-top:10px;width:100%">🤖 AI: Generate Call Strategy</button>
+<button class="btn btn-sm btn-secondary" onclick="aiCallPrep(${id})" style="margin-top:10px;width:100%">${icon('ai',14)} AI: Generate Call Strategy</button>
 <div id="aiCallPrep-${id}" style="margin-top:10px;display:none;background:var(--surface-2);border:1px solid var(--accent);border-radius:var(--radius);padding:14px;font-size:12px;line-height:1.7;color:var(--text-2);white-space:pre-wrap"></div>
 </div>
-<div class="dp-tab-pane" id="tab-activity">${acts.length?`<div class="timeline">${acts.map(a=>`<div class="tl-item"><div class="tl-dot ${a.type}"></div><div class="tl-card"><div class="tl-head"><div class="tl-type">${ACT_ICONS[a.type]||'📝'} ${a.type}</div><div class="tl-time">${fmtDateTime(a.created_at)} · ${ownerLabel(a.logged_by)}</div></div><div class="tl-sum">${esc(a.summary)}</div>${a.outcome?`<span class="badge badge-${a.outcome==='positive'?'green':a.outcome==='negative'?'red':'amber'}" style="margin-top:6px">${a.outcome}</span>`:''} ${a.talking_points?`<div style="font-size:11px;color:var(--text-3);margin-top:6px"><strong>Talking:</strong> ${esc(a.talking_points)}</div>`:''} ${a.pain_points_discovered?`<div style="font-size:11px;color:var(--text-3);margin-top:4px"><strong>Pain:</strong> ${esc(a.pain_points_discovered)}</div>`:''} ${a.objections_raised?`<div style="font-size:11px;color:var(--text-3);margin-top:4px"><strong>Objections:</strong> ${esc(a.objections_raised)}</div>`:''} ${a.next_step?`<div class="tl-next">→ ${esc(a.next_step)}</div>`:''}</div></div>`).join('')}</div>`:'<div class="section-empty">No activity yet</div>'}</div>
+<div class="dp-tab-pane" id="tab-activity">${acts.length?`<div class="timeline">${acts.map(a=>`<div class="tl-item"><div class="tl-dot ${a.type}"></div><div class="tl-card"><div class="tl-head"><div class="tl-type">${ACT_ICONS[a.type]||icon('note',15)} ${a.type}</div><div class="tl-time">${fmtDateTime(a.created_at)} · ${ownerLabel(a.logged_by)}</div></div><div class="tl-sum">${esc(a.summary)}</div>${a.outcome?`<span class="badge badge-${a.outcome==='positive'?'green':a.outcome==='negative'?'red':'amber'}" style="margin-top:6px">${a.outcome}</span>`:''} ${a.talking_points?`<div style="font-size:11px;color:var(--text-3);margin-top:6px"><strong>Talking:</strong> ${esc(a.talking_points)}</div>`:''} ${a.pain_points_discovered?`<div style="font-size:11px;color:var(--text-3);margin-top:4px"><strong>Pain:</strong> ${esc(a.pain_points_discovered)}</div>`:''} ${a.objections_raised?`<div style="font-size:11px;color:var(--text-3);margin-top:4px"><strong>Objections:</strong> ${esc(a.objections_raised)}</div>`:''} ${a.next_step?`<div class="tl-next">→ ${esc(a.next_step)}</div>`:''}</div></div>`).join('')}</div>`:'<div class="section-empty">No activity yet</div>'}</div>
 <div class="dp-tab-pane" id="tab-fu"><div style="margin-bottom:12px"><button class="btn btn-sm btn-primary" onclick="openScheduleFU(${id})">+ Schedule</button></div>${fus.length?fus.map(f=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)"><div style="width:8px;height:8px;border-radius:50%;background:${f.is_done?'var(--green)':f.due_date<today()?'var(--red)':'var(--amber)'}"></div><div style="flex:1"><div style="font-size:13px;font-weight:${f.is_done?'400':'600'};${f.is_done?'text-decoration:line-through;color:var(--text-3)':''}">${f.due_date} ${f.due_time||''}</div><div style="font-size:12px;color:var(--text-2)">${esc(f.note||'')}</div></div>${f.is_done?'<span class="badge badge-green">Done</span>':f.due_date<today()?'<span class="badge badge-red">Overdue</span>':'<span class="badge badge-amber">Pending</span>'} ${!f.is_done?`<button class="btn btn-sm btn-success" onclick="completeFU(${f.id});openDetail(${id})">✓</button>`:''}</div>`).join(''):'<div class="section-empty">No follow-ups</div>'}</div>
 <div class="dp-tab-pane" id="tab-intel"><div class="intel-grid"><div class="intel-card"><div class="ic-label">Pain Points</div><div class="ic-val ${lead.pain_points?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'pain_points',this.textContent)">${esc(lead.pain_points||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Objections</div><div class="ic-val ${lead.objections?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'objections',this.textContent)">${esc(lead.objections||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Decision Maker</div><div class="ic-val ${lead.decision_maker?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'decision_maker',this.textContent)">${esc(lead.decision_maker||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Notes</div><div class="ic-val ${lead.notes?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'notes',this.textContent)">${esc(lead.notes||'Click to add...')}</div></div></div>
-<h4 style="font-size:12px;margin:16px 0 10px">Score Breakdown</h4><div style="font-size:11px;color:var(--text-2);line-height:2.2">${lead.contact_phone?'✅':'❌'} Phone (10) · ${lead.contact_email?'✅':'❌'} Email (10) · ${lead.contact_name?'✅':'❌'} Contact (5) · Acts: ${Math.min(acts.length*5,30)}/30 · Positive: ${acts.filter(a=>a.outcome==='positive').length}×10 · ${lead.estimated_value>0?'✅':'❌'} Value (10) · ${lead.pain_points?'✅':'❌'} Pain (5) · ${lead.is_hot?'✅':'❌'} Hot (15)</div></div>
+<h4 style="font-size:12px;margin:16px 0 10px">Score Breakdown</h4><div style="font-size:11px;color:var(--text-2);line-height:2.2">${lead.contact_phone?icon('check',11):icon('xcircle',11)} Phone (10) · ${lead.contact_email?icon('check',11):icon('xcircle',11)} Email (10) · ${lead.contact_name?icon('check',11):icon('xcircle',11)} Contact (5) · Acts: ${Math.min(acts.length*5,30)}/30 · Positive: ${acts.filter(a=>a.outcome==='positive').length}×10 · ${lead.estimated_value>0?icon('check',11):icon('xcircle',11)} Value (10) · ${lead.pain_points?icon('check',11):icon('xcircle',11)} Pain (5) · ${lead.is_hot?icon('check',11):icon('xcircle',11)} Hot (15)</div></div>
 ${lead.contact_phone?`<div class="dp-tab-pane" id="tab-wa"><div style="font-size:13px;font-weight:600;margin-bottom:10px">Quick Message Templates</div><div class="wa-templates">${getWATemplates(lead).map(t=>`<a class="wa-tpl" href="${waLink(lead.contact_phone)}?text=${encodeURIComponent(t.msg)}" target="_blank"><span class="tpl-icon">${t.icon}</span><div><div style="font-weight:600;font-size:12px;color:var(--text);margin-bottom:2px">${t.label}</div><div style="font-size:11px;opacity:.7">${esc(t.msg.substring(0,80))}...</div></div></a>`).join('')}</div>
-<div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px"><div style="font-size:13px;font-weight:600;margin-bottom:8px">🤖 AI Custom Message</div>
+<div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px"><div style="font-size:13px;font-weight:600;margin-bottom:8px">${icon('ai',14)} AI Custom Message</div>
 <input id="aiMsgTone-${id}" placeholder="Tone: friendly, formal, urgent..." value="friendly" style="margin-bottom:8px">
 <button class="btn btn-sm btn-secondary" onclick="aiDraftMessage(${id})" style="width:100%">Generate Custom Message</button>
 <div id="aiMsg-${id}" style="margin-top:10px;display:none"><textarea id="aiMsgText-${id}" rows="4" style="font-size:12px"></textarea><a id="aiMsgSend-${id}" class="btn btn-sm btn-success" style="margin-top:6px;display:inline-flex;text-decoration:none" target="_blank">Send via WhatsApp</a></div>
@@ -1155,17 +1173,17 @@ function switchTab(el,id){el.parentElement.querySelectorAll('.dp-tab').forEach(t
 async function saveIntel(id,f,v){const d={};const val=v.trim();d[f]=val===''||val==='Click to add...'?null:val;await sbPatch('pipeline',id,d);const l=allLeads.find(x=>x.id===id);if(l)l[f]=d[f];}
 document.addEventListener('focusin',e=>{if(e.target.classList?.contains('ic-val')&&e.target.textContent.trim()==='Click to add...'){e.target.textContent='';e.target.classList.remove('empty');}});
 document.addEventListener('focusout',e=>{if(e.target.classList?.contains('ic-val')&&!e.target.textContent.trim()){e.target.textContent='Click to add...';e.target.classList.add('empty');}});
-async function toggleHot(id){if(demoGuard())return;const l=allLeads.find(x=>x.id===id);if(!l)return;const newHot=!l.is_hot;const res=await sbPatch('pipeline',id,{is_hot:newHot});if(!res){toast('Failed to update','error');return;}l.is_hot=newHot;toast(l.is_hot?'🔥 Marked hot':'Unmarked');openDetail(id);}
+async function toggleHot(id){if(demoGuard())return;const l=allLeads.find(x=>x.id===id);if(!l)return;const newHot=!l.is_hot;const res=await sbPatch('pipeline',id,{is_hot:newHot});if(!res){toast('Failed to update','error');return;}l.is_hot=newHot;toast(l.is_hot?'Marked hot':'Unmarked');openDetail(id);}
 async function removeTag(id,tag){if(demoGuard())return;const l=allLeads.find(x=>x.id===id);if(!l)return;const tags=(l.tags||[]).filter(t=>t!==tag);const res=await sbPatch('pipeline',id,{tags:tags.length?tags:null});if(!res){toast('Failed','error');return;}l.tags=tags.length?tags:null;openDetail(id);}
 function getWATemplates(lead){const name=lead.contact_name||lead.name;return[
-{icon:'👋',label:'Introduction',msg:`Hi ${name}, this is ${currentUser?.name} from Business Booster. We help businesses grow their online presence with digital marketing. Would you be open to a quick chat about how we can help ${lead.name}?`},
-{icon:'📋',label:'Follow-up',msg:`Hi ${name}, just following up on our conversation about ${lead.name}. Have you had a chance to think about our proposal? Happy to answer any questions!`},
-{icon:'🎁',label:'Special Offer',msg:`Hi ${name}, we have a special offer running this month for our ${lead.package_interest||'digital marketing'} package. Would you like to hear the details?`},
-{icon:'📅',label:'Meeting Request',msg:`Hi ${name}, I'd love to schedule a quick 15-min call to discuss how we can help ${lead.name} grow online. When would be a good time for you?`},
-{icon:'🙏',label:'Thank You',msg:`Hi ${name}, thank you for your time today! As discussed, I'll send over the proposal for ${lead.name}. Looking forward to working together!`},
-{icon:'⏰',label:'Gentle Reminder',msg:`Hi ${name}, hope you're doing well! Just a gentle reminder about our discussion regarding ${lead.package_interest||'digital marketing services'} for ${lead.name}. Let me know if you have any questions.`}
+{icon:'message',label:'Introduction',msg:`Hi ${name}, this is ${currentUser?.name} from Business Booster. We help businesses grow their online presence with digital marketing. Would you be open to a quick chat about how we can help ${lead.name}?`},
+{icon:'clipboard',label:'Follow-up',msg:`Hi ${name}, just following up on our conversation about ${lead.name}. Have you had a chance to think about our proposal? Happy to answer any questions!`},
+{icon:'star',label:'Special Offer',msg:`Hi ${name}, we have a special offer running this month for our ${lead.package_interest||'digital marketing'} package. Would you like to hear the details?`},
+{icon:'clock',label:'Meeting Request',msg:`Hi ${name}, I'd love to schedule a quick 15-min call to discuss how we can help ${lead.name} grow online. When would be a good time for you?`},
+{icon:'check',label:'Thank You',msg:`Hi ${name}, thank you for your time today! As discussed, I'll send over the proposal for ${lead.name}. Looking forward to working together!`},
+{icon:'clock',label:'Gentle Reminder',msg:`Hi ${name}, hope you're doing well! Just a gentle reminder about our discussion regarding ${lead.package_interest||'digital marketing services'} for ${lead.name}. Let me know if you have any questions.`}
 ];}
-async function aiCallPrep(id){const lead=allLeads.find(l=>l.id===id);if(!lead)return;const el=document.getElementById('aiCallPrep-'+id);if(!el)return;el.style.display='block';el.textContent='🤖 Thinking...';const ctx=getLeadContext(lead);const prompt=`You are a sales coach for Business Booster, a digital marketing agency in Sri Lanka. Based on this lead data, generate a brief call strategy (max 200 words). Include:
+async function aiCallPrep(id){const lead=allLeads.find(l=>l.id===id);if(!lead)return;const el=document.getElementById('aiCallPrep-'+id);if(!el)return;el.style.display='block';el.textContent='Generating strategy...';const ctx=getLeadContext(lead);const prompt=`You are a sales coach for Business Booster, a digital marketing agency in Sri Lanka. Based on this lead data, generate a brief call strategy (max 200 words). Include:
 1. Opening line (personalized)
 2. Key questions to ask (3-4)
 3. Value proposition angle based on their industry
@@ -1187,23 +1205,23 @@ allLeads.filter(l=>!['closed_won','closed_lost'].includes(l.stage)).forEach(l=>{
 const dsc=daysSinceContact(l);const sc=calcScore(l);const acts=allActivities.filter(a=>a.pipeline_id===l.id);
 const negCount=acts.filter(a=>a.outcome==='negative').length;
 const pendingFU=allFollowUps.filter(f=>f.pipeline_id===l.id&&!f.is_done&&f.due_date<today());
-if(dsc>=14)alerts.push({sev:'critical',icon:'🚨',msg:`${l.name} has gone silent for ${dsc} days — at risk of going cold`,leadId:l.id});
-else if(dsc>=7)alerts.push({sev:'warning',icon:'⚠️',msg:`${l.name} — no contact in ${dsc} days. Follow up soon.`,leadId:l.id});
-if(l.stage==='proposal_sent'&&dsc>=5)alerts.push({sev:'warning',icon:'📋',msg:`${l.name} — proposal sent ${dsc}d ago with no response. Time to follow up.`,leadId:l.id});
-if(l.stage==='negotiation'&&l.estimated_value>=200000)alerts.push({sev:'info',icon:'💎',msg:`${l.name} — high-value deal (${fmtValue(l.estimated_value)}) in negotiation. Prioritize closing.`,leadId:l.id});
-if(negCount>=2&&l.stage!=='on_hold')alerts.push({sev:'warning',icon:'👎',msg:`${l.name} — ${negCount} negative outcomes. Consider adjusting approach or putting on hold.`,leadId:l.id});
-if(pendingFU.length>=2)alerts.push({sev:'warning',icon:'⏰',msg:`${l.name} — ${pendingFU.length} overdue follow-ups! Clear backlog.`,leadId:l.id});
-if(sc>=70&&!l.is_hot)alerts.push({sev:'info',icon:'🔥',msg:`${l.name} scores ${sc}/100 but isn't marked hot. Consider flagging.`,leadId:l.id});
-if(l.stage==='new_lead'&&dsc>=3)alerts.push({sev:'warning',icon:'🆕',msg:`${l.name} — new lead sitting for ${dsc}d without being contacted.`,leadId:l.id});
+if(dsc>=14)alerts.push({sev:'critical',icon:'alert',msg:`${l.name} has gone silent for ${dsc} days — at risk of going cold`,leadId:l.id});
+else if(dsc>=7)alerts.push({sev:'warning',icon:'warning',msg:`${l.name} — no contact in ${dsc} days. Follow up soon.`,leadId:l.id});
+if(l.stage==='proposal_sent'&&dsc>=5)alerts.push({sev:'warning',icon:'clipboard',msg:`${l.name} — proposal sent ${dsc}d ago with no response. Time to follow up.`,leadId:l.id});
+if(l.stage==='negotiation'&&l.estimated_value>=200000)alerts.push({sev:'info',icon:'dollar',msg:`${l.name} — high-value deal (${fmtValue(l.estimated_value)}) in negotiation. Prioritize closing.`,leadId:l.id});
+if(negCount>=2&&l.stage!=='on_hold')alerts.push({sev:'warning',icon:'trending',msg:`${l.name} — ${negCount} negative outcomes. Consider adjusting approach or putting on hold.`,leadId:l.id});
+if(pendingFU.length>=2)alerts.push({sev:'warning',icon:'clock',msg:`${l.name} — ${pendingFU.length} overdue follow-ups! Clear backlog.`,leadId:l.id});
+if(sc>=70&&!l.is_hot)alerts.push({sev:'info',icon:'fire',msg:`${l.name} scores ${sc}/100 but isn't marked hot. Consider flagging.`,leadId:l.id});
+if(l.stage==='new_lead'&&dsc>=3)alerts.push({sev:'warning',icon:'alert',msg:`${l.name} — new lead sitting for ${dsc}d without being contacted.`,leadId:l.id});
 });
 const overdueFUs=allFollowUps.filter(f=>!f.is_done&&f.due_date<today());
-if(overdueFUs.length>=5)alerts.push({sev:'critical',icon:'📌',msg:`${overdueFUs.length} overdue follow-ups across all leads. Inbox is getting backed up.`});
+if(overdueFUs.length>=5)alerts.push({sev:'critical',icon:'pin',msg:`${overdueFUs.length} overdue follow-ups across all leads. Inbox is getting backed up.`});
 const todayActs=allActivities.filter(a=>a.created_at?.startsWith(today())).length;
-if(todayActs===0){const hour=new Date().getHours();if(hour>=11)alerts.push({sev:'info',icon:'📞',msg:`No activities logged today yet. Start making calls!`});}
+if(todayActs===0){const hour=new Date().getHours();if(hour>=11)alerts.push({sev:'info',icon:'phone',msg:`No activities logged today yet. Start making calls!`});}
 alerts.sort((a,b)=>(a.sev==='critical'?0:a.sev==='warning'?1:2)-(b.sev==='critical'?0:b.sev==='warning'?1:2));
 return alerts;}
 
-async function aiAnalyzeLeads(){if(!GEMINI_KEY){toast('Set Gemini API key first','error');return;}const el=document.getElementById('aiInsightsBox');if(!el)return;el.style.display='block';el.innerHTML='<div style="color:var(--accent);font-size:13px">🤖 Analyzing your pipeline...</div>';
+async function aiAnalyzeLeads(){if(!GEMINI_KEY){toast('Set Gemini API key first','error');return;}const el=document.getElementById('aiInsightsBox');if(!el)return;el.style.display='block';el.innerHTML='<div style="color:var(--accent);font-size:13px">Analyzing your pipeline...</div>';
 const active=activeLeads();const summary=`Pipeline: ${active.length} active leads, ${allLeads.filter(l=>l.stage==='closed_won').length} won, ${allLeads.filter(l=>l.stage==='closed_lost').length} lost.
 Stages: ${STAGES.map(s=>s.label+': '+allLeads.filter(l=>l.stage===s.key).length).join(', ')}
 Top leads: ${active.sort((a,b)=>calcScore(b)-calcScore(a)).slice(0,5).map(l=>`${l.name}(score:${calcScore(l)},stage:${l.stage},${daysSinceContact(l)}d silent)`).join('; ')}
@@ -1223,7 +1241,7 @@ const phone=document.getElementById('al_phone').value.trim()||null;const email=d
 if(!editingLeadId){const dupes=allLeads.filter(l=>{if(phone&&l.contact_phone&&l.contact_phone.replace(/\D/g,'')===phone.replace(/\D/g,''))return true;if(email&&l.contact_email&&l.contact_email.toLowerCase()===email.toLowerCase())return true;return false;});if(dupes.length){const dupNames=dupes.map(d=>d.name).join(', ');if(!confirm(`Possible duplicate detected: ${dupNames}\n\nAdd anyway?`))return;}}
 const data={name,contact_name:document.getElementById('al_contact').value.trim()||null,contact_phone:phone,contact_email:email,industry:document.getElementById('al_industry').value||null,source:document.getElementById('al_source').value,estimated_value:document.getElementById('al_value').value?parseInt(document.getElementById('al_value').value):null,package_interest:document.getElementById('al_package').value||null,owner:document.getElementById('al_owner').value,stage:document.getElementById('al_stage').value,tags:tags.length?tags:null,notes:document.getElementById('al_notes').value.trim()||null};
 if(data.estimated_value==null){const m=data.package_interest?.match(/\((\d+)K\)/);if(m)data.estimated_value=parseInt(m[1])*1000;}
-if(editingLeadId){await sbPatch('pipeline',editingLeadId,data);const l=allLeads.find(x=>x.id===editingLeadId);if(l)Object.assign(l,data);closeModal('addLeadModal');toast('Lead updated ✓');auditLog('UPDATE_LEAD',`${name} (ID:${editingLeadId})`);openDetail(editingLeadId);}else{data.status='active';data.temperature='cold';data.stage_changed_at=new Date().toISOString();const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);closeModal('addLeadModal');toast('Lead added! 🎯');auditLog('ADD_LEAD',`${name} (ID:${r[0].id})`);}else{toast('Failed','error');return;}}
+if(editingLeadId){await sbPatch('pipeline',editingLeadId,data);const l=allLeads.find(x=>x.id===editingLeadId);if(l)Object.assign(l,data);closeModal('addLeadModal');toast('Lead updated ✓');auditLog('UPDATE_LEAD',`${name} (ID:${editingLeadId})`);openDetail(editingLeadId);}else{data.status='active';data.temperature='cold';data.stage_changed_at=new Date().toISOString();const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);closeModal('addLeadModal');toast('Lead added');auditLog('ADD_LEAD',`${name} (ID:${r[0].id})`);}else{toast('Failed','error');return;}}
 const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== LOG ACTIVITY ===== */
@@ -1237,7 +1255,7 @@ document.getElementById('act_type').onchange=()=>checkStageSuggest(l);checkStage
 document.getElementById('act_schedFu').onchange=function(){document.getElementById('fuFields').style.display=this.checked?'block':'none';};
 openModal('activityModal');}
 function checkStageSuggest(l){const t=document.getElementById('act_type').value;let sg=null;if(t==='proposal'&&l.stage!=='proposal_sent')sg={s:'proposal_sent',l:'Proposal Sent'};else if(t==='meeting'&&['new_lead','contacted'].includes(l.stage))sg={s:'discovery',l:'Discovery'};
-document.getElementById('stageSuggest').innerHTML=sg?`<div class="suggest-bar"><span class="sg-text">💡 Move to <strong>${sg.l}</strong>?</span><button class="btn btn-sm btn-primary" onclick="this.dataset.stage='${sg.s}';this.textContent='✓ Will move';this.disabled=true">Yes</button></div>`:'';}
+document.getElementById('stageSuggest').innerHTML=sg?`<div class="suggest-bar"><span class="sg-text">${icon('lightbulb',14)} Move to <strong>${sg.l}</strong>?</span><button class="btn btn-sm btn-primary" onclick="this.dataset.stage='${sg.s}';this.textContent='✓ Will move';this.disabled=true">Yes</button></div>`:'';}
 async function saveActivity(){if(demoGuard())return;if(!activityLeadId)return;const sum=document.getElementById('act_summary').value.trim();if(!sum){toast('Summary required','error');return;}
 const data={pipeline_id:activityLeadId,type:document.getElementById('act_type').value,summary:sum,outcome:document.getElementById('act_outcome').value,talking_points:document.getElementById('act_talking').value.trim()||null,pain_points_discovered:document.getElementById('act_pain').value.trim()||null,objections_raised:document.getElementById('act_obj').value.trim()||null,next_step:document.getElementById('act_next').value.trim()||null,logged_by:currentUser?.name?.toUpperCase()};
 const r=await sbPost('lead_activities',data);if(!r){toast('Failed','error');return;}allActivities.unshift(r[0]);todayActCount++;
@@ -1255,12 +1273,12 @@ const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)n
 
 /* ===== FOLLOW-UP ===== */
 function openScheduleFU(id){fuLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('fuLeadInfo').innerHTML=`<div style="font-size:14px;font-weight:700">${esc(l.name)}</div>`;const tom=new Date();tom.setDate(tom.getDate()+1);document.getElementById('fu_date').value=localDateStr(tom);document.getElementById('fu_time').value='10:00';document.getElementById('fu_priority').value='normal';document.getElementById('fu_note').value='';openModal('followUpModal');}
-async function saveFollowUp(){if(demoGuard())return;if(!fuLeadId)return;const d=document.getElementById('fu_date').value;if(!d){toast('Date required','error');return;}const data={pipeline_id:fuLeadId,due_date:d,due_time:document.getElementById('fu_time').value||null,priority:document.getElementById('fu_priority').value,note:document.getElementById('fu_note').value.trim()||null,created_by:currentUser?.name?.toUpperCase()};const r=await sbPost('lead_follow_ups',data);if(r){allFollowUps.push(r[0]);closeModal('followUpModal');toast('Follow-up scheduled ⏰');updateFUBadge();if(currentDetailId===fuLeadId)openDetail(fuLeadId);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg==='dashboard')renderDashboard();}}
+async function saveFollowUp(){if(demoGuard())return;if(!fuLeadId)return;const d=document.getElementById('fu_date').value;if(!d){toast('Date required','error');return;}const data={pipeline_id:fuLeadId,due_date:d,due_time:document.getElementById('fu_time').value||null,priority:document.getElementById('fu_priority').value,note:document.getElementById('fu_note').value.trim()||null,created_by:currentUser?.name?.toUpperCase()};const r=await sbPost('lead_follow_ups',data);if(r){allFollowUps.push(r[0]);closeModal('followUpModal');toast('Follow-up scheduled');updateFUBadge();if(currentDetailId===fuLeadId)openDetail(fuLeadId);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg==='dashboard')renderDashboard();}}
 
 /* ===== CONVERT ===== */
 function openConvert(id){convertLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('cv_name').value=l.name;document.getElementById('cv_industry').value=l.industry||'';document.getElementById('cv_contact').value=l.contact_name||l.contact_phone||'';document.getElementById('cv_start').value=today();const p=l.package_interest?.split(' (')[0]||'Spark';document.getElementById('cv_package').value=p;document.getElementById('cv_mrr').value=PKG_VALUES[p]||90000;openModal('convertModal');}
 document.getElementById('cv_package').addEventListener('change',function(){document.getElementById('cv_mrr').value=PKG_VALUES[this.value]||90000;});
-async function convertToClient(){if(demoGuard())return;if(!convertLeadId)return;const cd={name:document.getElementById('cv_name').value.trim(),package:document.getElementById('cv_package').value,mrr:parseInt(document.getElementById('cv_mrr').value)||0,industry:document.getElementById('cv_industry').value.trim()||null,contact:document.getElementById('cv_contact').value.trim()||null,start_date:document.getElementById('cv_start').value||null,health:'green',client_type:'sm'};const cr=await sbPost('clients',cd);if(!cr){toast('Failed','error');return;}await sbPatch('pipeline',convertLeadId,{stage:'closed_won',closed_at:new Date().toISOString()});const l=allLeads.find(x=>x.id===convertLeadId);if(l){l.stage='closed_won';}await sbPost('lead_activities',{pipeline_id:convertLeadId,type:'note',summary:`🎉 Converted! ${cd.package} @ LKR ${cd.mrr}`,outcome:'positive',logged_by:currentUser?.name?.toUpperCase()});closeModal('convertModal');closeDetail();auditLog('CONVERT_CLIENT',`${cd.name} — ${cd.package} @ LKR ${cd.mrr}`);toast('🎉 Client converted!');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function convertToClient(){if(demoGuard())return;if(!convertLeadId)return;const cd={name:document.getElementById('cv_name').value.trim(),package:document.getElementById('cv_package').value,mrr:parseInt(document.getElementById('cv_mrr').value)||0,industry:document.getElementById('cv_industry').value.trim()||null,contact:document.getElementById('cv_contact').value.trim()||null,start_date:document.getElementById('cv_start').value||null,health:'green',client_type:'sm'};const cr=await sbPost('clients',cd);if(!cr){toast('Failed','error');return;}await sbPatch('pipeline',convertLeadId,{stage:'closed_won',closed_at:new Date().toISOString()});const l=allLeads.find(x=>x.id===convertLeadId);if(l){l.stage='closed_won';}await sbPost('lead_activities',{pipeline_id:convertLeadId,type:'note',summary:`Converted! ${cd.package} @ LKR ${cd.mrr}`,outcome:'positive',logged_by:currentUser?.name?.toUpperCase()});closeModal('convertModal');closeDetail();auditLog('CONVERT_CLIENT',`${cd.name} — ${cd.package} @ LKR ${cd.mrr}`);toast('Client converted!');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== MARK LOST ===== */
 function openMarkLost(id){lostLeadId=id;document.getElementById('lost_reason').value='unresponsive';document.getElementById('lost_notes').value='';openModal('lostModal');}
@@ -1273,7 +1291,7 @@ function handleCSVFile(file){if(!file)return;if(file.size>1048576){toast('File t
 csvData=rows.map(r=>({name:r.name||r.business||r.company||'',contact_name:r.contact||r.contact_name||r.person||'',contact_phone:r.phone||r.contact_phone||r.mobile||r.tel||'',contact_email:r.email||r.contact_email||'',industry:r.industry||r.sector||r.category||'',source:r.source||'other'}));
 document.getElementById('csvPreview').style.display='block';document.getElementById('csvPreview').innerHTML=`<div style="font-size:13px;font-weight:600;margin-bottom:8px">${csvData.length} leads found</div><div style="max-height:200px;overflow-y:auto;font-size:12px;color:var(--text-2)">${csvData.slice(0,10).map(r=>`<div style="padding:4px 0;border-bottom:1px solid var(--border)">${esc(r.name)} ${r.contact_phone?' · '+esc(r.contact_phone):''}</div>`).join('')}${csvData.length>10?`<div style="color:var(--text-3);padding:4px 0">+${csvData.length-10} more</div>`:''}</div>`;
 document.getElementById('csvImportBtn').style.display='inline-flex';};reader.readAsText(file);}
-async function importCSV(){if(demoGuard())return;if(!csvData||!csvData.length)return;let imported=0;for(const row of csvData){const data={name:row.name,contact_name:row.contact_name||null,contact_phone:row.contact_phone||null,contact_email:row.contact_email||null,industry:row.industry||null,source:row.source||'other',stage:'new_lead',status:'active',owner:currentUser?.code||'th',estimated_value:null,temperature:'cold'};const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);imported++;}}closeModal('csvModal');auditLog('IMPORT_CSV',`${imported} leads imported`);toast(`${imported} leads imported! 🎯`);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function importCSV(){if(demoGuard())return;if(!csvData||!csvData.length)return;let imported=0;for(const row of csvData){const data={name:row.name,contact_name:row.contact_name||null,contact_phone:row.contact_phone||null,contact_email:row.contact_email||null,industry:row.industry||null,source:row.source||'other',stage:'new_lead',status:'active',owner:currentUser?.code||'th',estimated_value:null,temperature:'cold'};const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);imported++;}}closeModal('csvModal');auditLog('IMPORT_CSV',`${imported} leads imported`);toast(`${imported} leads imported`);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== ANALYTICS ===== */
 let analyticsPeriod='all';
@@ -1426,10 +1444,10 @@ renderHours();
 /* ===== AGENTS ===== */
 let _leadsAlertData=[];
 const AGENT_META={
-'stale-lead':{icon:'💤',name:'Stale Lead',desc:'Leads untouched 7+ days'},
-'overdue-fu':{icon:'⏰',name:'Overdue Follow-Up',desc:'Follow-ups past due date'},
-'pipeline-summary':{icon:'📊',name:'Pipeline Summary',desc:'Daily pipeline health check'},
-'lead-score':{icon:'🎯',name:'Lead Score',desc:'Score changes & alerts'},
+'stale-lead':{icon:'sleep',name:'Stale Lead',desc:'Leads untouched 7+ days'},
+'overdue-fu':{icon:'clock',name:'Overdue Follow-Up',desc:'Follow-ups past due date'},
+'pipeline-summary':{icon:'chart',name:'Pipeline Summary',desc:'Daily pipeline health check'},
+'lead-score':{icon:'target',name:'Lead Score',desc:'Score changes & alerts'},
 'client-health':{icon:'❤️',name:'Client Health',desc:'At-risk client signals'}
 };
 async function loadLeadsAgentAlerts(){
@@ -1453,7 +1471,7 @@ if(!alerts||!alerts.length){el.innerHTML='<div style="color:var(--text-3);font-s
 const grouped={};alerts.forEach(a=>{if(!grouped[a.agent])grouped[a.agent]=[];grouped[a.agent].push(a);});
 const SEV_COLOR={critical:'#f87171',warning:'#fbbf24',info:'#60a5fa'};
 const cards=Object.keys(grouped).map(agent=>{
-const items=grouped[agent];const meta=AGENT_META[agent]||{icon:'⚡',name:agent,desc:'Agent monitor'};
+const items=grouped[agent];const meta=AGENT_META[agent]||{icon:'bolt',name:agent,desc:'Agent monitor'};
 const unread=items.filter(a=>!a.read_at);
 const topSev=items.find(a=>a.severity==='critical')?'critical':items.find(a=>a.severity==='warning')?'warning':'info';
 const col=SEV_COLOR[topSev]||'#60a5fa';const hasIssues=unread.length>0;
@@ -1461,7 +1479,7 @@ const d=new Date(items[0].created_at);
 const ts=d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 return`<div class="agent-card" onclick="openAgentDrawer('${agent}')">
 ${hasIssues?`<div class="agent-card-bar" style="background:linear-gradient(90deg,${col},transparent)"></div>`:''}
-<div class="agent-card-top"><div class="agent-card-icon">${meta.icon}</div>
+<div class="agent-card-top"><div class="agent-card-icon">${icon(meta.icon,20)}</div>
 <div style="flex:1;min-width:0"><div class="agent-card-name">${meta.name}</div><div class="agent-card-desc">${meta.desc}</div></div>
 <div class="agent-card-status" style="background:${col}22;color:${col}">${hasIssues?unread.length+' issue'+(unread.length!==1?'s':''):'✓ Clear'}</div></div>
 <div class="agent-card-foot"><span style="color:var(--text-3);font-size:10px">${ts}</span><span class="agent-card-arrow">View →</span></div></div>`;
@@ -1473,22 +1491,22 @@ const pg=document.getElementById('page-agents');
 const smartAlerts=generateSmartAlerts();
 const SEV_COLOR={critical:'#f87171',warning:'#fbbf24',info:'#60a5fa'};
 pg.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:24px">
-<div><div class="page-header" style="margin-bottom:0"><div class="page-label">System</div><h1>⚡ Agents & AI</h1><div class="page-sub">Smart alerts, AI insights & agent monitors</div></div></div>
+<div><div class="page-header" style="margin-bottom:0"><div class="page-label">System</div><h1>${icon('bolt',20)} Agents & AI</h1><div class="page-sub">Smart alerts, AI insights & agent monitors</div></div></div>
 <div style="display:flex;gap:8px;flex-wrap:wrap">
-<button class="btn btn-sm btn-secondary" onclick="setGeminiKey()">🔑 API Key</button>
-<button class="btn btn-sm btn-secondary" onclick="aiAnalyzeLeads()">🤖 AI Insights</button>
+<button class="btn btn-sm btn-secondary" onclick="setGeminiKey()">${icon('key',14)} API Key</button>
+<button class="btn btn-sm btn-secondary" onclick="aiAnalyzeLeads()">${icon('ai',14)} AI Insights</button>
 <button id="agents-refresh-btn" onclick="loadLeadsAgentAlerts()" style="padding:8px 14px;border-radius:8px;background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer">↻ Refresh</button>
 <button onclick="markAllLeadsAlertsRead()" style="padding:8px 14px;border-radius:8px;background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer">Mark all read</button>
 </div></div>
-<div id="aiInsightsBox" style="display:none;background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius-lg);padding:18px;margin-bottom:20px"><h4 style="font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:700">🤖 AI Pipeline Analysis</h4></div>
-${smartAlerts.length?`<div class="section" style="margin-bottom:20px"><div class="section-head"><h3>🧠 Smart Alerts</h3><span class="count">${smartAlerts.length}</span></div><div class="section-body">${smartAlerts.map(a=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);border-left:3px solid ${SEV_COLOR[a.sev]};cursor:${a.leadId?'pointer':'default'}" ${a.leadId?`onclick="openDetail(${a.leadId})"`:''}><span style="font-size:18px;flex-shrink:0">${a.icon}</span><div style="flex:1"><div style="font-size:12px;color:var(--text)">${esc(a.msg)}</div></div><span style="font-size:9px;font-weight:700;color:${SEV_COLOR[a.sev]};text-transform:uppercase">${a.sev}</span></div>`).join('')}</div></div>`:'<div style="background:var(--green-soft);border:1px solid var(--green);border-radius:var(--radius-lg);padding:18px;margin-bottom:20px;text-align:center;font-size:13px;color:var(--green)">✅ All clear — no smart alerts. Your pipeline is healthy!</div>'}
+<div id="aiInsightsBox" style="display:none;background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius-lg);padding:18px;margin-bottom:20px"><h4 style="font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:700">${icon('ai',14)} AI Pipeline Analysis</h4></div>
+${smartAlerts.length?`<div class="section" style="margin-bottom:20px"><div class="section-head"><h3>${icon('brain',16)} Smart Alerts</h3><span class="count">${smartAlerts.length}</span></div><div class="section-body">${smartAlerts.map(a=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);border-left:3px solid ${SEV_COLOR[a.sev]};cursor:${a.leadId?'pointer':'default'}" ${a.leadId?`onclick="openDetail(${a.leadId})"`:''}><span style="flex-shrink:0">${icon(a.icon,18)}</span><div style="flex:1"><div style="font-size:12px;color:var(--text)">${esc(a.msg)}</div></div><span style="font-size:9px;font-weight:700;color:${SEV_COLOR[a.sev]};text-transform:uppercase">${a.sev}</span></div>`).join('')}</div></div>`:`<div style="background:var(--green-soft);border:1px solid var(--green);border-radius:var(--radius-lg);padding:18px;margin-bottom:20px;text-align:center;font-size:13px;color:var(--green)">${icon('checkcircle',16)} All clear — no smart alerts. Your pipeline is healthy!</div>`}
 <h3 style="font-size:14px;font-weight:700;margin-bottom:12px">Agent Monitors</h3>
 <div id="leads-agents-list"><div style="color:var(--text-3);font-size:13px;padding:24px 0;text-align:center;">Loading...</div></div>`;
 loadLeadsAgentAlerts();
 }
 function openAgentDrawer(agent){
 const items=_leadsAlertData.filter(a=>a.agent===agent);
-const meta=AGENT_META[agent]||{icon:'⚡',name:agent};
+const meta=AGENT_META[agent]||{icon:'bolt',name:agent};
 const SEV_COLOR={critical:'#f87171',warning:'#fbbf24',info:'#60a5fa'};
 const topSev=items.find(a=>a.severity==='critical')?'critical':items.find(a=>a.severity==='warning')?'warning':'info';
 const col=SEV_COLOR[topSev]||'#60a5fa';
@@ -1506,7 +1524,7 @@ openModal('agentDrawerModal');
 const m=document.getElementById('agentDrawerModal');
 if(m){m.querySelector('.modal-body').innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
 <div style="width:3px;height:22px;background:${col};border-radius:2px"></div>
-<div><div style="font-size:15px;font-weight:700">${meta.icon} ${meta.name}</div>
+<div><div style="font-size:15px;font-weight:700">${icon(meta.icon,15)} ${meta.name}</div>
 <div style="font-size:11px;color:var(--text-2);margin-top:2px">${items.length} alert${items.length!==1?'s':''}</div></div></div>${body}`;}
 }
 async function markLeadsAlertRead(id){
@@ -1600,7 +1618,7 @@ const b=document.getElementById('sbAgentsBadge');if(b){b.textContent=count;b.sty
       document.body.appendChild(el);
     }
     var top=_issues.slice(-3).map(function(i){return (i.table_name?i.table_name+': ':'')+i.message;}).join('  ·  ');
-    el.innerHTML='<span style="font-size:15px">⚠️</span>'+
+    el.innerHTML='<span style="display:inline-flex"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>'+
       '<span style="flex:1">System issue detected ('+_issues.length+'): '+top+'</span>'+
       '<button id="bbSentinelView" style="background:rgba(255,255,255,.18);border:none;color:#fff;border-radius:6px;padding:4px 10px;font:700 11px Inter;cursor:pointer">Details</button>'+
       '<button id="bbSentinelHide" style="background:none;border:none;color:#fff;opacity:.7;font-size:17px;cursor:pointer;line-height:1">×</button>';
@@ -1620,7 +1638,7 @@ const b=document.getElementById('sbAgentsBadge');if(b){b.textContent=count;b.sty
     ov.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:20px';
     ov.innerHTML='<div style="background:var(--surface,#12121a);border:1px solid var(--border-strong,#3a3a4e);border-radius:14px;max-width:560px;width:100%;max-height:80vh;display:flex;flex-direction:column">'+
       '<div style="padding:16px 20px;border-bottom:1px solid var(--border,#2a2a3a);display:flex;align-items:center;justify-content:space-between">'+
-        '<div style="font:800 15px Poppins,Inter;color:var(--text,#fff)">🛡️ Sentinel — '+_issues.length+' issue(s)</div>'+
+        '<div style="font:800 15px Poppins,Inter;color:var(--text,#fff)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Sentinel — '+_issues.length+' issue(s)</div>'+
         '<button id="bbSentClose" style="background:none;border:none;color:var(--text-2,#a0a0b8);font-size:22px;cursor:pointer">×</button>'+
       '</div>'+
       '<div style="padding:16px 20px;overflow-y:auto">'+rows+
