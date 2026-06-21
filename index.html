@@ -264,6 +264,15 @@ select{cursor:pointer}
 .call-prep .cp-label{font-size:10px;text-transform:uppercase;color:var(--text-3);font-weight:600;letter-spacing:.5px;margin-bottom:3px}
 .call-prep .cp-val{font-size:12px;color:var(--text-2);line-height:1.6}
 .call-prep .cp-val.empty{font-style:italic;color:var(--text-3);font-size:11px}
+.game-plan{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-top:12px}
+.game-plan .gp-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.game-plan .gp-title{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1.2px;display:flex;align-items:center;gap:6px}
+.game-plan .gp-stake{font-size:11px;font-weight:700;color:var(--green);background:var(--green-soft);padding:4px 10px;border-radius:20px;white-space:nowrap}
+.game-plan .gp-row{display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border)}
+.game-plan .gp-row:last-child{border-bottom:none;padding-bottom:0}
+.game-plan .gp-icn{flex-shrink:0;width:28px;height:28px;border-radius:8px;background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--accent)}
+.game-plan .gp-label{font-size:10px;text-transform:uppercase;color:var(--text-3);font-weight:700;letter-spacing:.5px;margin-bottom:3px}
+.game-plan .gp-val{font-size:12.5px;color:var(--text);line-height:1.55}
 
 /* ===== INTELLIGENCE ===== */
 .intel-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
@@ -594,7 +603,6 @@ input,select,textarea{font-size:16px;padding:12px 14px;border-radius:10px}
 <div class="sb-footer">
 <button class="sb-theme" onclick="toggleTheme()"><span id="themeIcon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span> <span id="themeLabel">Light mode</span></button>
 <div class="sb-user"><div class="sb-avatar" id="userAvatar">TH</div><div><div class="sb-uname" id="userName">Thulaib</div><div class="sb-urole" id="userRole">CEO</div></div></div>
-<button class="sb-theme" onclick="setGeminiKey()" style="margin-bottom:0"><span style="display:inline-flex;color:var(--accent)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 014 4v1h2a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V9a2 2 0 012-2h2V6a4 4 0 014-4z"/><circle cx="9" cy="13" r="1.5" fill="currentColor" stroke="none"/><circle cx="15" cy="13" r="1.5" fill="currentColor" stroke="none"/><path d="M9 17h6"/></svg></span> <span id="aiKeyStatus">Set AI Key</span></button>
 <button class="sb-theme" onclick="showAuditLog()" style="margin-bottom:0"><span style="display:inline-flex;color:var(--text-3)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span> Audit Log</button>
 <button class="sb-theme" onclick="openModal('privacyModal')" style="margin-bottom:0"><span style="display:inline-flex;color:var(--text-3)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span> Privacy Policy</button>
 <button class="sb-signout" onclick="signOut()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
@@ -744,21 +752,6 @@ const CLOSED_STAGES=[{key:'closed_won',label:'Closed Won',color:'var(--green)',d
 const ALL_STAGES=[...STAGES,...CLOSED_STAGES];
 const SOURCES={social_media:'SM',website:'Web',referral:'Ref',cold_call:'Cold',walk_in:'Walk',other:'Other'};
 
-/* ===== AI CONFIG ===== */
-let GEMINI_KEY=localStorage.getItem('bb_gemini_key')||'';
-const GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent';
-let _aiLastCall=0;
-async function askGemini(prompt,maxTokens=500){if(!GEMINI_KEY){toast('Set your Gemini API key in Settings','error');return null;}
-// throttle: max 1 call every 4s to respect free-tier per-minute limits
-const since=Date.now()-_aiLastCall;if(since<4000){await new Promise(r=>setTimeout(r,4000-since));}_aiLastCall=Date.now();
-try{const r=await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:maxTokens,temperature:0.7}})});
-if(r.status===429){const e=await r.text();console.error('Gemini quota:',e);toast('AI is busy (free-tier limit). Wait ~30 seconds, then try once.','error');return null;}
-if(!r.ok){const e=await r.text();console.error('Gemini error:',r.status,e);try{const ej=JSON.parse(e);const m=ej.error?.message||'Request failed';toast(m.includes('API key')?'Invalid API key — re-paste it':'AI: '+m.substring(0,70),'error');}catch(_){toast('AI request failed ('+r.status+')','error');}return null;}
-const d=await r.json();_aiLastCall=Date.now();return d.candidates?.[0]?.content?.parts?.[0]?.text||null;}catch(e){console.error('Gemini error:',e);toast('AI connection failed','error');return null;}}
-function setGeminiKey(){const key=prompt('Enter your free Google Gemini API key:\n(Get one at ai.google.dev)');if(key!==null){GEMINI_KEY=key.trim();localStorage.setItem('bb_gemini_key',GEMINI_KEY);toast(GEMINI_KEY?'API key saved ✓':'API key cleared');updateAIStatus();}}
-function updateAIStatus(){const el=document.getElementById('aiKeyStatus');if(el)el.textContent=GEMINI_KEY?'AI Connected':'Set AI Key';}
-function getLeadContext(lead){const acts=allActivities.filter(a=>a.pipeline_id===lead.id).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,5);const fus=allFollowUps.filter(f=>f.pipeline_id===lead.id&&!f.is_done);return `Lead: ${lead.name}\nContact: ${lead.contact_name||'Unknown'}\nIndustry: ${lead.industry||'Unknown'}\nStage: ${stageInfo(lead.stage).label}\nValue: ${lead.estimated_value?'LKR '+lead.estimated_value:'Not set'}\nPackage: ${lead.package_interest||'Not decided'}\nPain Points: ${lead.pain_points||'None recorded'}\nObjections: ${lead.objections||'None recorded'}\nDays Since Contact: ${daysSinceContact(lead)}\nScore: ${calcScore(lead)}/100\nIs Hot: ${lead.is_hot?'Yes':'No'}\nRecent Activities:\n${acts.length?acts.map(a=>`- ${a.type} (${a.outcome}): ${a.summary}`).join('\n'):'No activities yet'}\nPending Follow-ups: ${fus.length?fus.map(f=>`${f.due_date}: ${f.note||'No note'}`).join(', '):'None'}`;}
-
 /* ===== ICON SYSTEM ===== */
 function icon(n,s=16){const w=s,h=s;const icons={
 phone:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.22 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>`,
@@ -804,6 +797,35 @@ download:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke
 const ACT_ICONS={call:icon('phone',15),message:icon('message',15),meeting:icon('meeting',15),email:icon('email',15),proposal:icon('proposal',15),note:icon('note',15),follow_up:icon('clock',15)};
 const PKG_VALUES={Spark:90000,Ignite:150000,Blaze:230000,'SEO Essential':40000,'SEO+Maintenance':50000};
 const WIN_PROB={new_lead:5,contacted:10,discovery:30,proposal_sent:60,negotiation:90,closed_won:100,closed_lost:0,on_hold:5};
+const STAGE_PLAYBOOK={
+new_lead:{goal:'Make first contact & qualify the lead',ask:'Confirm the need and book a real conversation',next:'contacted'},
+contacted:{goal:'Book a proper discovery call',ask:'Lock in a specific day & time to talk',next:'discovery'},
+discovery:{goal:'Uncover their pain, budget & timeline',ask:'Get a yes to send a tailored proposal',next:'proposal_sent'},
+proposal_sent:{goal:'Walk through the proposal & answer questions',ask:'Get yes-in-principle, move to final terms',next:'negotiation'},
+negotiation:{goal:'Close the deal & clear final objections',ask:'Confirm the start date & send the agreement',next:'closed_won'},
+on_hold:{goal:'Re-engage & find what changed',ask:'Learn what needs to happen to restart',next:'discovery'},
+closed_won:{goal:'Onboard smoothly & spot an upsell',ask:'Kick off delivery and ask for a referral',next:null},
+closed_lost:{goal:'Stay warm for a future opportunity',ask:'Leave the door open to check back later',next:null}
+};
+function buildCallGamePlan(lead,lastAct){
+const pb=STAGE_PLAYBOOK[lead.stage]||STAGE_PLAYBOOK.new_lead;
+const name=lead.contact_name||lead.name;
+const wp=WIN_PROB[lead.stage]||0;
+const nextWp=pb.next?WIN_PROB[pb.next]:null;
+let opener;
+if(lastAct){opener=`"Hi ${name}, following up on our last conversation`+(lastAct.next_step?` — you mentioned ${lastAct.next_step.toLowerCase()}`:'')+'."';}
+else{opener=`"Hi ${name}, this is ${currentUser?.name||'Business Booster'} from Business Booster. I'm reaching out about `+(lead.package_interest?lead.package_interest.replace(/\s*\(.*\)/,''):'helping you grow your business online')+'."';}
+const emphasis=lead.pain_points?`Lead with their pain — "${lead.pain_points}"`:(lead.package_interest?`Anchor the conversation on the ${lead.package_interest.replace(/\s*\(.*\)/,'')} package`:'Find out what is holding their growth back right now');
+const watch=lead.objections?`"${lead.objections}" — have your answer ready`:'Listen for hesitation on budget or timing, and handle it early';
+const rows=[
+{l:'Your objective',v:pb.goal,i:'target'},
+{l:'Suggested opener',v:opener,i:'message'},
+{l:'Emphasize',v:emphasis,i:'star'},
+{l:'Watch out for',v:watch,i:'alert'},
+{l:'Close on',v:pb.ask,i:'trophy'}
+];
+return `<div class="game-plan"><div class="gp-head"><div class="gp-title">${icon('target',15)} Call Game Plan</div>${lead.estimated_value?`<div class="gp-stake">${fmtValue(lead.estimated_value)} at stake · ${wp}%${nextWp?` → ${nextWp}% win`:' win'}</div>`:''}</div>${rows.map(r=>`<div class="gp-row"><div class="gp-icn">${icon(r.i,14)}</div><div><div class="gp-label">${r.l}</div><div class="gp-val">${esc(r.v)}</div></div></div>`).join('')}</div>`;
+}
 
 let currentUser=null,allLeads=[],allActivities=[],allFollowUps=[];
 let currentDetailId=null,activityLeadId=null,convertLeadId=null,lostLeadId=null,fuLeadId=null;
@@ -880,7 +902,7 @@ document.getElementById('loginPin').addEventListener('input',function(){if(this.
 document.getElementById('loginPin').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
 
 /* ===== APP INIT ===== */
-async function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('userName').textContent=currentUser.name;document.getElementById('userRole').textContent=currentUser.role;document.getElementById('userAvatar').textContent=currentUser.code.toUpperCase();if(isDemoMode){document.getElementById('demoBanner').classList.add('show');}else{document.getElementById('demoBanner').classList.remove('show');}startClock();await loadAllData();requestNotifPermission();updateAIStatus();auditLog('LOGIN',`${currentUser.name} (${currentUser.role})`);nav('dashboard');if(!isDemoMode)loadLeadsAgentAlerts();}
+async function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('userName').textContent=currentUser.name;document.getElementById('userRole').textContent=currentUser.role;document.getElementById('userAvatar').textContent=currentUser.code.toUpperCase();if(isDemoMode){document.getElementById('demoBanner').classList.add('show');}else{document.getElementById('demoBanner').classList.remove('show');}startClock();await loadAllData();requestNotifPermission();auditLog('LOGIN',`${currentUser.name} (${currentUser.role})`);nav('dashboard');if(!isDemoMode)loadLeadsAgentAlerts();}
 async function loadAllData(){if(isDemoMode){const demo=generateDemoData();allLeads=demo.leads;allActivities=demo.activities;allFollowUps=demo.followUps;todayActCount=2;updateFUBadge();return;}const[leads,acts,fus]=await Promise.all([sb('pipeline','select=*&order=created_at.desc'),sb('lead_activities','select=*&order=created_at.desc'),sb('lead_follow_ups','select=*&order=due_date.asc,due_time.asc')]);allLeads=leads||[];allActivities=acts||[];allFollowUps=fus||[];if(!leads.length&&!acts.length&&!fus.length){toast('Could not load data — check connection','error');}todayActCount=allActivities.filter(a=>a.created_at&&a.created_at.startsWith(today())).length;updateFUBadge();}
 function demoGuard(){if(isDemoMode){toast('Demo mode — read only','error');return true;}return false;}
 function updateFUBadge(){const c=allFollowUps.filter(f=>!f.is_done&&f.due_date<=today()).length;const b=document.getElementById('sbFuBadge');if(c>0){b.textContent=c;b.style.display='inline';}else{b.style.display='none';}}
@@ -1135,19 +1157,14 @@ ${!['closed_won','closed_lost'].includes(lead.stage)?`<button class="dp-action d
 <div class="cp-row"><div class="cp-label">Objections to address</div><div class="cp-val ${lead.objections?'':'empty'}">${lead.objections?esc(lead.objections):'None recorded'}</div></div>
 <div class="cp-row"><div class="cp-label">Talking points from last call</div><div class="cp-val ${lastAct?.talking_points?'':'empty'}">${lastAct?.talking_points?esc(lastAct.talking_points):'None'}</div></div>
 </div>
-<button class="btn btn-sm btn-secondary" onclick="aiCallPrep(${id})" style="margin-top:10px;width:100%">${icon('ai',14)} AI: Generate Call Strategy</button>
-<div id="aiCallPrep-${id}" style="margin-top:10px;display:none;background:var(--surface-2);border:1px solid var(--accent);border-radius:var(--radius);padding:14px;font-size:12px;line-height:1.7;color:var(--text-2);white-space:pre-wrap"></div>
+${buildCallGamePlan(lead,lastAct)}
 </div>
 <div class="dp-tab-pane" id="tab-activity">${acts.length?`<div class="timeline">${acts.map(a=>`<div class="tl-item"><div class="tl-dot ${a.type}"></div><div class="tl-card"><div class="tl-head"><div class="tl-type">${ACT_ICONS[a.type]||icon('note',15)} ${a.type}</div><div class="tl-time">${fmtDateTime(a.created_at)} · ${ownerLabel(a.logged_by)}</div></div><div class="tl-sum">${esc(a.summary)}</div>${a.outcome?`<span class="badge badge-${a.outcome==='positive'?'green':a.outcome==='negative'?'red':'amber'}" style="margin-top:6px">${a.outcome}</span>`:''} ${a.talking_points?`<div style="font-size:11px;color:var(--text-3);margin-top:6px"><strong>Talking:</strong> ${esc(a.talking_points)}</div>`:''} ${a.pain_points_discovered?`<div style="font-size:11px;color:var(--text-3);margin-top:4px"><strong>Pain:</strong> ${esc(a.pain_points_discovered)}</div>`:''} ${a.objections_raised?`<div style="font-size:11px;color:var(--text-3);margin-top:4px"><strong>Objections:</strong> ${esc(a.objections_raised)}</div>`:''} ${a.next_step?`<div class="tl-next">→ ${esc(a.next_step)}</div>`:''}</div></div>`).join('')}</div>`:'<div class="section-empty">No activity yet</div>'}</div>
 <div class="dp-tab-pane" id="tab-fu"><div style="margin-bottom:12px"><button class="btn btn-sm btn-primary" onclick="openScheduleFU(${id})">+ Schedule</button></div>${fus.length?fus.map(f=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)"><div style="width:8px;height:8px;border-radius:50%;background:${f.is_done?'var(--green)':f.due_date<today()?'var(--red)':'var(--amber)'}"></div><div style="flex:1"><div style="font-size:13px;font-weight:${f.is_done?'400':'600'};${f.is_done?'text-decoration:line-through;color:var(--text-3)':''}">${f.due_date} ${f.due_time||''}</div><div style="font-size:12px;color:var(--text-2)">${esc(f.note||'')}</div></div>${f.is_done?'<span class="badge badge-green">Done</span>':f.due_date<today()?'<span class="badge badge-red">Overdue</span>':'<span class="badge badge-amber">Pending</span>'} ${!f.is_done?`<button class="btn btn-sm btn-success" onclick="completeFU(${f.id});openDetail(${id})">✓</button>`:''}</div>`).join(''):'<div class="section-empty">No follow-ups</div>'}</div>
 <div class="dp-tab-pane" id="tab-intel"><div class="intel-grid"><div class="intel-card"><div class="ic-label">Pain Points</div><div class="ic-val ${lead.pain_points?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'pain_points',this.textContent)">${esc(lead.pain_points||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Objections</div><div class="ic-val ${lead.objections?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'objections',this.textContent)">${esc(lead.objections||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Decision Maker</div><div class="ic-val ${lead.decision_maker?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'decision_maker',this.textContent)">${esc(lead.decision_maker||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Notes</div><div class="ic-val ${lead.notes?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'notes',this.textContent)">${esc(lead.notes||'Click to add...')}</div></div></div>
 <h4 style="font-size:12px;margin:16px 0 10px">Score Breakdown</h4><div style="font-size:11px;color:var(--text-2);line-height:2.2">${lead.contact_phone?icon('check',11):icon('xcircle',11)} Phone (10) · ${lead.contact_email?icon('check',11):icon('xcircle',11)} Email (10) · ${lead.contact_name?icon('check',11):icon('xcircle',11)} Contact (5) · Acts: ${Math.min(acts.length*5,30)}/30 · Positive: ${acts.filter(a=>a.outcome==='positive').length}×10 · ${lead.estimated_value>0?icon('check',11):icon('xcircle',11)} Value (10) · ${lead.pain_points?icon('check',11):icon('xcircle',11)} Pain (5) · ${lead.is_hot?icon('check',11):icon('xcircle',11)} Hot (15)</div></div>
 ${lead.contact_phone?`<div class="dp-tab-pane" id="tab-wa"><div style="font-size:13px;font-weight:600;margin-bottom:10px">Quick Message Templates</div><div class="wa-templates">${getWATemplates(lead).map(t=>`<a class="wa-tpl" href="${waLink(lead.contact_phone)}?text=${encodeURIComponent(t.msg)}" target="_blank"><span class="tpl-icon">${t.icon}</span><div><div style="font-weight:600;font-size:12px;color:var(--text);margin-bottom:2px">${t.label}</div><div style="font-size:11px;opacity:.7">${esc(t.msg.substring(0,80))}...</div></div></a>`).join('')}</div>
-<div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px"><div style="font-size:13px;font-weight:600;margin-bottom:8px">${icon('ai',14)} AI Custom Message</div>
-<input id="aiMsgTone-${id}" placeholder="Tone: friendly, formal, urgent..." value="friendly" style="margin-bottom:8px">
-<button class="btn btn-sm btn-secondary" onclick="aiDraftMessage(${id})" style="width:100%">Generate Custom Message</button>
-<div id="aiMsg-${id}" style="margin-top:10px;display:none"><textarea id="aiMsgText-${id}" rows="4" style="font-size:12px"></textarea><a id="aiMsgSend-${id}" class="btn btn-sm btn-success" style="margin-top:6px;display:inline-flex;text-decoration:none" target="_blank">Send via WhatsApp</a></div>
-</div></div>`:''}
+</div>`:''}
 </div>`;
 document.getElementById('detailOverlay').classList.add('open');
 }
@@ -1190,23 +1207,6 @@ function getWATemplates(lead){const name=lead.contact_name||lead.name;return[
 {icon:'check',label:'Thank You',msg:`Hi ${name}, thank you for your time today! As discussed, I'll send over the proposal for ${lead.name}. Looking forward to working together!`},
 {icon:'clock',label:'Gentle Reminder',msg:`Hi ${name}, hope you're doing well! Just a gentle reminder about our discussion regarding ${lead.package_interest||'digital marketing services'} for ${lead.name}. Let me know if you have any questions.`}
 ];}
-async function aiCallPrep(id){const lead=allLeads.find(l=>l.id===id);if(!lead)return;const el=document.getElementById('aiCallPrep-'+id);if(!el)return;el.style.display='block';el.textContent='Generating strategy...';const ctx=getLeadContext(lead);const prompt=`You are a sales coach for Business Booster, a digital marketing agency in Sri Lanka. Based on this lead data, generate a brief call strategy (max 200 words). Include:
-1. Opening line (personalized)
-2. Key questions to ask (3-4)
-3. Value proposition angle based on their industry
-4. How to handle their known objections
-5. Closing move / next step to push for
-
-${ctx}
-
-Be specific, practical, and conversational. No generic advice.`;const result=await askGemini(prompt,400);el.textContent=result||'Could not generate — check your API key.';}
-
-async function aiDraftMessage(id){const lead=allLeads.find(l=>l.id===id);if(!lead)return;const tone=document.getElementById('aiMsgTone-'+id)?.value||'friendly';const ctx=getLeadContext(lead);const prompt=`You are writing a WhatsApp message for Business Booster (digital marketing agency, Sri Lanka) to send to a lead. Write a short, ${tone} WhatsApp message (max 80 words). Keep it natural, no emojis overload. Must feel personal, not templated.
-
-${ctx}
-
-Write ONLY the message text, nothing else.`;const result=await askGemini(prompt,200);if(result){const msgEl=document.getElementById('aiMsg-'+id);const textEl=document.getElementById('aiMsgText-'+id);const sendEl=document.getElementById('aiMsgSend-'+id);if(msgEl)msgEl.style.display='block';if(textEl)textEl.value=result;if(sendEl)sendEl.href=waLink(lead.contact_phone)+'?text='+encodeURIComponent(result);}}
-
 function generateSmartAlerts(){const alerts=[];const now=Date.now();
 allLeads.filter(l=>!['closed_won','closed_lost'].includes(l.stage)).forEach(l=>{
 const dsc=daysSinceContact(l);const sc=calcScore(l);const acts=allActivities.filter(a=>a.pipeline_id===l.id);
@@ -1227,15 +1227,6 @@ const todayActs=allActivities.filter(a=>a.created_at?.startsWith(today())).lengt
 if(todayActs===0){const hour=new Date().getHours();if(hour>=11)alerts.push({sev:'info',icon:'phone',msg:`No activities logged today yet. Start making calls!`});}
 alerts.sort((a,b)=>(a.sev==='critical'?0:a.sev==='warning'?1:2)-(b.sev==='critical'?0:b.sev==='warning'?1:2));
 return alerts;}
-
-async function aiAnalyzeLeads(){if(!GEMINI_KEY){toast('Set Gemini API key first','error');return;}const el=document.getElementById('aiInsightsBox');if(!el)return;el.style.display='block';el.innerHTML='<div style="color:var(--accent);font-size:13px">Analyzing your pipeline...</div>';
-const active=activeLeads();const summary=`Pipeline: ${active.length} active leads, ${allLeads.filter(l=>l.stage==='closed_won').length} won, ${allLeads.filter(l=>l.stage==='closed_lost').length} lost.
-Stages: ${STAGES.map(s=>s.label+': '+allLeads.filter(l=>l.stage===s.key).length).join(', ')}
-Top leads: ${active.sort((a,b)=>calcScore(b)-calcScore(a)).slice(0,5).map(l=>`${l.name}(score:${calcScore(l)},stage:${l.stage},${daysSinceContact(l)}d silent)`).join('; ')}
-Activities today: ${allActivities.filter(a=>a.created_at?.startsWith(today())).length}
-Overdue FUs: ${allFollowUps.filter(f=>!f.is_done&&f.due_date<today()).length}`;
-const prompt=`You are an AI sales manager for Business Booster (digital marketing agency, Sri Lanka). Analyze this pipeline data and give 3-5 specific, actionable insights. Be direct, use names. Max 150 words.\n\n${summary}`;
-const result=await askGemini(prompt,300);el.innerHTML=result?`<div style="font-size:12px;line-height:1.7;color:var(--text-2);white-space:pre-wrap">${esc(result)}</div>`:'<div style="color:var(--text-3)">Could not analyze — check API key</div>';}
 
 function exportRevenueCSV(){const won=allLeads.filter(l=>l.stage==='closed_won');const active=allLeads.filter(l=>!['closed_won','closed_lost'].includes(l.stage));const headers=['Type','Name','Contact','Stage','Win%','Deal Value','Weighted Value','Owner','Date'];const wonRows=won.map(l=>['Realized',l.name,l.contact_name||'','Won','100%',l.estimated_value||0,l.estimated_value||0,ownerLabel(l.owner),l.updated_at?.split('T')[0]||'']);const activeRows=active.map(l=>{const wp=WIN_PROB[l.stage]||5;return['Pipeline',l.name,l.contact_name||'',stageInfo(l.stage).label,wp+'%',l.estimated_value||0,Math.round((l.estimated_value||0)*wp/100),ownerLabel(l.owner),l.created_at?.split('T')[0]||''];});const allRows=[...wonRows,...activeRows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`));const realizedTotal=won.reduce((s,l)=>s+(l.estimated_value||0),0);const weightedTotal=Math.round(active.reduce((s,l)=>s+(l.estimated_value||0)*(WIN_PROB[l.stage]||5)/100,0));allRows.push(['','','','','','','','','']);allRows.push(['TOTAL REALIZED','','','','',realizedTotal,realizedTotal,'','']);allRows.push(['TOTAL WEIGHTED PIPELINE','','','','','',weightedTotal,'','']);allRows.push(['TOTAL FORECAST','','','','','',realizedTotal+weightedTotal,'','']);const csv=[headers.join(','),...allRows.map(r=>r.join(','))].join('\n');const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`bb-revenue-report-${today()}.csv`;a.click();URL.revokeObjectURL(url);auditLog('EXPORT_REVENUE','Revenue report exported');toast('Revenue report exported ✓');}
 function exportLeadsCSV(){const headers=['Name','Contact','Phone','Email','Industry','Source','Stage','Value','Score','Owner','Tags','Created','Last Contact'];const rows=allLeads.map(l=>[l.name,l.contact_name,l.contact_phone,l.contact_email,l.industry,SOURCES[l.source]||l.source,stageInfo(l.stage).label,l.estimated_value||'',calcScore(l),ownerLabel(l.owner),(l.tags||[]).join(';'),l.created_at?.split('T')[0]||'',l.last_contact_at?.split('T')[0]||''].map(v=>`"${String(v||'').replace(/"/g,'""')}"`));const csv=[headers.join(','),...rows.map(r=>r.join(','))].join('\n');const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`bb-leads-export-${today()}.csv`;a.click();URL.revokeObjectURL(url);auditLog('EXPORT_ALL',`${allLeads.length} leads exported as CSV`);toast('Exported '+allLeads.length+' leads ✓');}
@@ -1422,15 +1413,15 @@ ${!isStaff?`
 <div class="section-body" style="overflow-x:auto">
 <table style="width:100%;border-collapse:collapse;font-size:11px;min-width:500px">
 <thead><tr style="color:var(--text-2)">
-<th style="text-align:left;padding:5px 6px;border-bottom:1px solid var(--border)">Date</th>
-${allCodes.map(c=>`<th style="text-align:right;padding:5px 6px;border-bottom:1px solid var(--border)">${ownerLabel(c)}</th>`).join('')}
-<th style="text-align:right;padding:5px 6px;border-bottom:1px solid var(--border)">Team Total</th>
+<th style="text-align:left;padding:8px 6px;border-bottom:2px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1">Day</th>
+${allCodes.map(c=>`<th style="text-align:right;padding:8px 6px;border-bottom:2px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1">${ownerLabel(c)}</th>`).join('')}
+<th style="text-align:right;padding:8px 6px;border-bottom:2px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1">Team Total</th>
 </tr></thead>
 <tbody>
-${days.map(d=>{const row=hoursLog[d]||{};const total=allCodes.reduce((s,c)=>s+(row[c]||0),0);return`<tr style="${d===today()?'background:var(--surface-2);':''}">
-<td style="padding:5px 6px;border-bottom:1px solid var(--border);color:var(--text-2)">${d.slice(5)}</td>
-${allCodes.map(c=>{const h=row[c];return`<td style="text-align:right;padding:5px 6px;border-bottom:1px solid var(--border);font-weight:${h?'600':'400'};color:${h?'var(--text)':'var(--text-3)'}">${h||'—'}</td>`;}).join('')}
-<td style="text-align:right;padding:5px 6px;border-bottom:1px solid var(--border);font-weight:700;color:var(--accent)">${total||'—'}</td>
+${days.map(d=>{const row=hoursLog[d]||{};const total=allCodes.reduce((s,c)=>s+(row[c]||0),0);const dt=new Date(d+'T00:00');const wd=dt.toLocaleDateString('en-US',{weekday:'short'});const dd=dt.toLocaleDateString('en-US',{day:'numeric',month:'short'});const isToday=d===today();const isWeekend=dt.getDay()===0||dt.getDay()===6;return`<tr style="${isToday?'background:var(--accent-soft);':isWeekend?'background:var(--surface-2);opacity:.75;':''}">
+<td style="padding:7px 6px;border-bottom:1px solid var(--border);white-space:nowrap"><span style="font-weight:700;color:${isToday?'var(--accent)':'var(--text)'}">${wd}</span> <span style="color:var(--text-3);font-size:10px">${dd}</span>${isToday?' <span style="font-size:9px;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:1px 6px;border-radius:10px;margin-left:2px">TODAY</span>':''}</td>
+${allCodes.map(c=>{const h=row[c];return`<td style="text-align:right;padding:7px 6px;border-bottom:1px solid var(--border);font-weight:${h?'600':'400'};color:${h?'var(--text)':'var(--text-3)'}">${h||'—'}</td>`;}).join('')}
+<td style="text-align:right;padding:7px 6px;border-bottom:1px solid var(--border);font-weight:700;color:var(--accent)">${total||'—'}</td>
 </tr>`;}).join('')}
 </tbody>
 </table>
@@ -1508,14 +1499,11 @@ const pg=document.getElementById('page-agents');
 const smartAlerts=generateSmartAlerts();
 const SEV_COLOR={critical:'#f87171',warning:'#fbbf24',info:'#60a5fa'};
 pg.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:24px">
-<div><div class="page-header" style="margin-bottom:0"><div class="page-label">System</div><h1>${icon('bolt',20)} Agents & AI</h1><div class="page-sub">Smart alerts, AI insights & agent monitors</div></div></div>
+<div><div class="page-header" style="margin-bottom:0"><div class="page-label">System</div><h1>${icon('bolt',20)} Agents</h1><div class="page-sub">Smart alerts & agent monitors</div></div></div>
 <div style="display:flex;gap:8px;flex-wrap:wrap">
-<button class="btn btn-sm btn-secondary" onclick="setGeminiKey()">${icon('key',14)} API Key</button>
-<button class="btn btn-sm btn-secondary" onclick="aiAnalyzeLeads()">${icon('ai',14)} AI Insights</button>
 <button id="agents-refresh-btn" onclick="loadLeadsAgentAlerts()" style="padding:8px 14px;border-radius:8px;background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer">↻ Refresh</button>
 <button onclick="markAllLeadsAlertsRead()" style="padding:8px 14px;border-radius:8px;background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer">Mark all read</button>
 </div></div>
-<div id="aiInsightsBox" style="display:none;background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius-lg);padding:18px;margin-bottom:20px"><h4 style="font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:700">${icon('ai',14)} AI Pipeline Analysis</h4></div>
 ${smartAlerts.length?`<div class="section" style="margin-bottom:20px"><div class="section-head"><h3>${icon('brain',16)} Smart Alerts</h3><span class="count">${smartAlerts.length}</span></div><div class="section-body">${smartAlerts.map(a=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);border-left:3px solid ${SEV_COLOR[a.sev]};cursor:${a.leadId?'pointer':'default'}" ${a.leadId?`onclick="openDetail(${a.leadId})"`:''}><span style="flex-shrink:0">${icon(a.icon,18)}</span><div style="flex:1"><div style="font-size:12px;color:var(--text)">${esc(a.msg)}</div></div><span style="font-size:9px;font-weight:700;color:${SEV_COLOR[a.sev]};text-transform:uppercase">${a.sev}</span></div>`).join('')}</div></div>`:`<div style="background:var(--green-soft);border:1px solid var(--green);border-radius:var(--radius-lg);padding:18px;margin-bottom:20px;text-align:center;font-size:13px;color:var(--green)">${icon('checkcircle',16)} All clear — no smart alerts. Your pipeline is healthy!</div>`}
 <h3 style="font-size:14px;font-weight:700;margin-bottom:12px">Agent Monitors</h3>
 <div id="leads-agents-list"><div style="color:var(--text-3);font-size:13px;padding:24px 0;text-align:center;">Loading...</div></div>`;
