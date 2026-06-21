@@ -264,14 +264,22 @@ select{cursor:pointer}
 .call-prep .cp-label{font-size:10px;text-transform:uppercase;color:var(--text-3);font-weight:600;letter-spacing:.5px;margin-bottom:3px}
 .call-prep .cp-val{font-size:12px;color:var(--text-2);line-height:1.6}
 .call-prep .cp-val.empty{font-style:italic;color:var(--text-3);font-size:11px}
-.game-plan{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-top:12px}
-.game-plan .gp-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
-.game-plan .gp-title{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1.2px;display:flex;align-items:center;gap:6px}
+.game-plan{background:linear-gradient(160deg,var(--surface-2),var(--surface));border:1px solid var(--border-strong,var(--border));border-radius:var(--radius-lg);padding:16px;margin-top:12px}
+.game-plan .gp-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.game-plan .gp-title{font-size:12px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:1.2px;display:flex;align-items:center;gap:6px}
 .game-plan .gp-stake{font-size:11px;font-weight:700;color:var(--green);background:var(--green-soft);padding:4px 10px;border-radius:20px;white-space:nowrap}
-.game-plan .gp-row{display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border)}
-.game-plan .gp-row:last-child{border-bottom:none;padding-bottom:0}
-.game-plan .gp-icn{flex-shrink:0;width:28px;height:28px;border-radius:8px;background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--accent)}
-.game-plan .gp-label{font-size:10px;text-transform:uppercase;color:var(--text-3);font-weight:700;letter-spacing:.5px;margin-bottom:3px}
+.game-plan .gp-prog{margin-bottom:14px}
+.game-plan .gp-prog-track{position:relative;height:7px;background:var(--surface-2);border:1px solid var(--border);border-radius:20px;overflow:visible}
+.game-plan .gp-prog-fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--accent),var(--amber));border-radius:20px}
+.game-plan .gp-prog-target{position:absolute;top:-3px;width:2px;height:13px;background:var(--green);border-radius:2px}
+.game-plan .gp-prog-labels{display:flex;justify-content:space-between;margin-top:5px;font-size:10px;font-weight:600;color:var(--text-3)}
+.game-plan .gp-prog-labels span:last-child{color:var(--green)}
+.game-plan .gp-row{display:flex;gap:11px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--border)}
+.game-plan .gp-num{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;font-family:Poppins,Inter}
+.game-plan .gp-body{flex:1;min-width:0}
+.game-plan .gp-label{font-size:10px;text-transform:uppercase;color:var(--text-3);font-weight:700;letter-spacing:.5px;margin-bottom:3px;display:flex;align-items:center;gap:8px}
+.game-plan .gp-copy{font-size:9px;text-transform:uppercase;letter-spacing:.5px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-2);padding:2px 7px;border-radius:6px;cursor:pointer;font-weight:700}
+.game-plan .gp-copy:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
 .game-plan .gp-val{font-size:12.5px;color:var(--text);line-height:1.55}
 
 /* ===== INTELLIGENCE ===== */
@@ -344,6 +352,16 @@ select{cursor:pointer}
 
 /* ===== ANALYTICS ===== */
 .analytics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.rev-sheet{width:100%;border-collapse:collapse;font-size:12.5px}
+.rev-sheet th{text-align:left;padding:9px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-3);font-weight:700;border-bottom:2px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:2}
+.rev-sheet td{padding:9px 12px;border-bottom:1px solid var(--border)}
+.rev-sheet .num{text-align:right;font-family:Poppins,Inter;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rev-sheet tr.rev-grp td{background:var(--surface-2);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text);border-top:1px solid var(--border)}
+.rev-sheet tr.rev-deal:hover td{background:var(--surface-2);cursor:pointer}
+.rev-sheet tr.rev-sub td{font-weight:700;color:var(--text-2);background:var(--bg);font-size:11px}
+.rev-sheet tr.rev-total td{font-weight:800;font-size:13px;color:var(--text);border-top:2px solid var(--accent);background:var(--accent-soft)}
+.rev-wt{color:var(--accent);font-weight:700}
+.rev-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:auto;max-height:calc(100vh - 320px)}
 .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:all .2s}
 .chart-card:hover{border-color:var(--border-strong)}
 .chart-card h3{font-size:14px;font-weight:700;margin-bottom:16px}
@@ -595,6 +613,7 @@ input,select,textarea{font-size:16px;padding:12px 14px;border-radius:10px}
 <div class="sb-link" data-page="pipeline" onclick="nav('pipeline')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Pipeline Board</div>
 <div class="sb-link" data-page="leads" onclick="nav('leads')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>All Leads</div>
 <div class="sb-section">Analytics</div>
+<div class="sb-link" data-page="revenue" onclick="nav('revenue')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>Revenue Pipeline</div>
 <div class="sb-link" data-page="analytics" onclick="nav('analytics')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>Performance</div>
 <div class="sb-section">Team</div>
 <div class="sb-link" data-page="hours" onclick="nav('hours')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Hours Log</div>
@@ -615,6 +634,7 @@ input,select,textarea{font-size:16px;padding:12px 14px;border-radius:10px}
 <div class="page active" id="page-dashboard"></div>
 <div class="page" id="page-pipeline"></div>
 <div class="page" id="page-leads"></div>
+<div class="page" id="page-revenue"></div>
 <div class="page" id="page-analytics"></div>
 <div class="page" id="page-hours"></div>
 <div class="page" id="page-agents"></div>
@@ -819,12 +839,13 @@ const emphasis=lead.pain_points?`Lead with their pain — "${lead.pain_points}"`
 const watch=lead.objections?`"${lead.objections}" — have your answer ready`:'Listen for hesitation on budget or timing, and handle it early';
 const rows=[
 {l:'Your objective',v:pb.goal,i:'target'},
-{l:'Suggested opener',v:opener,i:'message'},
+{l:'Suggested opener',v:opener,i:'message',copy:opener.replace(/^"|"$/g,'')},
 {l:'Emphasize',v:emphasis,i:'star'},
 {l:'Watch out for',v:watch,i:'alert'},
 {l:'Close on',v:pb.ask,i:'trophy'}
 ];
-return `<div class="game-plan"><div class="gp-head"><div class="gp-title">${icon('target',15)} Call Game Plan</div>${lead.estimated_value?`<div class="gp-stake">${fmtValue(lead.estimated_value)} at stake · ${wp}%${nextWp?` → ${nextWp}% win`:' win'}</div>`:''}</div>${rows.map(r=>`<div class="gp-row"><div class="gp-icn">${icon(r.i,14)}</div><div><div class="gp-label">${r.l}</div><div class="gp-val">${esc(r.v)}</div></div></div>`).join('')}</div>`;
+const bar=nextWp?`<div class="gp-prog"><div class="gp-prog-track"><div class="gp-prog-fill" style="width:${wp}%"></div><div class="gp-prog-target" style="left:${nextWp}%"></div></div><div class="gp-prog-labels"><span>Now ${wp}%</span><span>Next stage ${nextWp}%</span></div></div>`:'';
+return `<div class="game-plan"><div class="gp-head"><div class="gp-title">${icon('target',15)} Call Game Plan</div>${lead.estimated_value?`<div class="gp-stake">${fmtValue(lead.estimated_value)} at stake</div>`:''}</div>${bar}${rows.map((r,n)=>`<div class="gp-row"><div class="gp-num">${n+1}</div><div class="gp-body"><div class="gp-label">${r.l}${r.copy?` <button class="gp-copy" onclick="event.stopPropagation();navigator.clipboard.writeText(this.dataset.t).then(()=>toast('Opener copied ✓'))" data-t="${esc(r.copy)}">copy</button>`:''}</div><div class="gp-val">${esc(r.v)}</div></div></div>`).join('')}</div>`;
 }
 
 let currentUser=null,allLeads=[],allActivities=[],allFollowUps=[];
@@ -908,7 +929,7 @@ function demoGuard(){if(isDemoMode){toast('Demo mode — read only','error');ret
 function updateFUBadge(){const c=allFollowUps.filter(f=>!f.is_done&&f.due_date<=today()).length;const b=document.getElementById('sbFuBadge');if(c>0){b.textContent=c;b.style.display='inline';}else{b.style.display='none';}}
 
 /* ===== NAV ===== */
-function nav(page){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));const pg=document.getElementById('page-'+page);if(pg)pg.classList.add('active');const ln=document.querySelector(`.sb-link[data-page="${page}"]`);if(ln)ln.classList.add('active');closeSidebar();if(page==='dashboard')renderDashboard();else if(page==='pipeline')renderPipeline();else if(page==='leads')renderLeads();else if(page==='analytics')renderAnalytics();else if(page==='hours')renderHours();else if(page==='agents')renderAgents();}
+function nav(page){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));const pg=document.getElementById('page-'+page);if(pg)pg.classList.add('active');const ln=document.querySelector(`.sb-link[data-page="${page}"]`);if(ln)ln.classList.add('active');closeSidebar();if(page==='dashboard')renderDashboard();else if(page==='pipeline')renderPipeline();else if(page==='leads')renderLeads();else if(page==='revenue')renderRevenue();else if(page==='analytics')renderAnalytics();else if(page==='hours')renderHours();else if(page==='agents')renderAgents();}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbOverlay').classList.toggle('open');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOverlay').classList.remove('open');}
 
@@ -1291,6 +1312,48 @@ csvData=rows.map(r=>({name:r.name||r.business||r.company||'',contact_name:r.cont
 document.getElementById('csvPreview').style.display='block';document.getElementById('csvPreview').innerHTML=`<div style="font-size:13px;font-weight:600;margin-bottom:8px">${csvData.length} leads found</div><div style="max-height:200px;overflow-y:auto;font-size:12px;color:var(--text-2)">${csvData.slice(0,10).map(r=>`<div style="padding:4px 0;border-bottom:1px solid var(--border)">${esc(r.name)} ${r.contact_phone?' · '+esc(r.contact_phone):''}</div>`).join('')}${csvData.length>10?`<div style="color:var(--text-3);padding:4px 0">+${csvData.length-10} more</div>`:''}</div>`;
 document.getElementById('csvImportBtn').style.display='inline-flex';};reader.readAsText(file);}
 async function importCSV(){if(demoGuard())return;if(!csvData||!csvData.length)return;let imported=0;for(const row of csvData){const data={name:row.name,contact_name:row.contact_name||null,contact_phone:row.contact_phone||null,contact_email:row.contact_email||null,industry:row.industry||null,source:row.source||'other',stage:'new_lead',status:'active',owner:currentUser?.code||'th',estimated_value:null,temperature:'cold'};const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);imported++;}}closeModal('csvModal');auditLog('IMPORT_CSV',`${imported} leads imported`);toast(`${imported} leads imported`);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+
+/* ===== REVENUE PIPELINE ===== */
+function fmtLKR(v){return 'LKR '+Math.round(v||0).toLocaleString('en-US');}
+function renderRevenue(){
+const pg=document.getElementById('page-revenue');
+const won=allLeads.filter(l=>l.stage==='closed_won');
+const lost=allLeads.filter(l=>l.stage==='closed_lost');
+const active=allLeads.filter(l=>!['closed_won','closed_lost','on_hold'].includes(l.stage));
+const onHold=allLeads.filter(l=>l.stage==='on_hold');
+const realized=won.reduce((s,l)=>s+(l.estimated_value||0),0);
+const pipeVal=active.reduce((s,l)=>s+(l.estimated_value||0),0);
+const weighted=Math.round(active.reduce((s,l)=>s+(l.estimated_value||0)*(WIN_PROB[l.stage]||5)/100,0));
+const forecast=realized+weighted;
+// group active deals by stage (pipeline order)
+const groups=STAGES.map(s=>{
+const ls=active.filter(l=>l.stage===s.key).sort((a,b)=>(b.estimated_value||0)-(a.estimated_value||0));
+const val=ls.reduce((sum,l)=>sum+(l.estimated_value||0),0);
+const wt=Math.round(ls.reduce((sum,l)=>sum+(l.estimated_value||0)*(WIN_PROB[s.key]||5)/100,0));
+return {s,ls,val,wt};
+});
+const dealRow=l=>{const wp=WIN_PROB[l.stage]||0;const wv=Math.round((l.estimated_value||0)*wp/100);const age=l.stage_changed_at?daysSince(l.stage_changed_at):daysSince(l.created_at);return `<tr class="rev-deal" onclick="openDetail(${l.id})"><td><div style="font-weight:600">${esc(l.name)}</div><div style="font-size:11px;color:var(--text-3)">${esc(l.contact_name||'')}</div></td><td>${ownerAvatar(l.owner)}</td><td class="num">${wp}%</td><td class="num">${fmtLKR(l.estimated_value)}</td><td class="num rev-wt">${fmtLKR(wv)}</td><td class="num" style="color:${age>=10?'var(--red)':age>=5?'var(--amber)':'var(--text-3)'}">${age}d</td></tr>`;};
+let body='';
+groups.forEach(g=>{
+body+=`<tr class="rev-grp"><td><span class="dot" style="background:${g.s.color};display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px"></span>${g.s.label} (${g.ls.length})</td><td></td><td class="num">${WIN_PROB[g.s.key]||0}%</td><td class="num">${fmtLKR(g.val)}</td><td class="num rev-wt">${fmtLKR(g.wt)}</td><td></td></tr>`;
+body+= g.ls.length?g.ls.map(dealRow).join(''):`<tr><td colspan="6" style="color:var(--text-3);font-style:italic;font-size:11px;padding:8px 12px">No deals at this stage</td></tr>`;
+});
+body+=`<tr class="rev-sub"><td>Open Pipeline Subtotal</td><td></td><td></td><td class="num">${fmtLKR(pipeVal)}</td><td class="num rev-wt">${fmtLKR(weighted)}</td><td></td></tr>`;
+if(onHold.length){const ohVal=onHold.reduce((s,l)=>s+(l.estimated_value||0),0);body+=`<tr class="rev-grp"><td><span class="dot" style="background:var(--grey);display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px"></span>On Hold (${onHold.length})</td><td></td><td class="num">5%</td><td class="num">${fmtLKR(ohVal)}</td><td class="num rev-wt">${fmtLKR(Math.round(ohVal*0.05))}</td><td></td></tr>`+onHold.sort((a,b)=>(b.estimated_value||0)-(a.estimated_value||0)).map(dealRow).join('');}
+// realized (won)
+body+=`<tr class="rev-grp"><td><span class="dot" style="background:var(--green);display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px"></span>Realized — Closed Won (${won.length})</td><td></td><td class="num">100%</td><td class="num">${fmtLKR(realized)}</td><td class="num rev-wt">${fmtLKR(realized)}</td><td></td></tr>`;
+body+= won.length?won.sort((a,b)=>(b.estimated_value||0)-(a.estimated_value||0)).map(l=>{const age=daysSince(l.created_at);return `<tr class="rev-deal" onclick="openDetail(${l.id})"><td><div style="font-weight:600">${esc(l.name)}</div><div style="font-size:11px;color:var(--text-3)">${esc(l.contact_name||'')}</div></td><td>${ownerAvatar(l.owner)}</td><td class="num" style="color:var(--green)">Won</td><td class="num">${fmtLKR(l.estimated_value)}</td><td class="num rev-wt" style="color:var(--green)">${fmtLKR(l.estimated_value)}</td><td class="num" style="color:var(--text-3)">${fmtDate(l.updated_at||l.created_at)}</td></tr>`;}).join(''):`<tr><td colspan="6" style="color:var(--text-3);font-style:italic;font-size:11px;padding:8px 12px">No closed deals yet</td></tr>`;
+body+=`<tr class="rev-total"><td>TOTAL FORECAST (Realized + Weighted)</td><td></td><td></td><td class="num">${fmtLKR(realized+pipeVal)}</td><td class="num">${fmtLKR(forecast)}</td><td></td></tr>`;
+pg.innerHTML=`<div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="page-label">Finance</div><h1>Revenue Pipeline</h1><div class="page-sub">Every deal, its value, and what it's worth to the business right now</div></div><button class="btn btn-secondary" onclick="exportRevenueCSV()">${icon('download',14)} Export to Excel/CSV</button></div>
+<div class="stats-row">
+<div class="stat-card green"><div class="stat-icon" style="color:var(--green)">${icon('trophy',20)}</div><div class="stat-label">Realized Revenue</div><div class="stat-val" style="font-size:22px">${fmtLKR(realized)}</div><div class="stat-sub">${won.length} deals won</div></div>
+<div class="stat-card blue"><div class="stat-icon" style="color:var(--blue)">${icon('chart',20)}</div><div class="stat-label">Open Pipeline</div><div class="stat-val" style="font-size:22px">${fmtLKR(pipeVal)}</div><div class="stat-sub">${active.length} active deals</div></div>
+<div class="stat-card accent"><div class="stat-icon" style="color:var(--accent)">${icon('target',20)}</div><div class="stat-label">Weighted Pipeline</div><div class="stat-val" style="font-size:22px">${fmtLKR(weighted)}</div><div class="stat-sub">probability-adjusted</div></div>
+<div class="stat-card purple"><div class="stat-icon" style="color:var(--accent)">${icon('dollar',20)}</div><div class="stat-label">Total Forecast</div><div class="stat-val" style="font-size:22px">${fmtLKR(forecast)}</div><div class="stat-sub">realized + weighted</div></div>
+</div>
+<div class="rev-wrap"><table class="rev-sheet"><thead><tr><th>Deal</th><th>Owner</th><th class="num">Win %</th><th class="num">Deal Value</th><th class="num">Weighted</th><th class="num">Age</th></tr></thead><tbody>${body}</tbody></table></div>
+<div style="font-size:11px;color:var(--text-3);margin-top:10px;line-height:1.6">${icon('lock',11)} <strong>Weighted value</strong> = deal value × win probability for its stage. This is your realistic forecast a finance team can rely on. Click any deal to open it.</div>`;
+}
 
 /* ===== ANALYTICS ===== */
 let analyticsPeriod='all';
