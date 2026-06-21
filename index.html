@@ -282,6 +282,45 @@ select{cursor:pointer}
 .game-plan .gp-copy:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
 .game-plan .gp-val{font-size:12.5px;color:var(--text);line-height:1.55}
 
+/* ===== BRIEFING + TARGET + AT-RISK ===== */
+.hero-row{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:20px}
+.briefing{background:linear-gradient(150deg,var(--surface),var(--surface-2));border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px 24px;display:flex;flex-direction:column;justify-content:center}
+.briefing .br-greet{font-size:13px;color:var(--text-3);font-weight:600;margin-bottom:8px}
+.briefing .br-line{font-size:17px;line-height:1.6;color:var(--text);font-weight:500;font-family:Poppins,Inter}
+.briefing .br-line b{font-weight:800}
+.briefing .br-hi{color:var(--green)}
+.briefing .br-warn{color:var(--amber)}
+.briefing .br-risk{color:var(--red)}
+.target-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.target-card .tc-edit{position:absolute;top:12px;right:14px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-3);font-weight:700;cursor:pointer;background:none;border:none}
+.target-card .tc-edit:hover{color:var(--accent)}
+.target-card .tc-label{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-3);font-weight:700;margin-bottom:10px}
+.ring-wrap{position:relative;width:150px;height:150px}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-center .rc-pct{font-size:30px;font-weight:800;font-family:Poppins,Inter;line-height:1}
+.ring-center .rc-sub{font-size:10px;color:var(--text-3);margin-top:3px}
+.target-card .tc-foot{margin-top:12px;font-size:12px;color:var(--text-2);text-align:center}
+.target-card .tc-foot b{color:var(--text);font-weight:700}
+.at-risk{background:var(--surface);border:1px solid var(--red);border-radius:var(--radius-lg);margin-bottom:20px;overflow:hidden}
+.at-risk .ar-head{display:flex;align-items:center;gap:8px;padding:13px 18px;background:rgba(239,68,68,.07);border-bottom:1px solid var(--border)}
+.at-risk .ar-title{font-size:13px;font-weight:800;color:var(--red);display:flex;align-items:center;gap:7px}
+.at-risk .ar-sub{font-size:11px;color:var(--text-3);margin-left:auto;font-weight:600}
+.at-risk .ar-item{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+.at-risk .ar-item:last-child{border-bottom:none}
+.at-risk .ar-item:hover{background:var(--surface-2)}
+.at-risk .ar-val{font-family:Poppins,Inter;font-weight:800;font-size:15px;color:var(--text);white-space:nowrap}
+.at-risk .ar-name{font-weight:600;font-size:13px}
+.at-risk .ar-meta{font-size:11px;color:var(--text-3);margin-top:2px}
+.at-risk .ar-days{font-size:11px;font-weight:700;color:var(--red);white-space:nowrap}
+.lb-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.lb-row:last-child{border-bottom:none}
+.lb-rank{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;font-family:Poppins,Inter;flex-shrink:0;background:var(--surface-2);color:var(--text-3)}
+.lb-rank.gold{background:rgba(250,204,21,.15);color:#eab308}
+.lb-bar{flex:1;height:8px;background:var(--surface-2);border-radius:20px;overflow:hidden}
+.lb-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--amber));border-radius:20px}
+@media(max-width:768px){.hero-row{grid-template-columns:1fr}}
+
 /* ===== INTELLIGENCE ===== */
 .intel-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .intel-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;transition:border .15s}
@@ -1028,6 +1067,28 @@ const streakSvg={
 // Notification for overdue
 if(overdueFUs.length>0)fireNotif(`${overdueFUs.length} overdue follow-up${overdueFUs.length>1?'s':''}`,`${overdueFUs.map(f=>{const l=myLeads.find(x=>x.id===f.pipeline_id);return l?.name;}).filter(Boolean).join(', ')}`);
 
+// At-Risk Radar: high-value deals going cold
+const atRisk=active.filter(l=>(l.estimated_value||0)>=100000&&daysSinceContact(l)>=7&&l.stage!=='on_hold').sort((a,b)=>(b.estimated_value||0)-(a.estimated_value||0));
+const atRiskVal=atRisk.reduce((s,l)=>s+(l.estimated_value||0),0);
+// Closing-soon: proposal/negotiation
+const closingSoon=active.filter(l=>['negotiation','proposal_sent'].includes(l.stage));
+const closingVal=closingSoon.reduce((s,l)=>s+(l.estimated_value||0),0);
+// Monthly target ring
+const target=parseInt(localStorage.getItem('bb_month_target')||'1000000')||1000000;
+const _mStart=new Date();_mStart.setDate(1);_mStart.setHours(0,0,0,0);
+const wonMonth=myLeads.filter(l=>l.stage==='closed_won'&&new Date(l.updated_at||l.created_at)>=_mStart);
+const wonMonthVal=wonMonth.reduce((s,l)=>s+(l.estimated_value||0),0);
+const tPct=target>0?Math.min(100,Math.round(wonMonthVal/target*100)):0;
+const monthName=new Date().toLocaleDateString('en-US',{month:'long'});
+// Briefing sentence
+const hr=new Date().getHours();const greet=hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+const brParts=[];
+if(closingSoon.length)brParts.push(`<span class="br-hi"><b>${fmtValue(closingVal)}</b></span> is close to landing across ${closingSoon.length} deal${closingSoon.length>1?'s':''} in proposal or negotiation`);
+if(atRisk.length)brParts.push(`<span class="br-risk"><b>${atRisk.length} deal${atRisk.length>1?'s':''}</b> worth ${fmtValue(atRiskVal)}</span> ${atRisk.length>1?'are':'is'} going cold`);
+if(overdueFUs.length)brParts.push(`<span class="br-warn"><b>${overdueFUs.length}</b> follow-up${overdueFUs.length>1?'s are':' is'} overdue</span>`);
+if(!brParts.length)brParts.push(`your pipeline is calm — <b>${active.length}</b> active deals and nothing urgent right now`);
+const briefing=`${greet}, ${currentUser.name.split(' ')[0]}. ${brParts.slice(0,2).join(', and ')}.`;
+
 const dashLabel=isStaff?`${currentUser.name}'s Dashboard`:'Team Dashboard';
 const pg=document.getElementById('page-dashboard');
 pg.innerHTML=`
@@ -1036,11 +1097,26 @@ pg.innerHTML=`
 <div style="display:flex;gap:8px"><button class="btn btn-primary" onclick="openAddLead()">${icon('plus',14)} Add Lead</button><button class="btn btn-secondary" onclick="openCSVImport()">${icon('import',14)} Import</button></div>
 </div>
 
-<div class="streak-bar ${myTodayCount>=3?'fire':''}">
-<div class="streak-icon" style="color:var(--accent)">${streakSvg}</div>
-<div class="streak-info"><div class="streak-title">${streakMsg}</div><div class="streak-sub">${myTodayCount} activit${myTodayCount===1?'y':'ies'} logged today</div></div>
-<div class="streak-dots">${[1,2,3,4,5].map(n=>`<div class="streak-dot ${n<=myTodayCount?'filled':''}"></div>`).join('')}</div>
+<div class="hero-row">
+<div class="briefing">
+<div class="br-greet">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
+<div class="br-line">${briefing}</div>
 </div>
+<div class="target-card">
+<button class="tc-edit" onclick="setMonthTarget()">Edit goal</button>
+<div class="tc-label">${monthName} Target${isStaff?' · Me':''}</div>
+<div class="ring-wrap">
+<svg width="150" height="150" viewBox="0 0 150 150"><circle cx="75" cy="75" r="62" fill="none" stroke="var(--surface-2)" stroke-width="12"/><circle cx="75" cy="75" r="62" fill="none" stroke="${tPct>=100?'var(--green)':'var(--accent)'}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${(2*Math.PI*62).toFixed(1)}" stroke-dashoffset="${(2*Math.PI*62*(1-tPct/100)).toFixed(1)}" style="transition:stroke-dashoffset .6s ease"/></svg>
+<div class="ring-center"><div class="rc-pct" style="color:${tPct>=100?'var(--green)':'var(--text)'}">${tPct}%</div><div class="rc-sub">of goal</div></div>
+</div>
+<div class="tc-foot"><b>${fmtValue(wonMonthVal)}</b> won of ${fmtValue(target)}</div>
+</div>
+</div>
+
+${atRisk.length?`<div class="at-risk">
+<div class="ar-head"><div class="ar-title">${icon('alert',15)} At-Risk Radar</div><div class="ar-sub">${fmtValue(atRiskVal)} at risk · high-value & going cold</div></div>
+${atRisk.slice(0,5).map(l=>{const d=daysSinceContact(l);return `<div class="ar-item" onclick="openDetail(${l.id})"><div style="flex:1;min-width:0"><div class="ar-name">${esc(l.name)}</div><div class="ar-meta">${stageInfo(l.stage).label} · ${ownerLabel(l.owner)}${l.contact_name?' · '+esc(l.contact_name):''}</div></div><div style="text-align:right"><div class="ar-val">${fmtValue(l.estimated_value)}</div><div class="ar-days">${d}d silent</div></div>${l.contact_phone?`<a href="${waLink(l.contact_phone)}" target="_blank" style="color:#25D366;flex-shrink:0" onclick="event.stopPropagation()" title="WhatsApp now">${icon('message',18)}</a>`:''}</div>`;}).join('')}
+</div>`:''}
 
 <div class="stats-row">
 <div class="stat-card blue"><div class="stat-icon" style="color:var(--blue)">${icon('users',20)}</div><div class="stat-label">Active Leads</div><div class="stat-val">${active.length}</div><div class="stat-sub">${thisWeek.length} new this week</div></div>
@@ -1084,6 +1160,7 @@ ${l.contact_phone?`<a href="${waLink(l.contact_phone)}" target="_blank" style="c
 `;
 }
 
+function setMonthTarget(){const cur=parseInt(localStorage.getItem('bb_month_target')||'1000000');const v=prompt('Set this month\'s revenue target (LKR):',cur);if(v!==null){const n=parseInt(String(v).replace(/[^0-9]/g,''))||0;if(n>0){localStorage.setItem('bb_month_target',n);toast('Monthly target updated ✓');renderDashboard();}else{toast('Enter a valid number','error');}}}
 async function completeFU(id){if(demoGuard())return;const res=await sbPatch('lead_follow_ups',id,{is_done:true,completed_at:new Date().toISOString()});if(!res){toast('Failed','error');return;}const i=allFollowUps.findIndex(f=>f.id===id);if(i>=0)allFollowUps[i].is_done=true;toast('Follow-up done ✓');updateFUBadge();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== PIPELINE BOARD ===== */
@@ -1370,6 +1447,13 @@ const funnel=ALL_STAGES.map(s=>({...s,count:pLeads.filter(l=>l.stage===s.key).le
 const sources=Object.keys(SOURCES).map(k=>({k,l:SOURCES[k],c:pLeads.filter(l=>l.source===k).length})).filter(s=>s.c>0).sort((a,b)=>b.c-a.c);
 const actTypes=['call','message','meeting','email','proposal','note'].map(t=>({t,c:pActs.filter(a=>a.type===t).length})).filter(t=>t.c>0);
 const stageFlow=STAGES.slice(0,-1).map((s,i)=>{const next=STAGES[i+1];const inStage=allLeads.filter(l=>ALL_STAGES.findIndex(x=>x.key===l.stage)>=i+1).length;const fromStage=allLeads.filter(l=>ALL_STAGES.findIndex(x=>x.key===l.stage)>=i).length;return{from:s.label,to:next.label,rate:fromStage>0?((inStage/fromStage)*100).toFixed(0):0};});
+// Bottleneck = weakest stage transition (with enough volume to matter)
+const flowWithData=stageFlow.filter(s=>parseInt(s.rate)>=0);
+const bottleneck=flowWithData.length?flowWithData.reduce((min,s)=>parseInt(s.rate)<parseInt(min.rate)?s:min):null;
+// Leaderboard: rank team by revenue won
+const _nm={'th':'THULAIB','sh':'SHIARA','pv':'PAVITH','nv':'NIRVANA'};
+const leaders=['th','sh','pv','nv'].map(o=>{const ol=allLeads.filter(l=>{if(!l.owner)return false;const ow=l.owner.toLowerCase();return ow===o||ow===_nm[o].toLowerCase();});const ow=ol.filter(l=>l.stage==='closed_won');const wonVal=ow.reduce((s,l)=>s+(l.estimated_value||0),0);const oa=allActivities.filter(a=>a.logged_by===_nm[o]).length;return{o,leads:ol.length,won:ow.length,wonVal,acts:oa};}).sort((a,b)=>b.wonVal-a.wonVal||b.won-a.won);
+const maxWonVal=Math.max(...leaders.map(l=>l.wonVal),1);
 pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="page-label">Analytics</div><h1>Performance</h1></div><div style="display:flex;gap:6px">${[{v:'all',l:'All Time'},{v:'7d',l:'7 Days'},{v:'30d',l:'30 Days'},{v:'90d',l:'90 Days'}].map(p=>`<button class="btn btn-sm ${analyticsPeriod===p.v?'btn-primary':'btn-secondary'}" onclick="analyticsPeriod='${p.v}';renderAnalytics()">${p.l}</button>`).join('')}</div></div>
 <div class="stats-row">
 <div class="stat-card green"><div class="stat-icon" style="color:var(--green)">${icon('trending',20)}</div><div class="stat-label">Conversion Rate</div><div class="stat-val">${conv}%</div><div class="stat-sub">${won.length} won / ${total}</div></div>
@@ -1377,13 +1461,14 @@ pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;ju
 <div class="stat-card amber"><div class="stat-icon" style="color:var(--amber)">${icon('chart',20)}</div><div class="stat-label">Win/Loss</div><div class="stat-val">${lost.length?`${(won.length/lost.length).toFixed(1)}:1`:'∞'}</div><div class="stat-sub">${won.length}W / ${lost.length}L</div></div>
 <div class="stat-card purple"><div class="stat-icon" style="color:var(--accent)">${icon('phone',20)}</div><div class="stat-label">Activities</div><div class="stat-val">${allActivities.length}</div><div class="stat-sub">total logged</div></div>
 </div>
+${bottleneck?`<div style="background:linear-gradient(135deg,var(--surface),var(--surface-2));border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px"><div style="color:var(--amber);flex-shrink:0">${icon('alert',22)}</div><div><div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);font-weight:700;margin-bottom:3px">Biggest Bottleneck</div><div style="font-size:15px;color:var(--text);font-weight:500">Deals stall most at <b>${bottleneck.from} → ${bottleneck.to}</b> — only <b style="color:var(--amber)">${bottleneck.rate}%</b> advance. Focus coaching here.</div></div></div>`:''}
 <div class="analytics-grid">
 <div class="chart-card"><h3>Pipeline Funnel</h3>${funnel.map(f=>`<div class="funnel-bar"><div class="fb-label">${f.label} <span style="color:var(--text-3);font-size:10px">${WIN_PROB[f.key]||0}%</span></div><div class="fb-track"><div class="fb-fill" style="width:${(f.count/mx)*100}%;background:${f.color}">${f.count}</div></div></div>`).join('')}</div>
 <div class="chart-card"><h3>Key Metrics</h3><div class="metric-row"><span class="mr-label">Active Leads</span><span class="mr-val">${active.length}</span></div><div class="metric-row"><span class="mr-label">Pipeline Value</span><span class="mr-val">${fmtValue(pipeVal)}</span></div><div class="metric-row"><span class="mr-label">Weighted Value</span><span class="mr-val">${fmtValue(Math.round(active.reduce((s,l)=>s+(l.estimated_value||0)*(WIN_PROB[l.stage]||10)/100,0)))}</span></div><div class="metric-row"><span class="mr-label">Avg Score</span><span class="mr-val">${active.length?Math.round(active.reduce((s,l)=>s+calcScore(l),0)/active.length):0}</span></div><div class="metric-row"><span class="mr-label">Hot Leads</span><span class="mr-val">${active.filter(l=>l.is_hot).length}</span></div><div class="metric-row"><span class="mr-label">Overdue FUs</span><span class="mr-val" style="color:var(--red)">${allFollowUps.filter(f=>!f.is_done&&f.due_date<today()).length}</span></div></div>
 <div class="chart-card"><h3>Lead Sources</h3>${sources.map(s=>`<div class="funnel-bar"><div class="fb-label">${s.l}</div><div class="fb-track"><div class="fb-fill" style="width:${(s.c/Math.max(...sources.map(x=>x.c),1))*100}%;background:var(--accent)">${s.c}</div></div></div>`).join('')}${!sources.length?'<div class="section-empty">No data</div>':''}</div>
 <div class="chart-card"><h3>Activity Types</h3>${actTypes.map(t=>`<div class="funnel-bar"><div class="fb-label">${ACT_ICONS[t.t]||''} ${t.t}</div><div class="fb-track"><div class="fb-fill" style="width:${(t.c/Math.max(...actTypes.map(x=>x.c),1))*100}%;background:var(--blue)">${t.c}</div></div></div>`).join('')}${!actTypes.length?'<div class="section-empty">No data</div>':''}</div>
 <div class="chart-card"><h3>Stage Conversion Rates</h3>${stageFlow.map(s=>`<div class="metric-row"><span class="mr-label">${s.from} → ${s.to}</span><span class="mr-val" style="color:${parseInt(s.rate)>=60?'var(--green)':parseInt(s.rate)>=30?'var(--amber)':'var(--red)'}">${s.rate}%</span></div>`).join('')}</div>
-<div class="chart-card"><h3>Owner Performance</h3>${(()=>{const nameMap={'th':'THULAIB','sh':'SHIARA','pv':'PAVITH','nv':'NIRVANA'};return['th','sh','pv','nv'].map(o=>{const ol=allLeads.filter(l=>{if(!l.owner)return false;const ow=l.owner.toLowerCase();return ow===o||ow===nameMap[o].toLowerCase();});const ow=ol.filter(l=>l.stage==='closed_won');const oa=allActivities.filter(a=>a.logged_by===nameMap[o]);return`<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)"><div style="font-size:14px;font-weight:600;margin-bottom:8px">${ownerAvatar(o)} ${ownerLabel(o)}</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px;color:var(--text-2);text-align:center"><div><span style="font-size:20px;font-weight:800;color:var(--text);display:block;font-family:Poppins">${ol.length}</span>Leads</div><div><span style="font-size:20px;font-weight:800;color:var(--green);display:block;font-family:Poppins">${ow.length}</span>Won</div><div><span style="font-size:20px;font-weight:800;color:var(--accent);display:block;font-family:Poppins">${oa.length}</span>Activities</div></div></div>`;}).join('');})()}</div>
+<div class="chart-card"><h3>${icon('trophy',14)} Team Leaderboard</h3><div style="font-size:11px;color:var(--text-3);margin:-6px 0 14px">Ranked by revenue closed</div>${leaders.map((l,i)=>`<div class="lb-row"><div class="lb-rank ${i===0&&l.wonVal>0?'gold':''}">${i+1}</div><div style="flex-shrink:0">${ownerAvatar(l.o)}</div><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"><span style="font-size:13px;font-weight:600">${ownerLabel(l.o)}</span><span style="font-size:13px;font-weight:800;font-family:Poppins;color:${l.wonVal>0?'var(--green)':'var(--text-3)'}">${fmtValue(l.wonVal)}</span></div><div class="lb-bar"><div class="lb-bar-fill" style="width:${Math.round(l.wonVal/maxWonVal*100)}%"></div></div><div style="font-size:10px;color:var(--text-3);margin-top:4px">${l.won} won · ${l.leads} leads · ${l.acts} activities</div></div></div>`).join('')}</div>
 <div class="chart-card"><h3>Loss Reasons</h3>${lost.length?Object.entries(lost.reduce((a,l)=>{const r=l.lost_reason||'unknown';a[r]=(a[r]||0)+1;return a;},{})).sort((a,b)=>b[1]-a[1]).map(([r,c])=>`<div class="metric-row"><span class="mr-label">${r}</span><span class="mr-val">${c}</span></div>`).join(''):'<div class="section-empty">No lost leads</div>'}</div>
 </div>
 <div class="section" style="margin-top:24px"><div class="section-head"><h3>${icon('dollar',16)} Revenue Report</h3><button class="btn btn-sm btn-secondary" onclick="exportRevenueCSV()">Export CSV</button></div><div class="section-body" style="padding:0">
