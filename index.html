@@ -327,6 +327,59 @@ select{cursor:pointer}
 .lb-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--amber));border-radius:20px}
 @media(max-width:768px){.hero-row{grid-template-columns:1fr}}
 
+/* ===== APPLE DASHBOARD (scoped) ===== */
+#page-dashboard{font-family:-apple-system,'SF Pro Display','SF Pro Text','Inter',sans-serif;letter-spacing:-0.01em}
+#page-dashboard .ad-date{font-size:13px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:1.4px;margin-bottom:8px}
+#page-dashboard .ad-h1{font-family:-apple-system,'SF Pro Display','Inter',sans-serif;font-size:38px;font-weight:700;letter-spacing:-0.03em;line-height:1.05;margin-bottom:10px}
+#page-dashboard .ad-sub{font-size:16px;color:var(--text-2);line-height:1.55;max-width:680px}
+#page-dashboard .ad-sub .br-hi{color:var(--green);font-weight:600}
+#page-dashboard .ad-sub .br-risk{color:var(--red);font-weight:600}
+#page-dashboard .ad-sub .br-warn{color:var(--amber);font-weight:600}
+#page-dashboard .ad-sub b{color:var(--text);font-weight:600}
+#page-dashboard .ad-hero{display:grid;grid-template-columns:1.45fr 1fr;gap:18px;margin:26px 0 18px}
+#page-dashboard .ad-card{background:var(--surface);border-radius:22px;padding:26px;box-shadow:0 1px 2px rgba(0,0,0,0.04),0 10px 34px rgba(0,0,0,0.06);transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s}
+html:not(.light) #page-dashboard .ad-card{box-shadow:0 1px 2px rgba(0,0,0,0.35),0 14px 44px rgba(0,0,0,0.4);border:1px solid var(--border)}
+#page-dashboard .ad-card:hover{box-shadow:0 2px 6px rgba(0,0,0,0.06),0 22px 60px rgba(0,0,0,0.10)}
+#page-dashboard .ad-lbl{font-size:12px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:1.1px;margin-bottom:16px}
+#page-dashboard .ad-focus-money{font-family:-apple-system,'SF Pro Display','Inter',sans-serif;font-size:44px;font-weight:700;letter-spacing:-0.03em;line-height:1}
+#page-dashboard .ad-focus-ctx{font-size:15px;color:var(--text-2);line-height:1.5;margin-top:12px}
+#page-dashboard .ad-chips{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}
+#page-dashboard .ad-chip{font-size:13px;font-weight:600;padding:7px 13px;border-radius:11px;background:var(--surface-2);color:var(--text-2)}
+#page-dashboard .ad-chip.hot{background:var(--accent-soft);color:var(--accent)}
+#page-dashboard .ad-ring-card{display:flex;flex-direction:column;align-items:center;position:relative}
+#page-dashboard .ad-ring-card .ad-lbl{align-self:flex-start}
+#page-dashboard .ad-edit{position:absolute;top:0;right:0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-3);background:none;cursor:pointer}
+#page-dashboard .ad-edit:hover{color:var(--accent)}
+#page-dashboard .ad-ring{position:relative;width:160px;height:160px;margin:4px 0 2px}
+#page-dashboard .ad-ring svg{transform:rotate(-90deg)}
+#page-dashboard .ad-ring .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#page-dashboard .ad-ring .pct{font-family:-apple-system,'SF Pro Display','Inter',sans-serif;font-size:34px;font-weight:700;letter-spacing:-0.03em}
+#page-dashboard .ad-ring .rl{font-size:12px;color:var(--text-3);font-weight:600;margin-top:1px}
+#page-dashboard .ad-ring-foot{font-size:14px;color:var(--text-2);margin-top:10px}
+#page-dashboard .ad-ring-foot b{color:var(--text);font-weight:700}
+#page-dashboard .ad-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+#page-dashboard .ad-tile{background:var(--surface);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,0.04),0 8px 24px rgba(0,0,0,0.05);transition:transform .3s;cursor:pointer}
+html:not(.light) #page-dashboard .ad-tile{box-shadow:0 1px 2px rgba(0,0,0,0.3),0 10px 30px rgba(0,0,0,0.3);border:1px solid var(--border)}
+#page-dashboard .ad-tile:hover{transform:translateY(-3px)}
+#page-dashboard .ad-tile .ti{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+#page-dashboard .ad-tile .tv{font-family:-apple-system,'SF Pro Display','Inter',sans-serif;font-size:28px;font-weight:700;letter-spacing:-0.03em;line-height:1}
+#page-dashboard .ad-tile .tl{font-size:13px;color:var(--text-2);font-weight:500;margin-top:5px}
+#page-dashboard .ad-tile .ts{font-size:12px;color:var(--text-3);margin-top:2px}
+#page-dashboard .ad-sect{font-size:20px;font-weight:700;letter-spacing:-0.02em;margin:30px 0 14px;display:flex;align-items:center;gap:10px}
+#page-dashboard .ad-sect .c{font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:4px 11px;border-radius:20px}
+#page-dashboard .ad-list{background:var(--surface);border-radius:20px;box-shadow:0 1px 2px rgba(0,0,0,0.04),0 8px 28px rgba(0,0,0,0.05);overflow:hidden}
+html:not(.light) #page-dashboard .ad-list{box-shadow:0 1px 2px rgba(0,0,0,0.3),0 10px 30px rgba(0,0,0,0.3);border:1px solid var(--border)}
+#page-dashboard .ad-row{display:flex;align-items:center;gap:15px;padding:16px 22px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .2s}
+#page-dashboard .ad-row:last-child{border-bottom:none}
+#page-dashboard .ad-row:hover{background:var(--surface-2)}
+#page-dashboard .ad-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+#page-dashboard .ad-rmain{flex:1;min-width:0}
+#page-dashboard .ad-rname{font-size:15.5px;font-weight:600;letter-spacing:-0.01em}
+#page-dashboard .ad-rreason{font-size:13px;color:var(--text-2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px}
+#page-dashboard .ad-ramt{font-size:15px;font-weight:700;letter-spacing:-0.02em;text-align:right;white-space:nowrap}
+#page-dashboard .ad-grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+@media(max-width:880px){#page-dashboard .ad-hero{grid-template-columns:1fr}#page-dashboard .ad-tiles{grid-template-columns:1fr 1fr}#page-dashboard .ad-grid2{grid-template-columns:1fr}#page-dashboard .ad-h1{font-size:30px}}
+
 /* ===== INTELLIGENCE ===== */
 .intel-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .intel-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;transition:border .15s}
@@ -1111,72 +1164,67 @@ const briefing=`${greet}, ${currentUser.name.split(' ')[0]}. ${brParts.slice(0,2
 
 const dashLabel=isStaff?`${currentUser.name}'s Dashboard`:'Team Dashboard';
 const pg=document.getElementById('page-dashboard');
+const _fn=esc((currentUser.name||'').split(' ')[0]);const _briefBody=briefing.indexOf('. ')>-1?briefing.slice(briefing.indexOf('. ')+2):briefing;const _closeSorted=closingSoon.slice().sort((a,b)=>(b.estimated_value||0)-(a.estimated_value||0));
 pg.innerHTML=`
-<div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
-<div><div class="page-label">${isStaff?'My Workspace':'Mission Control'}</div><h1>${dashLabel}</h1><div class="page-sub">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</div></div>
-<div style="display:flex;gap:8px"><button class="btn btn-primary" onclick="openAddLead()">${icon('plus',14)} Add Lead</button><button class="btn btn-secondary" onclick="openCSVImport()">${icon('import',14)} Import</button></div>
+<div class="ad-head" style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+<div style="min-width:0">
+<div class="ad-date">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
+<div class="ad-h1">${greet}, ${_fn}.</div>
+<div class="ad-sub">${_briefBody}</div>
+</div>
+<div style="display:flex;gap:8px;flex-shrink:0"><button class="btn btn-primary" onclick="openAddLead()">${icon('plus',14)} Add Lead</button><button class="btn btn-secondary" onclick="openCSVImport()">${icon('import',14)} Import</button></div>
 </div>
 
-<div class="hero-row">
-<div class="briefing">
-<div class="br-greet">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
-<div class="br-line">${briefing}</div>
+<div class="ad-hero">
+<div class="ad-card">
+<div class="ad-lbl">${closingSoon.length?'Closing this week':'Open pipeline'}</div>
+<div class="ad-focus-money">${fmtValue(closingSoon.length?closingVal:pipeVal)}</div>
+<div class="ad-focus-ctx">${closingSoon.length?`${closingSoon.length} deal${closingSoon.length>1?'s':''} in proposal or negotiation. Your best shot is <b>${esc(_closeSorted[0].name)}</b> — keep it moving.`:`Push your active deals toward proposal to build momentum. Weighted pipeline is <b>${fmtValue(weightedVal)}</b>.`}</div>
+${closingSoon.length?`<div class="ad-chips">${_closeSorted.slice(0,3).map((l,i)=>`<span class="ad-chip ${i===0?'hot':''}">${esc(l.name)} · ${WIN_PROB[l.stage]||0}%</span>`).join('')}</div>`:''}
 </div>
-<div class="target-card">
-<button class="tc-edit" onclick="setMonthTarget()">Edit goal</button>
-<div class="tc-label">${monthName} Target${isStaff?' · Me':''}</div>
-<div class="ring-wrap">
-<svg width="150" height="150" viewBox="0 0 150 150"><circle cx="75" cy="75" r="62" fill="none" stroke="var(--surface-2)" stroke-width="12"/><circle cx="75" cy="75" r="62" fill="none" stroke="${tPct>=100?'var(--green)':'var(--accent)'}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${(2*Math.PI*62).toFixed(1)}" stroke-dashoffset="${(2*Math.PI*62*(1-tPct/100)).toFixed(1)}" style="transition:stroke-dashoffset .6s ease"/></svg>
-<div class="ring-center"><div class="rc-pct" style="color:${tPct>=100?'var(--green)':'var(--text)'}">${tPct}%</div><div class="rc-sub">of goal</div></div>
+<div class="ad-card ad-ring-card">
+<button class="ad-edit" onclick="setMonthTarget()">Edit goal</button>
+<div class="ad-lbl">${monthName} target${isStaff?' · me':''}</div>
+<div class="ad-ring">
+<svg width="160" height="160" viewBox="0 0 160 160"><circle cx="80" cy="80" r="66" fill="none" stroke="var(--surface-2)" stroke-width="13"/><circle cx="80" cy="80" r="66" fill="none" stroke="${tPct>=100?'var(--green)':'var(--accent)'}" stroke-width="13" stroke-linecap="round" stroke-dasharray="${(2*Math.PI*66).toFixed(1)}" stroke-dashoffset="${(2*Math.PI*66*(1-tPct/100)).toFixed(1)}" style="transition:stroke-dashoffset .7s cubic-bezier(.2,.8,.2,1)"/></svg>
+<div class="mid"><div class="pct" style="color:${tPct>=100?'var(--green)':'var(--text)'}">${tPct}%</div><div class="rl">of goal</div></div>
 </div>
-<div class="tc-foot"><b>${fmtValue(wonMonthVal)}</b> won of ${fmtValue(target)}</div>
+<div class="ad-ring-foot"><b>${fmtValue(wonMonthVal)}</b> won of ${fmtValue(target)}</div>
 </div>
 </div>
 
-${atRisk.length?`<div class="at-risk">
+${atRisk.length?`<div class="at-risk" style="border-radius:20px;margin-bottom:18px">
 <div class="ar-head"><div class="ar-title">${icon('alert',15)} At-Risk Radar</div><div class="ar-sub">${fmtValue(atRiskVal)} at risk · high-value & going cold</div></div>
 ${atRisk.slice(0,5).map(l=>{const d=daysSinceContact(l);return `<div class="ar-item" onclick="openDetail(${l.id})"><div style="flex:1;min-width:0"><div class="ar-name">${esc(l.name)}</div><div class="ar-meta">${stageInfo(l.stage).label} · ${ownerLabel(l.owner)}${l.contact_name?' · '+esc(l.contact_name):''}</div></div><div style="text-align:right"><div class="ar-val">${fmtValue(l.estimated_value)}</div><div class="ar-days">${d}d silent</div></div>${l.contact_phone?`<a href="${waLink(l.contact_phone)}" target="_blank" style="color:#25D366;flex-shrink:0" onclick="event.stopPropagation()" title="WhatsApp now">${icon('message',18)}</a>`:''}</div>`;}).join('')}
 </div>`:''}
 
-<div class="stats-row">
-<div class="stat-card blue"><div class="stat-icon" style="color:var(--blue)">${icon('users',20)}</div><div class="stat-label">Active Leads</div><div class="stat-val">${active.length}</div><div class="stat-sub">${thisWeek.length} new this week</div></div>
-<div class="stat-card ${dueFUs.length?'red':'green'}"><div class="stat-icon" style="color:${dueFUs.length?'var(--red)':'var(--green)'}">${icon('clock',20)}</div><div class="stat-label">Action Items</div><div class="stat-val">${actions.length}</div><div class="stat-sub">${overdueFUs.length} overdue</div></div>
-<div class="stat-card accent"><div class="stat-icon" style="color:var(--accent)">${icon('dollar',20)}</div><div class="stat-label">Pipeline Value</div><div class="stat-val">${fmtValue(pipeVal)}</div><div class="stat-sub">weighted: ${fmtValue(weightedVal)}</div></div>
-<div class="stat-card green"><div class="stat-icon" style="color:var(--green)">${icon('trophy',20)}</div><div class="stat-label">Won</div><div class="stat-val">${myLeads.filter(l=>l.stage==='closed_won').length}</div><div class="stat-sub">${isStaff?'my closes':'all time'}</div></div>
+<div class="ad-tiles">
+<div class="ad-tile" onclick="nav('pipeline')"><div class="ti" style="background:var(--accent-soft);color:var(--accent)">${icon('clock',18)}</div><div class="tv">${actions.length}</div><div class="tl">To-do today</div><div class="ts">${dueFUs.length} follow-up${dueFUs.length===1?'':'s'} due</div></div>
+<div class="ad-tile" onclick="nav('leads')"><div class="ti" style="background:var(--blue-soft);color:var(--blue)">${icon('users',18)}</div><div class="tv">${active.length}</div><div class="tl">Active deals</div><div class="ts">${thisWeek.length} new this week</div></div>
+<div class="ad-tile" onclick="nav('pipeline')"><div class="ti" style="background:var(--green-soft);color:var(--green)">${icon('trophy',18)}</div><div class="tv">${wonMonth.length}</div><div class="tl">Won in ${monthName}</div><div class="ts">${fmtValue(wonMonthVal)} closed</div></div>
+<div class="ad-tile"><div class="ti" style="background:var(--red-soft);color:var(--red)">${icon('alert',18)}</div><div class="tv">${atRisk.length}</div><div class="tl">At risk</div><div class="ts">${atRisk.length?fmtValue(atRiskVal)+' cooling':'all healthy'}</div></div>
 </div>
 
-${actions.length?`<div class="action-queue">
-<div class="aq-title">${icon('alert',16)} Action Queue <span class="aq-count">${actions.length} items — do these NOW</span></div>
-${actions.slice(0,10).map(a=>{const lastAct=(isStaff?myActivities:allActivities).find(x=>x.pipeline_id===a.lead.id);return `
-<div class="aq-item urgency-${a.urgency}" onclick="openDetail(${a.lead.id})">
-<div class="aq-priority" style="color:var(--${a.urgency==='critical'?'red':a.urgency==='high'?'amber':'accent'})">${a.svgIcon}</div>
-<div class="aq-info">
-<div class="aq-lead">${esc(a.lead.name)}</div>
-<div class="aq-reason">${esc(a.reason)}</div>
-<div class="aq-meta">${stageBadge(a.lead.stage)} ${a.lead.estimated_value?`<span class="badge badge-green">${fmtValue(a.lead.estimated_value)}</span>`:''}${lastAct?.next_step?` <span style="font-size:11px;color:var(--text-3)">Next: ${esc(lastAct.next_step.substring(0,40))}</span>`:''}</div>
-</div>
-<div class="aq-actions">
-${a.lead.contact_phone?`<a class="aq-btn aq-btn-wa" href="${waLink(a.lead.contact_phone)}" target="_blank" onclick="event.stopPropagation()">WA</a>`:''}
-<button class="aq-btn aq-btn-primary" onclick="event.stopPropagation();openLogActivity(${a.lead.id})">Log</button>
-${a.fuId?`<button class="aq-btn aq-btn-secondary" onclick="event.stopPropagation();completeFU(${a.fuId})">${icon('check',12)}</button>`:''}
-</div>
+<div class="ad-sect">Up next${actions.length?`<span class="c">${actions.length} to do</span>`:''}</div>
+${actions.length?`<div class="ad-list">
+${actions.slice(0,6).map(a=>{const u=a.urgency;const dotc=u==='critical'?'var(--red)':u==='high'?'var(--amber)':'var(--green)';return `<div class="ad-row" onclick="openDetail(${a.lead.id})">
+<div class="ad-dot" style="background:${dotc}"></div>
+<div class="ad-rmain"><div class="ad-rname">${esc(a.lead.name)}</div><div class="ad-rreason">${esc(a.reason)}</div></div>
+${a.lead.estimated_value?`<div class="ad-ramt">${fmtValue(a.lead.estimated_value)}</div>`:''}
+<button class="btn btn-sm btn-primary" style="flex-shrink:0" onclick="event.stopPropagation();openLogActivity(${a.lead.id})">Log</button>
 </div>`;}).join('')}
-</div>`:`<div class="section" style="text-align:center;padding:32px"><div style="color:var(--green);margin-bottom:8px">${icon('check',36)}</div><div style="font-size:15px;font-weight:600;color:var(--green)">All clear — no urgent actions.</div><div style="font-size:12px;color:var(--text-3);margin-top:4px">Prospect new leads or warm up existing ones.</div></div>`}
+</div>`:`<div class="ad-card" style="text-align:center;padding:40px"><div style="color:var(--green);margin-bottom:10px;display:flex;justify-content:center">${icon('checkcircle',34)}</div><div style="font-size:16px;font-weight:600">You're all caught up.</div><div style="font-size:13px;color:var(--text-3);margin-top:4px">No urgent actions — go prospect some new leads.</div></div>`}
 
-<div class="dash-grid">
-<div>
-<div class="section"><div class="section-head"><h3>${icon('fire',14)} Hot Leads</h3><span class="count">${hotLeads.length}</span></div>
-<div class="section-body">${hotLeads.length?hotLeads.slice(0,5).map(l=>{const lastAct=(isStaff?myActivities:allActivities).find(a=>a.pipeline_id===l.id);const s=calcScore(l);return `<div class="act-item" onclick="openDetail(${l.id})">
-<div style="width:34px;text-align:center;color:${l.is_hot?'var(--accent)':'var(--amber)'}">${l.is_hot?icon('fire',20):icon('star',20)}</div>
-<div class="act-info"><div class="act-lead">${esc(l.name)} <span class="badge ${scoreClass(s)}" style="margin-left:4px">${s}</span></div><div class="act-sum">${lastAct?.next_step?'Next: '+esc(lastAct.next_step):l.pain_points?'Pain: '+esc(l.pain_points):stageBadge(l.stage)}</div></div>
-${l.contact_phone?`<a href="${waLink(l.contact_phone)}" target="_blank" style="color:#25D366" onclick="event.stopPropagation()" title="WhatsApp">${icon('message',18)}</a>`:''}</div>`;}).join(''):'<div class="section-empty">No hot leads yet.</div>'}</div>
-</div></div>
-<div>
-<div class="section"><div class="section-head"><h3>${icon('note',14)} Recent Activity</h3></div>
-<div class="section-body">${recentActs.length?recentActs.map(a=>{const l=allLeads.find(x=>x.id===a.pipeline_id);return `<div class="act-item" onclick="openDetail(${a.pipeline_id})"><div class="act-icon ${a.type}">${ACT_ICONS[a.type]||icon('note',15)}</div><div class="act-info"><div class="act-lead">${esc(l?.name||'?')}</div><div class="act-sum">${esc(a.summary)}</div></div><div class="act-time">${timeAgo(a.created_at)}</div></div>`;}).join(''):'<div class="section-empty">No activity yet. Start logging calls.</div>'}</div>
-</div></div>
+<div class="ad-grid2">
+<div class="ad-card" style="padding:0">
+<div style="padding:20px 24px 6px;display:flex;align-items:center;gap:8px"><span style="color:var(--accent);display:inline-flex">${icon('fire',16)}</span><span style="font-size:16px;font-weight:700;letter-spacing:-0.01em">Hot leads</span><span style="font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:3px 10px;border-radius:20px;margin-left:auto">${hotLeads.length}</span></div>
+${hotLeads.length?hotLeads.slice(0,5).map(l=>{const s=calcScore(l);return `<div class="ad-row" style="padding:13px 24px" onclick="openDetail(${l.id})"><div class="ad-rmain"><div class="ad-rname">${esc(l.name)}</div><div class="ad-rreason">${stageInfo(l.stage).label} · score ${s}</div></div>${l.contact_phone?`<a href="${waLink(l.contact_phone)}" target="_blank" style="color:#25D366;flex-shrink:0;display:inline-flex" onclick="event.stopPropagation()">${icon('message',18)}</a>`:''}</div>`;}).join(''):`<div style="padding:22px 24px;color:var(--text-3);font-size:13px;text-align:center">No hot leads yet.</div>`}
 </div>
-<div style="text-align:center;padding:20px 0;font-size:11px;color:var(--text-3)">Press <kbd style="background:var(--surface-2);padding:2px 6px;border-radius:4px;border:1px solid var(--border)">⌘K</kbd> to search leads or quick-add</div>
+<div class="ad-card" style="padding:0">
+<div style="padding:20px 24px 6px;display:flex;align-items:center;gap:8px"><span style="color:var(--text-2);display:inline-flex">${icon('note',16)}</span><span style="font-size:16px;font-weight:700;letter-spacing:-0.01em">Recent activity</span></div>
+${recentActs.length?recentActs.slice(0,6).map(a=>{const l=allLeads.find(x=>x.id===a.pipeline_id);return `<div class="ad-row" style="padding:13px 24px" onclick="openDetail(${a.pipeline_id})"><div class="ad-rmain"><div class="ad-rname">${esc(l?.name||'?')}</div><div class="ad-rreason">${esc(a.summary)}</div></div><div style="font-size:12px;color:var(--text-3);flex-shrink:0">${timeAgo(a.created_at)}</div></div>`;}).join(''):`<div style="padding:22px 24px;color:var(--text-3);font-size:13px;text-align:center">No activity yet. Start logging calls.</div>`}
+</div>
+</div>
 `;
 }
 
