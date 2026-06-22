@@ -901,7 +901,9 @@ return `<div class="game-plan"><div class="gp-head"><div class="gp-title">${icon
 let currentUser=null,allLeads=[],allActivities=[],allFollowUps=[];
 // Role-based access: masters (CEO/COO) see everything; salespeople (Staff) see only their own leads
 function isMaster(){return !!currentUser&&currentUser.role!=='Staff';}
-function visibleLeads(){if(currentUser&&currentUser.role==='Staff'){const c=currentUser.code;const n=(currentUser.name||'').toLowerCase();return allLeads.filter(l=>{if(!l.owner)return false;const o=l.owner.toLowerCase();return o===c||o===n;});}return allLeads;}
+function scopedLeads(){if(currentUser&&currentUser.role==='Staff'){const c=currentUser.code;const n=(currentUser.name||'').toLowerCase();return allLeads.filter(l=>{if(!l.owner)return false;const o=l.owner.toLowerCase();return o===c||o===n;});}return allLeads;}
+function visibleLeads(){return scopedLeads().filter(l=>!l.archived_at);}
+function archivedLeads(){return scopedLeads().filter(l=>l.archived_at);}
 const MASTER_ONLY_PAGES=['revenue','analytics','agents'];
 let currentDetailId=null,activityLeadId=null,convertLeadId=null,lostLeadId=null,fuLeadId=null;
 let editingLeadId=null,csvData=null;
@@ -1044,7 +1046,7 @@ function renderDashboard(){
 const isStaff=currentUser.role==='Staff';
 const myCode=currentUser.code;
 // Personalize: Staff see only their own leads/FUs/activities
-const myLeads=isStaff?allLeads.filter(l=>{if(!l.owner)return false;const ow=l.owner.toLowerCase();return ow===myCode||ow===currentUser.name.toLowerCase();}):allLeads;
+const myLeads=visibleLeads();
 const myFUs=isStaff?allFollowUps.filter(f=>myLeads.some(l=>l.id===f.pipeline_id)):allFollowUps;
 const myActivities=isStaff?allActivities.filter(a=>a.logged_by===currentUser.name.toUpperCase()):allActivities;
 
@@ -1216,25 +1218,27 @@ auditLog('MOVE_STAGE',`Lead ID:${did} → ${stageInfo(stage).label}`);toast('Mov
 
 /* ===== ALL LEADS TABLE ===== */
 function renderLeads(){
+leadsShowArchived=false;
 const pg=document.getElementById('page-leads');
 pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="page-label">CRM</div><h1>${isMaster()?'All Leads':'My Leads'} <span style="color:var(--text-3);font-weight:500;font-size:16px">${visibleLeads().length}</span></h1></div><div style="display:flex;gap:8px"><button class="btn btn-secondary export-btn" onclick="exportLeadsCSV()">${icon('download',14)} Export</button><button class="btn btn-secondary" onclick="openCSVImport()">${icon('import',14)} Import</button><button class="btn btn-primary" onclick="openAddLead()">+ Add Lead</button></div></div>
 <div class="leads-toolbar"><div class="search-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search leads..." id="leadSearch" oninput="filterLeadsTable()"></div>
 <select id="filterStage" onchange="filterLeadsTable()"><option value="">All Stages</option>${ALL_STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('')}</select>
 <select id="filterSource" onchange="filterLeadsTable()"><option value="">All Sources</option>${Object.entries(SOURCES).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select>
-${isMaster()?`<select id="filterOwner" onchange="filterLeadsTable()"><option value="">All Owners</option><option value="th">Thulaib</option><option value="sh">Shiara</option><option value="pv">Pavith</option><option value="nv">Nirvana</option></select>`:''}</div>
+${isMaster()?`<select id="filterOwner" onchange="filterLeadsTable()"><option value="">All Owners</option><option value="th">Thulaib</option><option value="sh">Shiara</option><option value="pv">Pavith</option><option value="nv">Nirvana</option></select>`:''}
+<button id="archToggle" class="btn btn-sm btn-secondary" onclick="leadsShowArchived=!leadsShowArchived;document.getElementById('archToggle').classList.toggle('btn-primary',leadsShowArchived);document.getElementById('archToggle').classList.toggle('btn-secondary',!leadsShowArchived);filterLeadsTable();">${icon('clipboard',13)} Archived${archivedLeads().length?` (${archivedLeads().length})`:''}</button></div>
 <div class="section"><div class="section-body" style="overflow-x:auto"><table class="leads-table"><thead><tr><th data-sort="name" onclick="sortLeadsTable('name')" style="cursor:pointer">Lead <span class="sort-arrow"></span></th><th data-sort="stage" onclick="sortLeadsTable('stage')" style="cursor:pointer">Stage <span class="sort-arrow"></span></th><th data-sort="source" onclick="sortLeadsTable('source')" style="cursor:pointer">Source <span class="sort-arrow"></span></th><th data-sort="value" onclick="sortLeadsTable('value')" style="cursor:pointer">Value <span class="sort-arrow"></span></th><th data-sort="score" onclick="sortLeadsTable('score')" style="cursor:pointer">Score <span class="sort-arrow"></span></th><th data-sort="owner" onclick="sortLeadsTable('owner')" style="cursor:pointer">Owner <span class="sort-arrow"></span></th><th data-sort="last" onclick="sortLeadsTable('last')" style="cursor:pointer">Last <span class="sort-arrow"></span></th><th data-sort="days" onclick="sortLeadsTable('days')" style="cursor:pointer">Days <span class="sort-arrow"></span></th></tr></thead><tbody id="leadsBody"></tbody></table></div></div>`;
 filterLeadsTable();
 }
-let leadSortCol='',leadSortDir='asc';
+let leadSortCol='',leadSortDir='asc',leadsShowArchived=false;
 function sortLeadsTable(col){if(leadSortCol===col){leadSortDir=leadSortDir==='asc'?'desc':'asc';}else{leadSortCol=col;leadSortDir='asc';}document.querySelectorAll('.leads-table th').forEach(th=>{th.classList.remove('sorted-asc','sorted-desc');});const th=document.querySelector(`.leads-table th[data-sort="${col}"]`);if(th)th.classList.add('sorted-'+leadSortDir);filterLeadsTable();}
 function filterLeadsTable(){
 const q=(document.getElementById('leadSearch')?.value||'').toLowerCase();
 const fs=document.getElementById('filterStage')?.value||'';
 const fo=document.getElementById('filterSource')?.value||'';
 const fw=document.getElementById('filterOwner')?.value||'';
-let filtered=visibleLeads().filter(l=>{if(q&&!l.name?.toLowerCase().includes(q)&&!l.contact_name?.toLowerCase().includes(q)&&!l.industry?.toLowerCase().includes(q))return false;if(fs&&l.stage!==fs)return false;if(fo&&l.source!==fo)return false;if(fw&&l.owner?.toLowerCase()!==fw.toLowerCase())return false;return true;});
+let filtered=(leadsShowArchived?archivedLeads():visibleLeads()).filter(l=>{if(q&&!l.name?.toLowerCase().includes(q)&&!l.contact_name?.toLowerCase().includes(q)&&!l.industry?.toLowerCase().includes(q))return false;if(fs&&l.stage!==fs)return false;if(fo&&l.source!==fo)return false;if(fw&&l.owner?.toLowerCase()!==fw.toLowerCase())return false;return true;});
 if(leadSortCol){const dir=leadSortDir==='asc'?1:-1;filtered.sort((a,b)=>{let va,vb;switch(leadSortCol){case 'name':va=(a.name||'').toLowerCase();vb=(b.name||'').toLowerCase();break;case 'stage':va=a.stage||'';vb=b.stage||'';break;case 'source':va=a.source||'';vb=b.source||'';break;case 'value':va=parseFloat(a.estimated_value)||0;vb=parseFloat(b.estimated_value)||0;return(va-vb)*dir;case 'score':va=calcScore(a);vb=calcScore(b);return(va-vb)*dir;case 'owner':va=(a.owner||'').toLowerCase();vb=(b.owner||'').toLowerCase();break;case 'last':va=a.last_contact_at||a.created_at||'';vb=b.last_contact_at||b.created_at||'';break;case 'days':va=daysSinceContact(a);vb=daysSinceContact(b);return(va-vb)*dir;default:return 0;}if(va<vb)return -dir;if(va>vb)return dir;return 0;});}
-if(!filtered.length){document.getElementById('leadsBody').innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-3)">No leads match your filters</td></tr>';return;}
+if(!filtered.length){document.getElementById('leadsBody').innerHTML=`<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-3)">${leadsShowArchived?'No archived leads':'No leads match your filters'}</td></tr>`;return;}
 document.getElementById('leadsBody').innerHTML=filtered.map(l=>{const sc=calcScore(l);const dsc=daysSinceContact(l);return `<tr onclick="openDetail(${l.id})"><td><div class="td-name">${l.is_hot?icon('fire',14)+' ':''}${esc(l.name)}</div><div class="td-phone">${esc(l.contact_name||'')}${l.contact_phone?' · '+esc(l.contact_phone):''}</div></td><td>${stageBadge(l.stage)}</td><td>${sourceBadge(l.source)}</td><td style="font-family:Poppins;font-weight:600;font-size:12px">${fmtValue(l.estimated_value)}</td><td><span class="badge ${scoreClass(sc)}">${sc}</span></td><td>${ownerAvatar(l.owner)}</td><td style="font-size:12px;color:var(--text-3)">${fmtDate(l.last_contact_at||l.created_at)}</td><td style="color:${dsc>=10?'var(--red)':dsc>=5?'var(--amber)':'var(--text-3)'};font-weight:${dsc>=5?'600':'400'}">${dsc}d</td></tr>`;}).join('');
 }
 
@@ -1262,7 +1266,8 @@ ${!['closed_won','closed_lost'].includes(lead.stage)?`<button class="dp-action" 
 ${!['closed_won','closed_lost'].includes(lead.stage)?`<button class="dp-action danger" onclick="openMarkLost(${id})">${icon('alert',13)} Lost</button>`:''}
 <button class="dp-action" onclick="editLead(${id})">${icon('note',13)} Edit</button>
 <button class="dp-action" onclick="exportLeadData(${id})" style="margin-left:auto">${icon('chart',13)} Export</button>
-<button class="dp-action danger" onclick="deleteLead(${id})">${icon('alert',13)} Delete</button>
+${lead.archived_at?`<button class="dp-action" onclick="restoreLead(${id})">${icon('check',13)} Restore</button>`:`<button class="dp-action" onclick="archiveLead(${id})">${icon('clipboard',13)} Archive</button>`}
+${isMaster()?`<button class="dp-action danger" onclick="deleteLead(${id})">${icon('alert',13)} Delete</button>`:''}
 </div>
 <div class="dp-tabs"><div class="dp-tab active" onclick="switchTab(this,'tab-prep')">Call Prep</div><div class="dp-tab" onclick="switchTab(this,'tab-activity')">Activity (${acts.length})</div><div class="dp-tab" onclick="switchTab(this,'tab-fu')">Follow-Ups (${fus.filter(f=>!f.is_done).length})</div><div class="dp-tab" onclick="switchTab(this,'tab-intel')">Intel</div>${lead.contact_phone?`<div class="dp-tab" onclick="switchTab(this,'tab-wa')">WhatsApp</div>`:''}</div>
 <div class="dp-tab-content">
@@ -1304,6 +1309,8 @@ allLeads=allLeads.filter(l=>l.id!==id);allActivities=allActivities.filter(a=>a.p
 auditLog('DELETE_LEAD',`${lead.name} (ID:${id}) — ${acts.length} activities, ${fus.length} follow-ups removed`);
 closeDetail();toast('Lead permanently deleted');updateFUBadge();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);
 }catch(e){toast('Delete failed','error');console.error(e);if(window.bbReportDbError)bbReportDbError('pipeline','delete',e);}}
+async function archiveLead(id){if(demoGuard())return;const lead=allLeads.find(l=>l.id===id);if(!lead)return;if(!confirm(`Archive "${lead.name}"?\n\nIt will be hidden from your lists but can be restored anytime.`))return;const ts=new Date().toISOString();const res=await sbPatch('pipeline',id,{archived_at:ts});if(!res){toast('Archive failed','error');return;}lead.archived_at=ts;auditLog('ARCHIVE_LEAD',`${lead.name} (ID:${id})`);closeDetail();toast('Lead archived');const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function restoreLead(id){if(demoGuard())return;const lead=allLeads.find(l=>l.id===id);if(!lead)return;const res=await sbPatch('pipeline',id,{archived_at:null});if(!res){toast('Restore failed','error');return;}lead.archived_at=null;auditLog('RESTORE_LEAD',`${lead.name} (ID:${id})`);closeDetail();toast('Lead restored');const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== EXPORT SINGLE LEAD DATA ===== */
 function exportLeadData(id){const lead=allLeads.find(l=>l.id===id);if(!lead)return;const acts=allActivities.filter(a=>a.pipeline_id===id);const fus=allFollowUps.filter(f=>f.pipeline_id===id);
@@ -1413,10 +1420,11 @@ async function importCSV(){if(demoGuard())return;if(!csvData||!csvData.length)re
 function fmtLKR(v){return 'LKR '+Math.round(v||0).toLocaleString('en-US');}
 function renderRevenue(){
 const pg=document.getElementById('page-revenue');
-const won=allLeads.filter(l=>l.stage==='closed_won');
-const lost=allLeads.filter(l=>l.stage==='closed_lost');
-const active=allLeads.filter(l=>!['closed_won','closed_lost','on_hold'].includes(l.stage));
-const onHold=allLeads.filter(l=>l.stage==='on_hold');
+const L=visibleLeads();
+const won=L.filter(l=>l.stage==='closed_won');
+const lost=L.filter(l=>l.stage==='closed_lost');
+const active=L.filter(l=>!['closed_won','closed_lost','on_hold'].includes(l.stage));
+const onHold=L.filter(l=>l.stage==='on_hold');
 const realized=won.reduce((s,l)=>s+(l.estimated_value||0),0);
 const pipeVal=active.reduce((s,l)=>s+(l.estimated_value||0),0);
 const weighted=Math.round(active.reduce((s,l)=>s+(l.estimated_value||0)*(WIN_PROB[l.stage]||5)/100,0));
@@ -1456,7 +1464,7 @@ let analyticsPeriod='all';
 function renderAnalytics(){
 const pg=document.getElementById('page-analytics');
 const periodStart=analyticsPeriod==='7d'?new Date(Date.now()-7*864e5):analyticsPeriod==='30d'?new Date(Date.now()-30*864e5):analyticsPeriod==='90d'?new Date(Date.now()-90*864e5):null;
-const pLeads=periodStart?allLeads.filter(l=>new Date(l.created_at)>=periodStart):allLeads;
+const _AL=visibleLeads();const pLeads=periodStart?_AL.filter(l=>new Date(l.created_at)>=periodStart):_AL;
 const pActs=periodStart?allActivities.filter(a=>new Date(a.created_at)>=periodStart):allActivities;
 const total=pLeads.length;const won=pLeads.filter(l=>l.stage==='closed_won');const lost=pLeads.filter(l=>l.stage==='closed_lost');const active=pLeads.filter(l=>!['closed_won','closed_lost'].includes(l.stage));
 const conv=total>0?((won.length/total)*100).toFixed(1):0;
@@ -1465,13 +1473,13 @@ const pipeVal=active.reduce((s,l)=>s+(l.estimated_value||0),0);
 const funnel=ALL_STAGES.map(s=>({...s,count:pLeads.filter(l=>l.stage===s.key).length}));const mx=Math.max(...funnel.map(f=>f.count),1);
 const sources=Object.keys(SOURCES).map(k=>({k,l:SOURCES[k],c:pLeads.filter(l=>l.source===k).length})).filter(s=>s.c>0).sort((a,b)=>b.c-a.c);
 const actTypes=['call','message','meeting','email','proposal','note'].map(t=>({t,c:pActs.filter(a=>a.type===t).length})).filter(t=>t.c>0);
-const stageFlow=STAGES.slice(0,-1).map((s,i)=>{const next=STAGES[i+1];const inStage=allLeads.filter(l=>ALL_STAGES.findIndex(x=>x.key===l.stage)>=i+1).length;const fromStage=allLeads.filter(l=>ALL_STAGES.findIndex(x=>x.key===l.stage)>=i).length;return{from:s.label,to:next.label,rate:fromStage>0?((inStage/fromStage)*100).toFixed(0):0};});
+const stageFlow=STAGES.slice(0,-1).map((s,i)=>{const next=STAGES[i+1];const inStage=_AL.filter(l=>ALL_STAGES.findIndex(x=>x.key===l.stage)>=i+1).length;const fromStage=_AL.filter(l=>ALL_STAGES.findIndex(x=>x.key===l.stage)>=i).length;return{from:s.label,to:next.label,rate:fromStage>0?((inStage/fromStage)*100).toFixed(0):0};});
 // Bottleneck = weakest stage transition (with enough volume to matter)
 const flowWithData=stageFlow.filter(s=>parseInt(s.rate)>=0);
 const bottleneck=flowWithData.length?flowWithData.reduce((min,s)=>parseInt(s.rate)<parseInt(min.rate)?s:min):null;
 // Leaderboard: rank team by revenue won
 const _nm={'th':'THULAIB','sh':'SHIARA','pv':'PAVITH','nv':'NIRVANA'};
-const leaders=['th','sh','pv','nv'].map(o=>{const ol=allLeads.filter(l=>{if(!l.owner)return false;const ow=l.owner.toLowerCase();return ow===o||ow===_nm[o].toLowerCase();});const ow=ol.filter(l=>l.stage==='closed_won');const wonVal=ow.reduce((s,l)=>s+(l.estimated_value||0),0);const oa=allActivities.filter(a=>a.logged_by===_nm[o]).length;return{o,leads:ol.length,won:ow.length,wonVal,acts:oa};}).sort((a,b)=>b.wonVal-a.wonVal||b.won-a.won);
+const leaders=['th','sh','pv','nv'].map(o=>{const ol=_AL.filter(l=>{if(!l.owner)return false;const ow=l.owner.toLowerCase();return ow===o||ow===_nm[o].toLowerCase();});const ow=ol.filter(l=>l.stage==='closed_won');const wonVal=ow.reduce((s,l)=>s+(l.estimated_value||0),0);const oa=allActivities.filter(a=>a.logged_by===_nm[o]).length;return{o,leads:ol.length,won:ow.length,wonVal,acts:oa};}).sort((a,b)=>b.wonVal-a.wonVal||b.won-a.won);
 const maxWonVal=Math.max(...leaders.map(l=>l.wonVal),1);
 pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="page-label">Analytics</div><h1>Performance</h1></div><div style="display:flex;gap:6px">${[{v:'all',l:'All Time'},{v:'7d',l:'7 Days'},{v:'30d',l:'30 Days'},{v:'90d',l:'90 Days'}].map(p=>`<button class="btn btn-sm ${analyticsPeriod===p.v?'btn-primary':'btn-secondary'}" onclick="analyticsPeriod='${p.v}';renderAnalytics()">${p.l}</button>`).join('')}</div></div>
 <div class="stats-row">
