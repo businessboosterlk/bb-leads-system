@@ -348,7 +348,7 @@ html:not(.light) #page-dashboard .ad-card{box-shadow:0 1px 2px rgba(0,0,0,0.35),
 #page-dashboard .ad-chip.hot{background:var(--accent-soft);color:var(--accent)}
 #page-dashboard .ad-ring-card{display:flex;flex-direction:column;align-items:center;position:relative}
 #page-dashboard .ad-ring-card .ad-lbl{align-self:flex-start}
-#page-dashboard .ad-edit{position:absolute;top:0;right:0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-3);background:none;cursor:pointer}
+#page-dashboard .ad-edit{position:absolute;top:22px;right:24px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-3);background:var(--surface-2);border-radius:9px;padding:5px 10px;cursor:pointer;z-index:2}
 #page-dashboard .ad-edit:hover{color:var(--accent)}
 #page-dashboard .ad-ring{position:relative;width:160px;height:160px;margin:4px 0 2px}
 #page-dashboard .ad-ring svg{transform:rotate(-90deg)}
@@ -464,6 +464,32 @@ html:not(.light) #page-dashboard .ad-list{box-shadow:0 1px 2px rgba(0,0,0,0.3),0
 .rev-sheet .winpill{display:inline-block;min-width:42px;text-align:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;background:var(--surface-2);color:var(--text-2)}
 .rev-wt{color:var(--accent);font-weight:700}
 .rev-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:auto;max-height:calc(100vh - 340px)}
+
+/* ===== APPLE REVENUE (scoped) ===== */
+#page-revenue{font-family:-apple-system,'SF Pro Display','SF Pro Text','Inter',sans-serif;letter-spacing:-0.01em}
+#page-revenue .page-header h1{font-family:-apple-system,'SF Pro Display','Inter',sans-serif;font-size:34px;font-weight:700;letter-spacing:-0.03em}
+#page-revenue .page-label{letter-spacing:1.4px}
+#page-revenue .page-sub{font-size:15px;color:var(--text-2);margin-top:6px}
+#page-revenue .stats-row{gap:16px;margin-bottom:22px}
+#page-revenue .stat-card{border:none;border-radius:18px;padding:22px;box-shadow:0 1px 2px rgba(0,0,0,0.04),0 8px 24px rgba(0,0,0,0.05);transition:transform .3s,box-shadow .3s}
+html:not(.light) #page-revenue .stat-card{box-shadow:0 1px 2px rgba(0,0,0,0.3),0 10px 30px rgba(0,0,0,0.3);border:1px solid var(--border)}
+#page-revenue .stat-card:hover{transform:translateY(-3px)}
+#page-revenue .stat-card .stat-val{font-family:-apple-system,'SF Pro Display','Inter',sans-serif;font-weight:700;letter-spacing:-0.03em;font-size:26px!important}
+#page-revenue .stat-card.green .stat-val{color:var(--green)}
+#page-revenue .stat-card.accent .stat-val{color:var(--accent)}
+#page-revenue .rev-wrap{border:none;border-radius:20px;box-shadow:0 1px 2px rgba(0,0,0,0.04),0 10px 34px rgba(0,0,0,0.06);max-height:calc(100vh - 300px)}
+html:not(.light) #page-revenue .rev-wrap{box-shadow:0 1px 2px rgba(0,0,0,0.3),0 12px 36px rgba(0,0,0,0.35);border:1px solid var(--border)}
+#page-revenue .rev-sheet{font-size:13.5px}
+#page-revenue .rev-sheet th{padding:16px 22px;letter-spacing:.8px}
+#page-revenue .rev-sheet td{padding:15px 22px}
+#page-revenue .rev-sheet tr.rev-grp td{letter-spacing:.7px;padding-top:15px;padding-bottom:15px}
+#page-revenue .rev-sheet tr.rev-deal:hover td{background:var(--surface-2)}
+#page-revenue .rev-sheet tr.rev-deal:hover td:first-child{border-left-color:var(--accent)}
+#page-revenue .rev-sheet tr.rev-total td{font-size:14px;padding-top:18px;padding-bottom:18px}
+
+/* ===== Apple page transition (signature touch) ===== */
+.page.active{animation:pageIn .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:all .2s}
 .chart-card:hover{border-color:var(--border-strong)}
 .chart-card h3{font-size:14px;font-weight:700;margin-bottom:16px}
