@@ -488,8 +488,32 @@ html:not(.light) #page-revenue .rev-wrap{box-shadow:0 1px 2px rgba(0,0,0,0.3),0 
 #page-revenue .rev-sheet tr.rev-total td{font-size:14px;padding-top:18px;padding-bottom:18px}
 
 /* ===== Apple page transition (signature touch) ===== */
-.page.active{animation:pageIn .45s cubic-bezier(.2,.8,.2,1)}
-@keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.page.active{animation:pageIn .4s ease}
+@keyframes pageIn{from{opacity:0}to{opacity:1}}
+
+/* staggered card entrance on the dashboard */
+@media(prefers-reduced-motion:no-preference){
+#page-dashboard.active .ad-hero>*,#page-dashboard.active .ad-tile,#page-dashboard.active .at-risk,#page-dashboard.active .ad-sect,#page-dashboard.active .ad-list,#page-dashboard.active .ad-grid2>*{animation:adRise .55s cubic-bezier(.2,.8,.2,1) both}
+#page-dashboard.active .ad-hero>*:nth-child(2){animation-delay:.05s}
+#page-dashboard.active .at-risk{animation-delay:.08s}
+#page-dashboard.active .ad-tile:nth-child(1){animation-delay:.10s}
+#page-dashboard.active .ad-tile:nth-child(2){animation-delay:.15s}
+#page-dashboard.active .ad-tile:nth-child(3){animation-delay:.20s}
+#page-dashboard.active .ad-tile:nth-child(4){animation-delay:.25s}
+#page-dashboard.active .ad-sect{animation-delay:.28s}
+#page-dashboard.active .ad-list{animation-delay:.32s}
+#page-dashboard.active .ad-grid2>*:nth-child(1){animation-delay:.36s}
+#page-dashboard.active .ad-grid2>*:nth-child(2){animation-delay:.42s}
+}
+@keyframes adRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* tactile press feedback */
+.btn:active,.dp-action:active,.ad-tile:active,.pipe-card:active,.aq-btn:active,.sb-link:active{transform:scale(.97)}
+
+/* confetti celebration (deal won) */
+.confetti-layer{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden}
+.confetti{position:absolute;top:-12px;width:10px;height:10px;border-radius:2px;opacity:0;will-change:transform,opacity;animation:confettiFall 1.6s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes confettiFall{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--dx),100vh) rotate(var(--rot))}}
 .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:all .2s}
 .chart-card:hover{border-color:var(--border-strong)}
 .chart-card h3{font-size:14px;font-weight:700;margin-bottom:16px}
@@ -1265,7 +1289,7 @@ pg.innerHTML=`
 <div class="ad-hero">
 <div class="ad-card">
 <div class="ad-lbl">${closingSoon.length?'Closing this week':'Open pipeline'}</div>
-<div class="ad-focus-money">${fmtValue(closingSoon.length?closingVal:pipeVal)}</div>
+<div class="ad-focus-money" data-count="${closingSoon.length?closingVal:pipeVal}" data-fmt="value">${fmtValue(closingSoon.length?closingVal:pipeVal)}</div>
 <div class="ad-focus-ctx">${closingSoon.length?`${closingSoon.length} deal${closingSoon.length>1?'s':''} in proposal or negotiation. Your best shot is <b>${esc(_closeSorted[0].name)}</b> — keep it moving.`:`Push your active deals toward proposal to build momentum. Weighted pipeline is <b>${fmtValue(weightedVal)}</b>.`}</div>
 ${closingSoon.length?`<div class="ad-chips">${_closeSorted.slice(0,3).map((l,i)=>`<span class="ad-chip ${i===0?'hot':''}">${esc(l.name)} · ${WIN_PROB[l.stage]||0}%</span>`).join('')}</div>`:''}
 </div>
@@ -1273,8 +1297,8 @@ ${closingSoon.length?`<div class="ad-chips">${_closeSorted.slice(0,3).map((l,i)=
 <button class="ad-edit" onclick="setMonthTarget()">Edit goal</button>
 <div class="ad-lbl">${monthName} target${isStaff?' · me':''}</div>
 <div class="ad-ring">
-<svg width="160" height="160" viewBox="0 0 160 160"><circle cx="80" cy="80" r="66" fill="none" stroke="var(--surface-2)" stroke-width="13"/><circle cx="80" cy="80" r="66" fill="none" stroke="${tPct>=100?'var(--green)':'var(--accent)'}" stroke-width="13" stroke-linecap="round" stroke-dasharray="${(2*Math.PI*66).toFixed(1)}" stroke-dashoffset="${(2*Math.PI*66*(1-tPct/100)).toFixed(1)}" style="transition:stroke-dashoffset .7s cubic-bezier(.2,.8,.2,1)"/></svg>
-<div class="mid"><div class="pct" style="color:${tPct>=100?'var(--green)':'var(--text)'}">${tPct}%</div><div class="rl">of goal</div></div>
+<svg width="160" height="160" viewBox="0 0 160 160"><circle cx="80" cy="80" r="66" fill="none" stroke="var(--surface-2)" stroke-width="13"/><circle class="ad-ring-prog" cx="80" cy="80" r="66" fill="none" stroke="${tPct>=100?'var(--green)':'var(--accent)'}" stroke-width="13" stroke-linecap="round" stroke-dasharray="${(2*Math.PI*66).toFixed(1)}" stroke-dashoffset="${(2*Math.PI*66).toFixed(1)}" data-ring="${(2*Math.PI*66*(1-tPct/100)).toFixed(1)}" style="transition:stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1)"/></svg>
+<div class="mid"><div class="pct" style="color:${tPct>=100?'var(--green)':'var(--text)'}" data-count="${tPct}" data-suffix="%">0%</div><div class="rl">of goal</div></div>
 </div>
 <div class="ad-ring-foot"><b>${fmtValue(wonMonthVal)}</b> won of ${fmtValue(target)}</div>
 </div>
@@ -1286,10 +1310,10 @@ ${atRisk.slice(0,5).map(l=>{const d=daysSinceContact(l);return `<div class="ar-i
 </div>`:''}
 
 <div class="ad-tiles">
-<div class="ad-tile" onclick="nav('pipeline')"><div class="ti" style="background:var(--accent-soft);color:var(--accent)">${icon('clock',18)}</div><div class="tv">${actions.length}</div><div class="tl">To-do today</div><div class="ts">${dueFUs.length} follow-up${dueFUs.length===1?'':'s'} due</div></div>
-<div class="ad-tile" onclick="nav('leads')"><div class="ti" style="background:var(--blue-soft);color:var(--blue)">${icon('users',18)}</div><div class="tv">${active.length}</div><div class="tl">Active deals</div><div class="ts">${thisWeek.length} new this week</div></div>
-<div class="ad-tile" onclick="nav('pipeline')"><div class="ti" style="background:var(--green-soft);color:var(--green)">${icon('trophy',18)}</div><div class="tv">${wonMonth.length}</div><div class="tl">Won in ${monthName}</div><div class="ts">${fmtValue(wonMonthVal)} closed</div></div>
-<div class="ad-tile"><div class="ti" style="background:var(--red-soft);color:var(--red)">${icon('alert',18)}</div><div class="tv">${atRisk.length}</div><div class="tl">At risk</div><div class="ts">${atRisk.length?fmtValue(atRiskVal)+' cooling':'all healthy'}</div></div>
+<div class="ad-tile" onclick="nav('pipeline')"><div class="ti" style="background:var(--accent-soft);color:var(--accent)">${icon('clock',18)}</div><div class="tv" data-count="${actions.length}">0</div><div class="tl">To-do today</div><div class="ts">${dueFUs.length} follow-up${dueFUs.length===1?'':'s'} due</div></div>
+<div class="ad-tile" onclick="nav('leads')"><div class="ti" style="background:var(--blue-soft);color:var(--blue)">${icon('users',18)}</div><div class="tv" data-count="${active.length}">0</div><div class="tl">Active deals</div><div class="ts">${thisWeek.length} new this week</div></div>
+<div class="ad-tile" onclick="nav('pipeline')"><div class="ti" style="background:var(--green-soft);color:var(--green)">${icon('trophy',18)}</div><div class="tv" data-count="${wonMonth.length}">0</div><div class="tl">Won in ${monthName}</div><div class="ts">${fmtValue(wonMonthVal)} closed</div></div>
+<div class="ad-tile"><div class="ti" style="background:var(--red-soft);color:var(--red)">${icon('alert',18)}</div><div class="tv" data-count="${atRisk.length}">0</div><div class="tl">At risk</div><div class="ts">${atRisk.length?fmtValue(atRiskVal)+' cooling':'all healthy'}</div></div>
 </div>
 
 <div class="ad-sect">Up next${actions.length?`<span class="c">${actions.length} to do</span>`:''}</div>
@@ -1313,6 +1337,33 @@ ${recentActs.length?recentActs.slice(0,6).map(a=>{const l=allLeads.find(x=>x.id=
 </div>
 </div>
 `;
+setTimeout(animateDashboard,30);
+}
+
+/* ===== ANIMATION ENGINE ===== */
+function animateCount(el){
+const target=parseFloat(el.getAttribute('data-count'))||0;
+const fmt=el.getAttribute('data-fmt');const suffix=el.getAttribute('data-suffix')||'';
+const out=v=>(fmt==='value'?fmtValue(v):Math.round(v).toLocaleString('en-US'))+suffix;
+const finalTxt=out(target);
+if(target<=0||window.matchMedia('(prefers-reduced-motion:reduce)').matches){el.textContent=finalTxt;return;}
+const dur=700,start=performance.now();let done=false;
+el.textContent=out(0);
+function finish(){if(done)return;done=true;el.textContent=finalTxt;}
+function tick(now){if(done)return;let p=Math.min(1,(now-start)/dur);p=1-Math.pow(1-p,3);el.textContent=out(target*p);if(p<1)requestAnimationFrame(tick);else finish();}
+requestAnimationFrame(tick);
+setTimeout(finish,dur+200); // safety net: guarantees correct value even if rAF is throttled
+}
+function animateDashboard(){
+const pg=document.getElementById('page-dashboard');if(!pg)return;
+pg.querySelectorAll('[data-count]').forEach(animateCount);
+pg.querySelectorAll('.ad-ring-prog').forEach(c=>{const t=c.getAttribute('data-ring');setTimeout(()=>{c.style.strokeDashoffset=t;},90);});
+}
+function celebrate(){
+const colors=['#f97316','#22c55e','#3b82f6','#a855f7','#fbbf24','#ec4899'];
+const layer=document.createElement('div');layer.className='confetti-layer';document.body.appendChild(layer);
+for(let i=0;i<42;i++){const p=document.createElement('div');p.className='confetti';p.style.left=(50+(Math.random()*46-23))+'%';p.style.background=colors[i%colors.length];p.style.setProperty('--dx',(Math.random()*260-130)+'px');p.style.setProperty('--rot',(Math.random()*900-450)+'deg');p.style.animationDelay=(Math.random()*0.18)+'s';if(i%3===0)p.style.borderRadius='50%';layer.appendChild(p);}
+setTimeout(()=>layer.remove(),2000);
 }
 
 function setMonthTarget(){const cur=parseInt(localStorage.getItem('bb_month_target')||'1000000');const v=prompt('Set this month\'s revenue target (LKR):',cur);if(v!==null){const n=parseInt(String(v).replace(/[^0-9]/g,''))||0;if(n>0){localStorage.setItem('bb_month_target',n);toast('Monthly target updated ✓');renderDashboard();}else{toast('Enter a valid number','error');}}}
@@ -1536,7 +1587,7 @@ async function saveFollowUp(){if(demoGuard())return;if(!fuLeadId)return;const d=
 /* ===== CONVERT ===== */
 function openConvert(id){convertLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('cv_name').value=l.name;document.getElementById('cv_industry').value=l.industry||'';document.getElementById('cv_contact').value=l.contact_name||l.contact_phone||'';document.getElementById('cv_start').value=today();const p=l.package_interest?.split(' (')[0]||'Spark';document.getElementById('cv_package').value=p;document.getElementById('cv_mrr').value=PKG_VALUES[p]||90000;openModal('convertModal');}
 document.getElementById('cv_package').addEventListener('change',function(){document.getElementById('cv_mrr').value=PKG_VALUES[this.value]||90000;});
-async function convertToClient(){if(demoGuard())return;if(!convertLeadId)return;const cd={name:document.getElementById('cv_name').value.trim(),package:document.getElementById('cv_package').value,mrr:parseInt(document.getElementById('cv_mrr').value)||0,industry:document.getElementById('cv_industry').value.trim()||null,contact:document.getElementById('cv_contact').value.trim()||null,start_date:document.getElementById('cv_start').value||null,health:'green',client_type:'sm'};const cr=await sbPost('clients',cd);if(!cr){toast('Failed','error');return;}await sbPatch('pipeline',convertLeadId,{stage:'closed_won',closed_at:new Date().toISOString()});const l=allLeads.find(x=>x.id===convertLeadId);if(l){l.stage='closed_won';}await sbPost('lead_activities',{pipeline_id:convertLeadId,type:'note',summary:`Converted! ${cd.package} @ LKR ${cd.mrr}`,outcome:'positive',logged_by:currentUser?.name?.toUpperCase()});closeModal('convertModal');closeDetail();auditLog('CONVERT_CLIENT',`${cd.name} — ${cd.package} @ LKR ${cd.mrr}`);toast('Client converted!');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function convertToClient(){if(demoGuard())return;if(!convertLeadId)return;const cd={name:document.getElementById('cv_name').value.trim(),package:document.getElementById('cv_package').value,mrr:parseInt(document.getElementById('cv_mrr').value)||0,industry:document.getElementById('cv_industry').value.trim()||null,contact:document.getElementById('cv_contact').value.trim()||null,start_date:document.getElementById('cv_start').value||null,health:'green',client_type:'sm'};const cr=await sbPost('clients',cd);if(!cr){toast('Failed','error');return;}await sbPatch('pipeline',convertLeadId,{stage:'closed_won',closed_at:new Date().toISOString()});const l=allLeads.find(x=>x.id===convertLeadId);if(l){l.stage='closed_won';}await sbPost('lead_activities',{pipeline_id:convertLeadId,type:'note',summary:`Converted! ${cd.package} @ LKR ${cd.mrr}`,outcome:'positive',logged_by:currentUser?.name?.toUpperCase()});closeModal('convertModal');closeDetail();celebrate();auditLog('CONVERT_CLIENT',`${cd.name} — ${cd.package} @ LKR ${cd.mrr}`);toast('🎉 Deal won — client converted!');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== MARK LOST ===== */
 function openMarkLost(id){lostLeadId=id;document.getElementById('lost_reason').value='unresponsive';document.getElementById('lost_notes').value='';openModal('lostModal');}
