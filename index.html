@@ -24,7 +24,7 @@
 --pink:#ec4899;--pink-soft:rgba(236,72,153,0.08);
 --purple:#a855f7;--purple-soft:rgba(168,85,247,0.08);
 --grey:#6b7280;--grey-soft:rgba(107,114,128,0.08);
---radius:8px;--radius-lg:12px;
+--radius:11px;--radius-lg:18px;
 --shadow:0 2px 8px rgba(0,0,0,0.3);
 --glass:rgba(255,255,255,0.03);
 }
@@ -34,8 +34,8 @@
 --text:#1a1a2e;--text-2:#555568;--text-3:#888898;
 --shadow:0 2px 8px rgba(0,0,0,0.08);--glass:rgba(0,0,0,0.02);--accent-glow:rgba(249,115,22,0.08);
 }
-html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
-h1,h2,h3,h4,.stat-val,.poppins{font-family:'Poppins',sans-serif}
+html,body{height:100%;font-family:-apple-system,'SF Pro Text','Inter',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;letter-spacing:-0.01em}
+h1,h2,h3,h4,.stat-val,.poppins{font-family:-apple-system,'SF Pro Display','Poppins',sans-serif;letter-spacing:-0.02em}
 a{color:var(--accent);text-decoration:none}
 button{cursor:pointer;font-family:'Inter',sans-serif;border:none;outline:none}
 input,select,textarea{font-family:'Inter',sans-serif;background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:var(--radius);padding:8px 12px;font-size:13px;outline:none;width:100%;transition:border .15s}
@@ -710,6 +710,67 @@ input,select,textarea{font-size:16px;padding:12px 14px;border-radius:10px}
 /* Demo banner */
 .demo-banner{display:none;background:linear-gradient(135deg,var(--amber),#d97706);color:#000;text-align:center;padding:6px 12px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;position:sticky;top:0;z-index:60}
 .demo-banner.show{display:block}
+
+/* ===================================================================
+   GLOBAL APPLE SKIN — Apple aesthetic across every screen (overrides base)
+   =================================================================== */
+:root{--ash:0 1px 2px rgba(0,0,0,0.32),0 10px 30px rgba(0,0,0,0.34);--ash-lg:0 2px 8px rgba(0,0,0,0.45),0 22px 60px rgba(0,0,0,0.55)}
+.light{--ash:0 1px 2px rgba(0,0,0,0.04),0 8px 26px rgba(0,0,0,0.05);--ash-lg:0 2px 6px rgba(0,0,0,0.05),0 18px 50px rgba(0,0,0,0.08)}
+
+/* headings */
+.page-header h1{font-size:30px;font-weight:700}
+.page-header .page-label{letter-spacing:1.4px}
+
+/* cards → soft floating depth */
+.section,.chart-card,.stat-card,.agent-card{box-shadow:var(--ash);border-radius:18px}
+.light .section,.light .chart-card,.light .stat-card,.light .agent-card,.light .aq-item,.light .pipe-col,.light .pipe-card{border-color:transparent}
+.stat-card:hover,.chart-card:hover,.agent-card:hover{box-shadow:var(--ash-lg)}
+.aq-item{border-radius:14px;box-shadow:var(--ash)}
+
+/* buttons → Apple pills */
+.btn{border-radius:12px;font-weight:600;letter-spacing:-0.01em;transition:transform .2s,box-shadow .2s,background .2s}
+.btn-primary{background:var(--accent);box-shadow:0 1px 2px rgba(249,115,22,0.25)}
+.btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 6px 18px rgba(249,115,22,0.32)}
+.btn-secondary{background:var(--surface-2);border-color:transparent;box-shadow:var(--ash)}
+.light .btn-secondary{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.05),0 3px 10px rgba(0,0,0,0.05)}
+.btn-secondary:hover{transform:translateY(-1px)}
+
+/* inputs */
+input,select,textarea{border-radius:11px;padding:10px 13px;border-color:transparent;font-size:14px}
+.light input,.light select,.light textarea{background:#eef0f4}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);background:var(--surface)}
+
+/* sidebar + topbar */
+.sb-link{border-radius:10px;font-size:13.5px}
+.sb-avatar{border-radius:11px}
+.tb-icon{border-radius:50%}
+.topbar{backdrop-filter:saturate(180%) blur(18px);background:transparent}
+
+/* badges slightly rounder */
+.badge{border-radius:7px}
+
+/* lead detail panel */
+.detail-panel{border-left:none;box-shadow:-24px 0 70px rgba(0,0,0,0.22)}
+.dp-name{font-size:22px;font-weight:700}
+.dp-action{border-radius:11px;background:var(--surface);box-shadow:var(--ash)}
+.light .dp-action{border-color:transparent}
+.dp-action.primary{background:var(--accent);box-shadow:0 1px 2px rgba(249,115,22,0.25)}
+.dp-tab{font-size:13px}
+
+/* modals (radius bumped on desktop only to keep mobile bottom-sheet intact) */
+.modal{box-shadow:var(--ash-lg)}
+.light .modal{border-color:transparent}
+.modal-head h3{font-size:18px;font-weight:700}
+@media(min-width:769px){.modal{border-radius:22px}}
+
+/* pipeline */
+.pipe-col{border-radius:18px;box-shadow:var(--ash)}
+.pipe-card{border-radius:13px;background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,0.05),0 3px 10px rgba(0,0,0,0.05)}
+.pipe-card:hover{transform:translateY(-2px);box-shadow:var(--ash);border-color:transparent}
+
+/* leads table rows */
+.leads-table tbody tr{transition:background .15s}
+.leads-table tbody tr:hover{background:var(--surface-2)}
 </style>
 </head>
 <body>
