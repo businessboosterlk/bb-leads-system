@@ -963,6 +963,7 @@ showApp();
 
 /* ===== SUPABASE ===== */
 function getHeaders(){const token=authToken||SB_KEY;return{'apikey':SB_KEY,'Authorization':`Bearer ${token}`,'Content-Type':'application/json'};}
+window.bbAuthHeaders=getHeaders;
 const H_LEGACY={'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'};
 async function sb(t,p=''){try{const r=await fetch(`${SB_URL}/${t}?${p}`,{headers:getHeaders()});if(!r.ok){console.error(`DB load failed: ${t} (${r.status})`);if(window.bbReportDbError)bbReportDbError(t,'read',{message:`HTTP ${r.status}`});return[];}return r.json();}catch(e){console.error(`DB error: ${t}`,e);if(window.bbReportDbError)bbReportDbError(t,'read',e);return[];}}
 async function sbPost(t,d){try{const r=await fetch(`${SB_URL}/${t}`,{method:'POST',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});if(!r.ok){console.error(`DB post failed: ${t} (${r.status})`);if(window.bbReportDbError)bbReportDbError(t,'insert',{message:`HTTP ${r.status}`});return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);if(window.bbReportDbError)bbReportDbError(t,'insert',e);return null;}}
@@ -1821,9 +1822,11 @@ const b=document.getElementById('sbAgentsBadge');if(b){b.textContent=count;b.sty
   }
 
   function headCount(table){
+    var base=(window.bbAuthHeaders?window.bbAuthHeaders():{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY});
+    var h=Object.assign({},base,{'Prefer':'count=exact','Range':'0-0'});
     return fetch(SB_URL+'/rest/v1/'+table+'?select=id&limit=1',{
       method:'GET',
-      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Prefer':'count=exact','Range':'0-0'}
+      headers:h
     }).then(function(r){
       var cr=r.headers.get('content-range');
       var total=null;
@@ -1842,9 +1845,9 @@ const b=document.getElementById('sbAgentsBadge');if(b){b.textContent=count;b.sty
           report({severity:'error',category:cat,table_name:t.name,message:'read failed (HTTP '+res.status+')',detail:(res.body||'').slice(0,300)});
           return;
         }
-        if(t.core && res.count===0){
-          report({severity:'warning',category:'empty_core',table_name:t.name,message:'returned 0 rows — likely a permissions (RLS) block',detail:'Core table should never be empty. Check Row Level Security policy for the anon role.'});
-        }
+        // NOTE: 0 rows is a legitimate result under Row Level Security
+        // (anon sees nothing, a salesperson may have no leads, an empty
+        // table is valid). Only real HTTP errors above are flagged.
       });
     });
   }
