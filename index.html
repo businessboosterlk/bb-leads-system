@@ -795,6 +795,15 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 /* leads table rows */
 .leads-table tbody tr{transition:background .15s}
 .leads-table tbody tr:hover{background:var(--surface-2)}
+/* Apple-style detail panel: More menu + clean empty states */
+.dp-more-wrap{position:relative}
+.dp-more-menu{position:absolute;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 34px rgba(0,0,0,.28);padding:6px;min-width:172px;z-index:60;display:none;flex-direction:column;gap:2px}
+.dp-more-menu.open{display:flex}
+.dp-more-menu button{text-align:left;background:none;border:none;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;font-family:inherit;transition:background .12s}
+.dp-more-menu button:hover{background:var(--surface-2)}
+.dp-more-menu button.danger{color:var(--red)}
+.dp-more-menu button.danger:hover{background:var(--red-soft)}
+.cp-empty{font-size:13px;color:var(--text-3);padding:6px 0;line-height:1.5}
 </style>
 </head>
 <body>
@@ -1432,6 +1441,9 @@ document.getElementById('leadsBody').innerHTML=filtered.map(l=>{const sc=calcSco
 }
 
 /* ===== LEAD DETAIL ===== */
+function toggleMoreMenu(e){e.stopPropagation();const m=document.getElementById('dpMoreMenu');if(m)m.classList.toggle('open');}
+function closeMoreMenu(){const m=document.getElementById('dpMoreMenu');if(m)m.classList.remove('open');}
+document.addEventListener('click',function(e){const m=document.getElementById('dpMoreMenu');if(m&&m.classList.contains('open')&&!e.target.closest('.dp-more-wrap'))m.classList.remove('open');});
 async function openDetail(id){
 currentDetailId=id;const lead=allLeads.find(l=>l.id===id);if(!lead)return;
 const acts=allActivities.filter(a=>a.pipeline_id===id).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
@@ -1450,23 +1462,29 @@ ${lead.stage_changed_at?`<div class="stage-duration">${icon('clock',11)} In ${st
 <button class="dp-action primary" onclick="openLogActivity(${id})">${icon('phone',13)} Log Activity</button>
 <button class="dp-action" onclick="openScheduleFU(${id})">${icon('clock',13)} Follow-Up</button>
 ${lead.contact_phone?`<a class="dp-action" href="${waLink(lead.contact_phone)}" target="_blank" style="color:#25D366;text-decoration:none">${icon('message',13)} WhatsApp</a>`:''}
-<button class="dp-action" onclick="toggleHot(${id})">${lead.is_hot?icon('fire',13)+' Unmark Hot':icon('fire',13)+' Hot'}</button>
 ${!['closed_won','closed_lost'].includes(lead.stage)?`<button class="dp-action" onclick="openConvert(${id})">${icon('trophy',13)} Convert</button>`:''}
-${!['closed_won','closed_lost'].includes(lead.stage)?`<button class="dp-action danger" onclick="openMarkLost(${id})">${icon('alert',13)} Lost</button>`:''}
-<button class="dp-action" onclick="editLead(${id})">${icon('note',13)} Edit</button>
-<button class="dp-action" onclick="exportLeadData(${id})" style="margin-left:auto">${icon('chart',13)} Export</button>
-${lead.archived_at?`<button class="dp-action" onclick="restoreLead(${id})">${icon('check',13)} Restore</button>`:`<button class="dp-action" onclick="archiveLead(${id})">${icon('clipboard',13)} Archive</button>`}
-${isMaster()?`<button class="dp-action danger" onclick="deleteLead(${id})">${icon('alert',13)} Delete</button>`:''}
+<div class="dp-more-wrap" style="margin-left:auto">
+<button class="dp-action" onclick="toggleMoreMenu(event)">More ▾</button>
+<div class="dp-more-menu" id="dpMoreMenu">
+<button onclick="closeMoreMenu();toggleHot(${id})">${lead.is_hot?'Unmark Hot':'Mark as Hot'}</button>
+${!['closed_won','closed_lost'].includes(lead.stage)?`<button onclick="closeMoreMenu();openMarkLost(${id})">Mark as Lost</button>`:''}
+<button onclick="closeMoreMenu();editLead(${id})">Edit Lead</button>
+<button onclick="closeMoreMenu();exportLeadData(${id})">Export</button>
+${lead.archived_at?`<button onclick="closeMoreMenu();restoreLead(${id})">Restore</button>`:`<button onclick="closeMoreMenu();archiveLead(${id})">Archive</button>`}
+${isMaster()?`<button class="danger" onclick="closeMoreMenu();deleteLead(${id})">Delete</button>`:''}
+</div>
+</div>
 </div>
 <div class="dp-tabs"><div class="dp-tab active" onclick="switchTab(this,'tab-prep')">Call Prep</div><div class="dp-tab" onclick="switchTab(this,'tab-activity')">Activity (${acts.length})</div><div class="dp-tab" onclick="switchTab(this,'tab-fu')">Follow-Ups (${fus.filter(f=>!f.is_done).length})</div><div class="dp-tab" onclick="switchTab(this,'tab-intel')">Intel</div>${lead.contact_phone?`<div class="dp-tab" onclick="switchTab(this,'tab-wa')">WhatsApp</div>`:''}</div>
 <div class="dp-tab-content">
 <div class="dp-tab-pane active" id="tab-prep">
 <div class="call-prep"><h4>${icon('clipboard',14)} Call Preparation</h4>
-<div class="cp-row"><div class="cp-label">Last interaction</div><div class="cp-val ${lastAct?'':'empty'}">${lastAct?esc(lastAct.summary):'No interactions yet'}</div></div>
-<div class="cp-row"><div class="cp-label">Next step</div><div class="cp-val ${lastAct?.next_step?'':'empty'}">${lastAct?.next_step?esc(lastAct.next_step):'Not defined'}</div></div>
-<div class="cp-row"><div class="cp-label">Their pain points</div><div class="cp-val ${lead.pain_points?'':'empty'}">${lead.pain_points?esc(lead.pain_points):'Not discovered yet'}</div></div>
-<div class="cp-row"><div class="cp-label">Objections to address</div><div class="cp-val ${lead.objections?'':'empty'}">${lead.objections?esc(lead.objections):'None recorded'}</div></div>
-<div class="cp-row"><div class="cp-label">Talking points from last call</div><div class="cp-val ${lastAct?.talking_points?'':'empty'}">${lastAct?.talking_points?esc(lastAct.talking_points):'None'}</div></div>
+${lastAct?`<div class="cp-row"><div class="cp-label">Last interaction</div><div class="cp-val">${esc(lastAct.summary)}</div></div>`:''}
+${lastAct?.next_step?`<div class="cp-row"><div class="cp-label">Next step</div><div class="cp-val">${esc(lastAct.next_step)}</div></div>`:''}
+${lead.pain_points?`<div class="cp-row"><div class="cp-label">Their pain points</div><div class="cp-val">${esc(lead.pain_points)}</div></div>`:''}
+${lead.objections?`<div class="cp-row"><div class="cp-label">Objections to address</div><div class="cp-val">${esc(lead.objections)}</div></div>`:''}
+${lastAct?.talking_points?`<div class="cp-row"><div class="cp-label">Talking points from last call</div><div class="cp-val">${esc(lastAct.talking_points)}</div></div>`:''}
+${(!lastAct&&!lead.pain_points&&!lead.objections)?`<div class="cp-empty">Nothing logged yet — start with "Log Activity", or add details in the Intel tab.</div>`:''}
 </div>
 ${buildCallGamePlan(lead,lastAct)}
 </div>
