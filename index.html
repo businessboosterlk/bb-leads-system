@@ -988,6 +988,34 @@ const SB_URL_BASE='https://yyviiwnqgphyklcoijyd.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5dmlpd25xZ3BoeWtsY29panlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MjE5OTEsImV4cCI6MjA5MTI5Nzk5MX0.I8YiBr-rfLVcc6DE8Z1PxEP2oxXCelv6mxqAY_wY7lc';
 const sbClient=window.supabase?window.supabase.createClient(SB_URL_BASE,SB_KEY):null;
 let authToken=null;
+// Keep authToken in sync with the live session. Supabase auto-refreshes the
+// access token (~hourly); without this the app kept sending the stale token
+// and every write 401'd after ~1h. This listener updates it on every refresh.
+if(sbClient){
+  try{
+    sbClient.auth.onAuthStateChange(function(event,session){
+      authToken = session && session.access_token ? session.access_token : null;
+    });
+  }catch(e){console.warn('auth listener failed',e);}
+}
+// Belt-and-suspenders: pull a guaranteed-fresh token right before a write.
+// getSession() returns the current token; if it's within 60s of expiry we
+// force a refresh so the write never goes out with an expired JWT.
+async function ensureFreshToken(){
+  if(!sbClient||(typeof isDemoMode!=='undefined'&&isDemoMode))return;
+  try{
+    let res=await sbClient.auth.getSession();
+    let session=res&&res.data?res.data.session:null;
+    if(session){
+      const expMs=(session.expires_at||0)*1000;
+      if(expMs && (expMs-Date.now())<60000){
+        const r=await sbClient.auth.refreshSession();
+        if(r&&r.data&&r.data.session)session=r.data.session;
+      }
+      if(session&&session.access_token)authToken=session.access_token;
+    }
+  }catch(e){/* keep existing token; write will surface any error */}
+}
 const PIN_AUTH={1031:{email:'thulaib@bb-leads.app',pass:'pin1031secure',name:'Thulaib',code:'th',role:'CEO'},1006:{email:'shiara@bb-leads.app',pass:'pin1006secure',name:'Shiara',code:'sh',role:'COO'},1111:{email:'pavith@bb-leads.app',pass:'pin1111secure',name:'Pavith',code:'pv',role:'Staff'},2222:{email:'nirvana@bb-leads.app',pass:'pin2222secure',name:'Nirvana',code:'nv',role:'Staff'}};
 const USERS={1031:{name:'Thulaib',code:'th',role:'CEO'},1006:{name:'Shiara',code:'sh',role:'COO'},1111:{name:'Pavith',code:'pv',role:'Staff'},2222:{name:'Nirvana',code:'nv',role:'Staff'}};
 const STAGES=[{key:'new_lead',label:'New Lead',color:'var(--blue)',dot:'blue'},{key:'contacted',label:'Contacted',color:'var(--amber)',dot:'amber'},{key:'discovery',label:'Discovery',color:'var(--accent)',dot:'accent'},{key:'proposal_sent',label:'Proposal Sent',color:'var(--pink)',dot:'pink'},{key:'negotiation',label:'Negotiation',color:'var(--purple)',dot:'purple'}];
@@ -1141,8 +1169,8 @@ function getHeaders(){const token=authToken||SB_KEY;return{'apikey':SB_KEY,'Auth
 window.bbAuthHeaders=getHeaders;
 const H_LEGACY={'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'};
 async function sb(t,p=''){try{const r=await fetch(`${SB_URL}/${t}?${p}`,{headers:getHeaders()});if(!r.ok){console.error(`DB load failed: ${t} (${r.status})`);if(window.bbReportDbError)bbReportDbError(t,'read',{message:`HTTP ${r.status}`});return[];}return r.json();}catch(e){console.error(`DB error: ${t}`,e);if(window.bbReportDbError)bbReportDbError(t,'read',e);return[];}}
-async function sbPost(t,d){try{const r=await fetch(`${SB_URL}/${t}`,{method:'POST',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});if(!r.ok){console.error(`DB post failed: ${t} (${r.status})`);if(window.bbReportDbError)bbReportDbError(t,'insert',{message:`HTTP ${r.status}`});return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);if(window.bbReportDbError)bbReportDbError(t,'insert',e);return null;}}
-async function sbPatch(t,id,d){try{const r=await fetch(`${SB_URL}/${t}?id=eq.${id}`,{method:'PATCH',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});if(!r.ok){console.error(`DB patch failed: ${t} (${r.status})`);if(window.bbReportDbError)bbReportDbError(t,'update',{message:`HTTP ${r.status}`});return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);if(window.bbReportDbError)bbReportDbError(t,'update',e);return null;}}
+async function sbPost(t,d){try{await ensureFreshToken();let r=await fetch(`${SB_URL}/${t}`,{method:'POST',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});if(r.status===401){await ensureFreshToken();r=await fetch(`${SB_URL}/${t}`,{method:'POST',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});}if(!r.ok){console.error(`DB post failed: ${t} (${r.status})`);if(r.status===401)toast&&toast('Session expired — please log in again','error');if(window.bbReportDbError)bbReportDbError(t,'insert',{message:`HTTP ${r.status}`});return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);if(window.bbReportDbError)bbReportDbError(t,'insert',e);return null;}}
+async function sbPatch(t,id,d){try{await ensureFreshToken();let r=await fetch(`${SB_URL}/${t}?id=eq.${id}`,{method:'PATCH',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});if(r.status===401){await ensureFreshToken();r=await fetch(`${SB_URL}/${t}?id=eq.${id}`,{method:'PATCH',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});}if(!r.ok){console.error(`DB patch failed: ${t} (${r.status})`);if(r.status===401)toast&&toast('Session expired — please log in again','error');if(window.bbReportDbError)bbReportDbError(t,'update',{message:`HTTP ${r.status}`});return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);if(window.bbReportDbError)bbReportDbError(t,'update',e);return null;}}
 
 /* ===== AUTH ===== */
 function updateLoginDate(){const el=document.getElementById('loginDate');if(el){const n=new Date();el.textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});}}
