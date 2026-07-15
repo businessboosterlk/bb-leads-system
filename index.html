@@ -805,6 +805,39 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 .dp-more-menu button.danger{color:var(--red)}
 .dp-more-menu button.danger:hover{background:var(--red-soft)}
 .cp-empty{font-size:13px;color:var(--text-3);padding:6px 0;line-height:1.5}
+
+/* ===== SALES PLAYBOOK (scoped) ===== */
+#page-playbook{font-family:-apple-system,'SF Pro Display','SF Pro Text','Inter',sans-serif;letter-spacing:-0.01em}
+#page-playbook .pb-seg{display:inline-flex;background:var(--surface-2);border-radius:13px;padding:3px;margin-bottom:22px;box-shadow:var(--ash);max-width:100%;overflow-x:auto}
+#page-playbook .pb-seg button{border:none;background:none;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--text-2);padding:9px 18px;border-radius:10px;cursor:pointer;transition:all .25s;white-space:nowrap}
+#page-playbook .pb-seg button.on{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,0.12)}
+#page-playbook .pb-hero{background:linear-gradient(150deg,var(--surface),var(--surface-2));border-radius:20px;padding:24px 26px;box-shadow:var(--ash);margin-bottom:16px}
+#page-playbook .pb-hero .ph-for{font-size:12px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:1.1px;margin-bottom:10px}
+#page-playbook .pb-hero .ph-pitch{font-size:20px;font-weight:700;letter-spacing:-0.02em;line-height:1.35;color:var(--text)}
+#page-playbook .pb-hero .ph-note{font-size:13px;color:var(--text-2);margin-top:10px;line-height:1.5}
+#page-playbook .pb-card{background:var(--surface);border-radius:18px;box-shadow:var(--ash);margin-bottom:16px;overflow:hidden}
+#page-playbook .pb-card h3{font-size:13px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:1.1px;padding:18px 22px 12px}
+#page-playbook .pb-pkg{display:flex;align-items:baseline;gap:12px;padding:14px 22px;border-top:1px solid var(--border);flex-wrap:wrap}
+#page-playbook .pb-pkg .pk-name{font-size:15px;font-weight:700;flex:1;min-width:150px}
+#page-playbook .pb-pkg .pk-name .pk-tag{font-size:10px;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:3px 8px;border-radius:8px;margin-left:6px;text-transform:uppercase;letter-spacing:.5px;vertical-align:middle;white-space:nowrap}
+#page-playbook .pb-pkg .pk-price{font-size:15px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;white-space:nowrap}
+#page-playbook .pb-pkg .pk-inc{flex-basis:100%;font-size:13px;color:var(--text-2);line-height:1.5;margin-top:2px}
+#page-playbook .pb-q{display:flex;gap:12px;align-items:flex-start;padding:13px 22px;border-top:1px solid var(--border)}
+#page-playbook .pb-q .qn{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+#page-playbook .pb-q .qt{font-size:14px;line-height:1.5;padding-top:2px}
+#page-playbook .pb-obj{padding:16px 22px;border-top:1px solid var(--border)}
+#page-playbook .pb-obj .ob-q{font-size:14.5px;font-weight:700;margin-bottom:6px}
+#page-playbook .pb-obj .ob-a{font-size:13.5px;color:var(--text-2);line-height:1.6}
+#page-playbook .pb-rule{background:var(--accent-soft);border-radius:16px;padding:18px 22px;font-size:14px;line-height:1.6;color:var(--text);margin-top:4px;margin-bottom:24px}
+#page-playbook .pb-rule b{color:var(--accent)}
+/* compact playbook strip inside lead Call Prep */
+.gp-playbook{background:var(--surface-2);border-radius:14px;padding:14px 16px;margin-top:12px}
+.gp-playbook .gpb-line{font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.gp-playbook .gpb-line a{margin-left:auto;font-size:10px;color:var(--text-3);cursor:pointer;font-weight:700}
+.gp-playbook .gpb-line a:hover{color:var(--accent)}
+.gp-playbook .gpb-pitch{font-size:13.5px;font-weight:600;line-height:1.5;margin-bottom:8px}
+.gp-playbook .gpb-obj{font-size:12px;color:var(--text-2);line-height:1.55}
+.gp-playbook .gpb-obj b{color:var(--text)}
 </style>
 </head>
 <body>
@@ -839,6 +872,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 <div class="sb-section master-only">Analytics</div>
 <div class="sb-link master-only" data-page="revenue" onclick="nav('revenue')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>Revenue Pipeline</div>
 <div class="sb-link master-only" data-page="analytics" onclick="nav('analytics')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>Performance</div>
+<div class="sb-section">Selling</div>
+<div class="sb-link" data-page="playbook" onclick="nav('playbook')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Sales Playbook</div>
 <div class="sb-section">Team</div>
 <div class="sb-link" data-page="hours" onclick="nav('hours')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Hours Log</div>
 <div class="sb-section master-only">System</div>
@@ -858,6 +893,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 <div class="page active" id="page-dashboard"></div>
 <div class="page" id="page-pipeline"></div>
 <div class="page" id="page-leads"></div>
+<div class="page" id="page-playbook"></div>
 <div class="page" id="page-revenue"></div>
 <div class="page" id="page-analytics"></div>
 <div class="page" id="page-hours"></div>
@@ -1097,7 +1133,7 @@ const rows=[
 {l:'Close on',v:pb.ask,i:'trophy'}
 ];
 const bar=nextWp?`<div class="gp-prog"><div class="gp-prog-track"><div class="gp-prog-fill" style="width:${wp}%"></div><div class="gp-prog-target" style="left:${nextWp}%"></div></div><div class="gp-prog-labels"><span>Now ${wp}%</span><span>Next stage ${nextWp}%</span></div></div>`:'';
-return `<div class="game-plan"><div class="gp-head"><div class="gp-title">${icon('target',15)} Call Game Plan</div>${lead.estimated_value?`<div class="gp-stake">${fmtValue(lead.estimated_value)} at stake</div>`:''}</div>${bar}${rows.map((r,n)=>`<div class="gp-row"><div class="gp-num">${n+1}</div><div class="gp-body"><div class="gp-label">${r.l}${r.copy?` <button class="gp-copy" onclick="event.stopPropagation();navigator.clipboard.writeText(this.dataset.t).then(()=>toast('Opener copied ✓'))" data-t="${esc(r.copy)}">copy</button>`:''}</div><div class="gp-val">${esc(r.v)}</div></div></div>`).join('')}</div>`;
+return `<div class="game-plan"><div class="gp-head"><div class="gp-title">${icon('target',15)} Call Game Plan</div>${lead.estimated_value?`<div class="gp-stake">${fmtValue(lead.estimated_value)} at stake</div>`:''}</div>${bar}${rows.map((r,n)=>`<div class="gp-row"><div class="gp-num">${n+1}</div><div class="gp-body"><div class="gp-label">${r.l}${r.copy?` <button class="gp-copy" onclick="event.stopPropagation();navigator.clipboard.writeText(this.dataset.t).then(()=>toast('Opener copied ✓'))" data-t="${esc(r.copy)}">copy</button>`:''}</div><div class="gp-val">${esc(r.v)}</div></div></div>`).join('')}${(()=>{const pl=typeof playbookLineFor==='function'?playbookLineFor(lead):null;if(!pl)return '';const ob=pl.objections[0];return `<div class="gp-playbook"><div class="gpb-line">${icon('note',12)} Playbook · ${pl.label}<a onclick="event.stopPropagation();playbookTab='${pl.key}';localStorage.setItem('bb_playbook_tab','${pl.key}');closeDetail();nav('playbook')">Open full playbook</a></div><div class="gpb-pitch">“${esc(pl.pitch)}”</div><div class="gpb-obj"><b>If they say “${esc(ob.q)}”:</b> ${esc(ob.a)}</div></div>`;})()}</div>`;
 }
 
 let currentUser=null,allLeads=[],allActivities=[],allFollowUps=[];
@@ -1196,7 +1232,7 @@ function demoGuard(){if(isDemoMode){toast('Demo mode — read only','error');ret
 function updateFUBadge(){const c=allFollowUps.filter(f=>!f.is_done&&f.due_date<=today()).length;const b=document.getElementById('sbFuBadge');if(c>0){b.textContent=c;b.style.display='inline';}else{b.style.display='none';}}
 
 /* ===== NAV ===== */
-function nav(page){if(MASTER_ONLY_PAGES.includes(page)&&!isMaster())page='dashboard';document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));const pg=document.getElementById('page-'+page);if(pg)pg.classList.add('active');const ln=document.querySelector(`.sb-link[data-page="${page}"]`);if(ln)ln.classList.add('active');closeSidebar();if(page==='dashboard')renderDashboard();else if(page==='pipeline')renderPipeline();else if(page==='leads')renderLeads();else if(page==='revenue')renderRevenue();else if(page==='analytics')renderAnalytics();else if(page==='hours')renderHours();else if(page==='agents')renderAgents();}
+function nav(page){if(MASTER_ONLY_PAGES.includes(page)&&!isMaster())page='dashboard';document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));const pg=document.getElementById('page-'+page);if(pg)pg.classList.add('active');const ln=document.querySelector(`.sb-link[data-page="${page}"]`);if(ln)ln.classList.add('active');closeSidebar();if(page==='dashboard')renderDashboard();else if(page==='pipeline')renderPipeline();else if(page==='leads')renderLeads();else if(page==='playbook')renderPlaybook();else if(page==='revenue')renderRevenue();else if(page==='analytics')renderAnalytics();else if(page==='hours')renderHours();else if(page==='agents')renderAgents();}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbOverlay').classList.toggle('open');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOverlay').classList.remove('open');}
 
@@ -1218,9 +1254,9 @@ document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){
 function openCmd(){document.getElementById('cmdOverlay').classList.add('open');const inp=document.getElementById('cmdInput');inp.value='';inp.focus();renderCmd();}
 function closeCmd(){document.getElementById('cmdOverlay').classList.remove('open');}
 function renderCmd(){const q=(document.getElementById('cmdInput').value||'').toLowerCase();const el=document.getElementById('cmdResults');let items=[];
-if(!q){items=[{icon:icon('plus',16),label:'Add new lead',action:'openAddLead()'},{icon:icon('phone',16),label:'Log activity',action:'pickLeadForActivity()'},{icon:icon('chart',16),label:'Go to Dashboard',action:"nav('dashboard')"},{icon:icon('fire',16),label:isMaster()?'Go to Pipeline':'Go to My Pipeline',action:"nav('pipeline')"},{icon:icon('users',16),label:isMaster()?'Go to All Leads':'Go to My Leads',action:"nav('leads')"},...(isMaster()?[{icon:icon('trending',16),label:'Go to Revenue Pipeline',action:"nav('revenue')"},{icon:icon('chart',16),label:'Go to Performance',action:"nav('analytics')"}]:[]),{icon:icon('import',16),label:'Import CSV',action:"openCSVImport()"},{icon:icon('download',16),label:'Export leads to CSV',action:"exportLeadsCSV()"}];}
+if(!q){items=[{icon:icon('plus',16),label:'Add new lead',action:'openAddLead()'},{icon:icon('phone',16),label:'Log activity',action:'pickLeadForActivity()'},{icon:icon('chart',16),label:'Go to Dashboard',action:"nav('dashboard')"},{icon:icon('fire',16),label:isMaster()?'Go to Pipeline':'Go to My Pipeline',action:"nav('pipeline')"},{icon:icon('users',16),label:isMaster()?'Go to All Leads':'Go to My Leads',action:"nav('leads')"},...(isMaster()?[{icon:icon('trending',16),label:'Go to Revenue Pipeline',action:"nav('revenue')"},{icon:icon('chart',16),label:'Go to Performance',action:"nav('analytics')"}]:[]),{icon:icon('clipboard',16),label:'Go to Sales Playbook',action:"nav('playbook')"},{icon:icon('import',16),label:'Import CSV',action:"openCSVImport()"},{icon:icon('download',16),label:'Export leads to CSV',action:"exportLeadsCSV()"}];}
 else{const matched=visibleLeads().filter(l=>l.name?.toLowerCase().includes(q)||l.contact_name?.toLowerCase().includes(q)||l.industry?.toLowerCase().includes(q)).slice(0,8);items=matched.map(l=>({icon:icon('users',16),label:l.name+(l.contact_name?' · '+l.contact_name:''),hint:stageInfo(l.stage).label,action:`openDetail(${l.id})`}));if(!items.length)items=[{icon:icon('alert',16),label:'No leads found',action:''}];}
-const CMD_ACTIONS={'openAddLead()':()=>openAddLead(),'pickLeadForActivity()':()=>pickLeadForActivity(),"nav('dashboard')":()=>nav('dashboard'),"nav('pipeline')":()=>nav('pipeline'),"nav('leads')":()=>nav('leads'),"nav('revenue')":()=>nav('revenue'),"nav('analytics')":()=>nav('analytics'),"openCSVImport()":()=>openCSVImport(),"exportLeadsCSV()":()=>exportLeadsCSV()};
+const CMD_ACTIONS={'openAddLead()':()=>openAddLead(),'pickLeadForActivity()':()=>pickLeadForActivity(),"nav('dashboard')":()=>nav('dashboard'),"nav('pipeline')":()=>nav('pipeline'),"nav('leads')":()=>nav('leads'),"nav('playbook')":()=>nav('playbook'),"nav('revenue')":()=>nav('revenue'),"nav('analytics')":()=>nav('analytics'),"openCSVImport()":()=>openCSVImport(),"exportLeadsCSV()":()=>exportLeadsCSV()};
 el.innerHTML=items.map((i,idx)=>`<div class="cmd-item" data-cmd="${idx}"><div class="cmd-icon">${i.icon}</div><div class="cmd-label">${esc(i.label)}</div>${i.hint?`<div class="cmd-hint">${i.hint}</div>`:''}</div>`).join('');el.querySelectorAll('.cmd-item').forEach((el,idx)=>{el.onclick=()=>{const fn=items[idx].action;if(fn){if(CMD_ACTIONS[fn])CMD_ACTIONS[fn]();else if(fn.startsWith('openDetail('))openDetail(parseInt(fn.match(/\d+/)[0]));}closeCmd();};});}
 function pickLeadForActivity(){closeCmd();const leads=activeLeads().sort((a,b)=>calcScore(b)-calcScore(a));if(leads.length)openLogActivity(leads[0].id);else toast('No active leads','error');}
 
@@ -1656,6 +1692,68 @@ csvData=rows.map(r=>({name:r.name||r.business||r.company||'',contact_name:r.cont
 document.getElementById('csvPreview').style.display='block';document.getElementById('csvPreview').innerHTML=`<div style="font-size:13px;font-weight:600;margin-bottom:8px">${csvData.length} leads found</div><div style="max-height:200px;overflow-y:auto;font-size:12px;color:var(--text-2)">${csvData.slice(0,10).map(r=>`<div style="padding:4px 0;border-bottom:1px solid var(--border)">${esc(r.name)} ${r.contact_phone?' · '+esc(r.contact_phone):''}</div>`).join('')}${csvData.length>10?`<div style="color:var(--text-3);padding:4px 0">+${csvData.length-10} more</div>`:''}</div>`;
 document.getElementById('csvImportBtn').style.display='inline-flex';};reader.readAsText(file);}
 async function importCSV(){if(demoGuard())return;if(!csvData||!csvData.length)return;let imported=0;for(const row of csvData){const data={name:row.name,contact_name:row.contact_name||null,contact_phone:row.contact_phone||null,contact_email:row.contact_email||null,industry:row.industry||null,source:row.source||'other',stage:'new_lead',status:'active',owner:currentUser?.code||'th',estimated_value:null,temperature:'cold'};const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);imported++;}}closeModal('csvModal');auditLog('IMPORT_CSV',`${imported} leads imported`);toast(`${imported} leads imported`);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+
+/* ===== SALES PLAYBOOK (read-only reference, no DB) ===== */
+const PLAYBOOK=[
+{key:'web',label:'Website & SEO',pitch:'We keep your website fast, fresh, and found on Google, so it earns instead of leaks.',
+who:'E-commerce stores and any business with a website that just sits there. They want it maintained, updated, and actually bringing enquiries.',
+note:'6-month minimum. SEO results compound from month 4. Ad boosting spend is always the client\'s, on top.',
+packages:[
+{n:'Website build',p:'from LKR 250,000 one-time',i:'Custom, responsive, fast-loading site'},
+{n:'Maintenance Light',p:'LKR 25,000/mo',i:'Bug fixes, plugin and security updates, 50 product uploads, speed and uptime monitoring, monthly report'},
+{n:'Maintenance Heavy',p:'LKR 45,000/mo',i:'Everything in Light + priority fixes, 150 uploads, monthly tech health report, quarterly audit'},
+{n:'SEO Foundation',p:'LKR 65,000/mo',i:'Technical + on-page SEO, 4 blog posts, 15 keywords, Google Business Profile, backlinks'},
+{n:'SEO Aggressive',p:'LKR 95,000/mo',i:'Everything in Foundation + 8 blogs, 30 keywords, competitor tracking, bi-weekly check-ins'},
+{n:'Combo Light',p:'LKR 80,000/mo',i:'Maintenance Light + SEO Foundation (save 10,000)'},
+{n:'Combo Heavy',p:'LKR 125,000/mo',i:'Maintenance Heavy + SEO Aggressive (save 15,000)',tag:'Most popular'}],
+discovery:['Is your website bringing you enquiries right now, or is it just sitting there?','When did you last update it, and who keeps it running?','When someone searches for what you sell, do you show up on Google?'],
+objections:[
+{q:'SEO takes too long',a:'True, it compounds. You see movement in 3 to 6 months and it keeps building. If you need leads this week, that is ads, not SEO. We are honest about that.'},
+{q:'We do not get much web traffic',a:'That is exactly the problem we fix. SEO builds that traffic; maintenance makes sure the site converts it.'},
+{q:'It is expensive',a:'The combo bundles maintenance and SEO into one invoice and saves you money versus buying them apart.'}]},
+{key:'dm',label:'Digital Marketing',pitch:'We turn your social media into a revenue stream, not just content.',
+who:'Businesses whose social is just a presence, not a revenue channel. They want growth, enquiries, and sales from social, done for them.',
+note:'Ad boosting spend is separate, paid by the client to the platform.',
+packages:[
+{n:'Spark',p:'LKR 150,000/mo',i:'12 posts, 6 camera videos, 12 stories. IG, FB, TikTok + LinkedIn. Ad management, analytics, captions and strategy'},
+{n:'Ignite',p:'LKR 200,000/mo',i:'15 posts, 10 camera videos, 18 stories. Same platforms, more output and strategy weight'},
+{n:'Blaze',p:'LKR 280,000/mo',i:'18 posts, 15 camera videos, 20 stories. Our fullest content and strategy package'}],
+discovery:['Is your social media actually bringing you enquiries and customers, or is it more just a presence thing?','If nothing changed on your social in six months, what would that cost you?','Who runs it now, and are they growing your revenue or mainly posting?'],
+objections:[
+{q:'We tried ads and they did not work',a:'Usually it is one of three things: the offer, the creative, or the targeting. We fix all three, and boosting is your spend so you stay in control.'},
+{q:'It is too expensive',a:'Look at it as a path to break-even. We map how the package pays for itself, then profits after.'},
+{q:'We already have someone',a:'Great. Are they growing your revenue consistently, or mainly posting content? We complement, we do not disrupt.'}]},
+{key:'sys',label:'Systems',pitch:'Software that runs your business so you do not have to. Built for you, maintained by us.',
+who:'Owners who are the bottleneck, teams buried in spreadsheets and WhatsApp, businesses where things fall through the cracks.',
+note:'Usually sold to warm or existing clients once trust is there, not cold.',
+packages:[
+{n:'Custom system build',p:'scoped per project',i:'A CRM, booking, leads or ops tool built for how the business actually works'},
+{n:'Systems retainer',p:'LKR 30,000/mo',i:'Ongoing maintenance, support, fixes and updates so the system keeps running smoothly'}],
+discovery:['What eats up your time each week that a system could just handle for you?','Where do things fall through the cracks right now?','Are you the only person who knows how a key part of the business works?'],
+objections:[
+{q:'We just use Excel and WhatsApp',a:'That works until it does not, and then it is chaos and lost information. A system keeps it all in one place, for the whole team.'},
+{q:'Building it sounds expensive',a:'We scope it to fit your budget and only build what you need. It pays for itself in the hours it saves you every month.'},
+{q:'What if it breaks',a:'That is what the 30,000 a month retainer is for. We maintain it, fix it, and improve it, so you are never stuck.'}]}
+];
+let playbookTab=localStorage.getItem('bb_playbook_tab')||'dm';
+function playbookLineFor(lead){
+const hay=((lead.package_interest||'')+' '+(lead.type||'')+' '+(lead.notes||'')).toLowerCase();
+if(/seo|website|web site|maintenance|combo/.test(hay)||lead.type==='web')return PLAYBOOK[0];
+if(/system|crm|booking|software|app\b/.test(hay))return PLAYBOOK[2];
+if(/spark|ignite|blaze|social|marketing|smm/.test(hay))return PLAYBOOK[1];
+return null;}
+function renderPlaybook(){
+const pg=document.getElementById('page-playbook');
+const line=PLAYBOOK.find(l=>l.key===playbookTab)||PLAYBOOK[1];
+pg.innerHTML=`
+<div class="page-header"><div class="page-label">Selling</div><h1>Sales Playbook</h1><div class="page-sub">What we sell, what it costs, how to pitch it, and how to answer the pushback</div></div>
+<div class="pb-seg">${PLAYBOOK.map(l=>`<button class="${l.key===line.key?'on':''}" onclick="playbookTab='${l.key}';localStorage.setItem('bb_playbook_tab','${l.key}');renderPlaybook()">${l.label}</button>`).join('')}</div>
+<div class="pb-hero"><div class="ph-for">${esc(line.who)}</div><div class="ph-pitch">“${esc(line.pitch)}”</div><div class="ph-note">${esc(line.note)}</div></div>
+<div class="pb-card"><h3>Packages</h3>${line.packages.map(p=>`<div class="pb-pkg"><div class="pk-name">${esc(p.n)}${p.tag?`<span class="pk-tag">${esc(p.tag)}</span>`:''}</div><div class="pk-price">${esc(p.p)}</div><div class="pk-inc">${esc(p.i)}</div></div>`).join('')}</div>
+<div class="pb-card"><h3>Discovery questions</h3>${line.discovery.map((q,i)=>`<div class="pb-q"><div class="qn">${i+1}</div><div class="qt">${esc(q)}</div></div>`).join('')}</div>
+<div class="pb-card"><h3>Objections and answers</h3>${line.objections.map(o=>`<div class="pb-obj"><div class="ob-q">“${esc(o.q)}”</div><div class="ob-a">${esc(o.a)}</div></div>`).join('')}</div>
+<div class="pb-rule"><b>Golden rule:</b> we are diagnosing, not selling. Ask, listen, and match the right package to the real problem. Speak to the owner or decision-maker, never pitch a normal employee.</div>`;
+}
 
 /* ===== REVENUE PIPELINE ===== */
 function fmtLKR(v){return 'LKR '+Math.round(v||0).toLocaleString('en-US');}
