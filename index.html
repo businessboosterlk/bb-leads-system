@@ -543,7 +543,7 @@ html:not(.light) #page-revenue .rev-wrap{box-shadow:0 1px 2px rgba(0,0,0,0.3),0 
 .menu-btn{background:none;border:none;color:var(--text);font-size:20px;cursor:pointer;padding:10px}
 .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:49}
 @media(max-width:768px){
-/* Core layout fix — sidebar is fixed, main takes full width */
+/* Core layout fix - sidebar is fixed, main takes full width */
 .app{flex-direction:column}
 .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:50;transform:translateX(-100%);width:280px}
 .sidebar.open{transform:translateX(0)}
@@ -589,12 +589,12 @@ html:not(.light) #page-revenue .rev-wrap{box-shadow:0 1px 2px rgba(0,0,0,0.3),0 
 .act-info .act-sum{font-size:11px}
 .act-time{font-size:10px}
 
-/* Pipeline — horizontal scroll on mobile */
+/* Pipeline - horizontal scroll on mobile */
 .pipeline-board{flex-direction:row;min-height:auto;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding-bottom:12px}
 .pipe-col{min-width:85vw;max-width:85vw;min-height:auto;scroll-snap-align:start;flex-shrink:0}
 .pipe-col-body{max-height:55vh;min-height:120px}
 
-/* All Leads table — card layout on mobile */
+/* All Leads table - card layout on mobile */
 .leads-toolbar{flex-direction:column;gap:8px}
 .leads-toolbar select{width:100%}
 .leads-toolbar .search-box{min-width:100%}
@@ -737,7 +737,7 @@ input,select,textarea{font-size:16px;padding:12px 14px;border-radius:10px}
 .demo-banner.show{display:block}
 
 /* ===================================================================
-   GLOBAL APPLE SKIN — Apple aesthetic across every screen (overrides base)
+   GLOBAL APPLE SKIN - Apple aesthetic across every screen (overrides base)
    =================================================================== */
 :root{--ash:0 1px 2px rgba(0,0,0,0.32),0 10px 30px rgba(0,0,0,0.34);--ash-lg:0 2px 8px rgba(0,0,0,0.45),0 22px 60px rgba(0,0,0,0.55)}
 .light{--ash:0 1px 2px rgba(0,0,0,0.04),0 8px 26px rgba(0,0,0,0.05);--ash-lg:0 2px 6px rgba(0,0,0,0.05),0 18px 50px rgba(0,0,0,0.08)}
@@ -889,7 +889,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 <!-- MAIN -->
 <div class="main" id="mainContent">
 <div class="topbar" id="topbar"><button class="tb-icon" id="themeBtn" onclick="toggleTheme()" title="Toggle light / dark mode"></button></div>
-<div class="demo-banner" id="demoBanner">Demo Mode — Sample Data Only</div>
+<div class="demo-banner" id="demoBanner">Demo Mode - Sample Data Only</div>
 <div class="page active" id="page-dashboard"></div>
 <div class="page" id="page-pipeline"></div>
 <div class="page" id="page-leads"></div>
@@ -987,7 +987,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 <div class="modal-overlay" id="privacyModal"><div class="modal" style="width:600px;max-height:85vh">
 <div class="modal-head"><h3>Privacy Policy</h3><button class="modal-close" onclick="closeModal('privacyModal')">✕</button></div>
 <div class="modal-body" style="max-height:70vh;overflow-y:auto;font-size:12px;line-height:1.8;color:var(--text-2)">
-<h4 style="font-size:14px;color:var(--text);margin-bottom:8px">BB Leads System — Privacy Policy</h4>
+<h4 style="font-size:14px;color:var(--text);margin-bottom:8px">BB Leads System - Privacy Policy</h4>
 <p style="margin-bottom:12px"><strong>Last updated:</strong> June 2026</p>
 <p style="margin-bottom:12px"><strong>Data Controller:</strong> Business Booster (Pvt) Ltd, Sri Lanka</p>
 <h4 style="font-size:13px;color:var(--text);margin:16px 0 6px">1. Data We Collect</h4>
@@ -999,7 +999,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 <h4 style="font-size:13px;color:var(--text);margin:16px 0 6px">4. AI Features</h4>
 <p style="margin-bottom:8px">Optional AI features use Google Gemini API. When enabled, lead context data is sent to Google's servers for processing. Your API key is stored locally in your browser. You can disable AI features at any time by removing your API key.</p>
 <h4 style="font-size:13px;color:var(--text);margin:16px 0 6px">5. Your Rights</h4>
-<p style="margin-bottom:8px">You have the right to: <strong>Access</strong> — export any lead's complete data. <strong>Rectification</strong> — edit any information. <strong>Erasure</strong> — permanently delete leads and all associated data. <strong>Portability</strong> — export all leads as CSV.</p>
+<p style="margin-bottom:8px">You have the right to: <strong>Access</strong> - export any lead's complete data. <strong>Rectification</strong> - edit any information. <strong>Erasure</strong> - permanently delete leads and all associated data. <strong>Portability</strong> - export all leads as CSV.</p>
 <h4 style="font-size:13px;color:var(--text);margin:16px 0 6px">6. Data Retention</h4>
 <p style="margin-bottom:8px">Lead data is retained until manually deleted. Closed-won leads are converted to clients. Closed-lost leads remain for analytics. Users can permanently delete any lead at any time, which cascades to all related activities and follow-ups.</p>
 <h4 style="font-size:13px;color:var(--text);margin:16px 0 6px">7. Third Parties</h4>
@@ -1121,10 +1121,10 @@ const name=lead.contact_name||lead.name;
 const wp=WIN_PROB[lead.stage]||0;
 const nextWp=pb.next?WIN_PROB[pb.next]:null;
 let opener;
-if(lastAct){opener=`"Hi ${name}, following up on our last conversation`+(lastAct.next_step?` — you mentioned ${lastAct.next_step.toLowerCase()}`:'')+'."';}
+if(lastAct){opener=`"Hi ${name}, following up on our last conversation`+(lastAct.next_step?` - you mentioned ${lastAct.next_step.toLowerCase()}`:'')+'."';}
 else{opener=`"Hi ${name}, this is ${currentUser?.name||'Business Booster'} from Business Booster. I'm reaching out about `+(lead.package_interest?lead.package_interest.replace(/\s*\(.*\)/,''):'helping you grow your business online')+'."';}
-const emphasis=lead.pain_points?`Lead with their pain — "${lead.pain_points}"`:(lead.package_interest?`Anchor the conversation on the ${lead.package_interest.replace(/\s*\(.*\)/,'')} package`:'Find out what is holding their growth back right now');
-const watch=lead.objections?`"${lead.objections}" — have your answer ready`:'Listen for hesitation on budget or timing, and handle it early';
+const emphasis=lead.pain_points?`Lead with their pain - "${lead.pain_points}"`:(lead.package_interest?`Anchor the conversation on the ${lead.package_interest.replace(/\s*\(.*\)/,'')} package`:'Find out what is holding their growth back right now');
+const watch=lead.objections?`"${lead.objections}" - have your answer ready`:'Listen for hesitation on budget or timing, and handle it early';
 const rows=[
 {l:'Your objective',v:pb.goal,i:'target'},
 {l:'Suggested opener',v:opener,i:'message',copy:opener.replace(/^"|"$/g,'')},
@@ -1160,10 +1160,10 @@ const demoLeads=[
 {id:9004,name:'Emerald Gems',contact_name:'Priya Wickrama',contact_phone:'+94 70 456 7890',contact_email:'priya@emeraldgems.lk',industry:'Retail',source:'website',stage:'contacted',status:'active',estimated_value:90000,package_interest:'Spark (90K)',owner:'nv',pain_points:null,objections:null,notes:'Found us via Google',lead_score:35,is_hot:false,created_at:d(5),updated_at:d(5),last_contact_at:d(5)},
 {id:9005,name:'Cloud Nine Travels',contact_name:'Sandun Jayasuriya',contact_phone:'+94 77 567 8901',contact_email:'sandun@c9travels.lk',industry:'Hospitality',source:'social_media',stage:'new_lead',status:'active',estimated_value:230000,package_interest:'Blaze (230K)',owner:'th',pain_points:null,objections:null,notes:'DM on Instagram, wants full branding',lead_score:20,is_hot:false,created_at:d(2),updated_at:d(2),last_contact_at:null},
 {id:9006,name:'Bright Minds Academy',contact_name:'Nirasha Fernando',contact_phone:'+94 76 678 9012',contact_email:'nirasha@brightminds.lk',industry:'Education',source:'referral',stage:'new_lead',status:'active',estimated_value:90000,package_interest:null,owner:'sh',pain_points:null,objections:null,notes:'Referred by a friend',lead_score:15,is_hot:false,created_at:d(1),updated_at:d(1),last_contact_at:null},
-{id:9007,name:'Golden Spice Restaurant',contact_name:'Kasun Bandara',contact_phone:'+94 71 789 0123',contact_email:'kasun@goldenspice.lk',industry:'Food & Beverage',source:'walk_in',stage:'contacted',status:'active',estimated_value:150000,package_interest:'Ignite (150K)',owner:'pv',pain_points:'Delivery apps taking commission',objections:'Timing — opening new branch soon',notes:'Wants to start after new branch opens',lead_score:40,is_hot:false,created_at:d(10),updated_at:d(6),last_contact_at:d(6)},
+{id:9007,name:'Golden Spice Restaurant',contact_name:'Kasun Bandara',contact_phone:'+94 71 789 0123',contact_email:'kasun@goldenspice.lk',industry:'Food & Beverage',source:'walk_in',stage:'contacted',status:'active',estimated_value:150000,package_interest:'Ignite (150K)',owner:'pv',pain_points:'Delivery apps taking commission',objections:'Timing - opening new branch soon',notes:'Wants to start after new branch opens',lead_score:40,is_hot:false,created_at:d(10),updated_at:d(6),last_contact_at:d(6)},
 {id:9008,name:'TechWave Solutions',contact_name:'Malith Ratnayake',contact_phone:'+94 70 890 1234',contact_email:'malith@techwave.lk',industry:'Technology',source:'website',stage:'closed_won',status:'active',estimated_value:230000,package_interest:'Blaze (230K)',owner:'th',pain_points:'No digital presence',objections:null,notes:'Signed Blaze package!',lead_score:100,is_hot:false,created_at:d(30),updated_at:d(7),last_contact_at:d(7)},
 {id:9009,name:'Serenity Spa',contact_name:'Chamari De Silva',contact_phone:'+94 77 901 2345',contact_email:null,industry:'Beauty',source:'cold_call',stage:'closed_lost',status:'active',estimated_value:90000,package_interest:'Spark (90K)',owner:'nv',pain_points:'Low bookings',objections:'Price too high',notes:'Went with cheaper competitor',lead_score:0,is_hot:false,lost_reason:'competitor',created_at:d(25),updated_at:d(10),last_contact_at:d(10)},
-{id:9010,name:'Metro Real Estate',contact_name:'Harsha Wijesinghe',contact_phone:'+94 76 012 3456',contact_email:'harsha@metrore.lk',industry:'Real Estate',source:'social_media',stage:'discovery',status:'active',estimated_value:230000,package_interest:'Blaze (230K)',owner:'th',pain_points:'Listings not getting views',objections:'Wants proof of ROI',notes:'Big potential — 50+ property listings',lead_score:60,is_hot:true,created_at:d(14),updated_at:d(1),last_contact_at:d(1)}
+{id:9010,name:'Metro Real Estate',contact_name:'Harsha Wijesinghe',contact_phone:'+94 76 012 3456',contact_email:'harsha@metrore.lk',industry:'Real Estate',source:'social_media',stage:'discovery',status:'active',estimated_value:230000,package_interest:'Blaze (230K)',owner:'th',pain_points:'Listings not getting views',objections:'Wants proof of ROI',notes:'Big potential - 50+ property listings',lead_score:60,is_hot:true,created_at:d(14),updated_at:d(1),last_contact_at:d(1)}
 ];
 
 const demoActivities=[
@@ -1188,7 +1188,7 @@ const demoFollowUps=[
 {id:7004,pipeline_id:9004,due_date:dDate(0),due_time:'11:00',priority:'normal',note:'Call to discuss Spark package',is_done:false,created_by:'NIRVANA'},
 {id:7005,pipeline_id:9010,due_date:dDate(1),due_time:'15:00',priority:'high',note:'Send real estate custom proposal',is_done:false,created_by:'THULAIB'},
 {id:7006,pipeline_id:9007,due_date:dDate(20),due_time:null,priority:'normal',note:'Check if new branch timeline is on track',is_done:false,created_by:'PAVITH'},
-{id:7007,pipeline_id:9005,due_date:dDate(0),due_time:'09:00',priority:'high',note:'Call Cloud Nine — they DMed on Instagram',is_done:false,created_by:'THULAIB'}
+{id:7007,pipeline_id:9005,due_date:dDate(0),due_time:'09:00',priority:'high',note:'Call Cloud Nine - they DMed on Instagram',is_done:false,created_by:'THULAIB'}
 ];
 
 return{leads:demoLeads,activities:demoActivities,followUps:demoFollowUps};
@@ -1206,8 +1206,8 @@ function getHeaders(){const token=authToken||SB_KEY;return{'apikey':SB_KEY,'Auth
 window.bbAuthHeaders=getHeaders;
 const H_LEGACY={'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'};
 async function sb(t,p=''){try{const r=await fetch(`${SB_URL}/${t}?${p}`,{headers:getHeaders()});if(!r.ok){console.error(`DB load failed: ${t} (${r.status})`);if(window.bbReportDbError)bbReportDbError(t,'read',{message:`HTTP ${r.status}`});return[];}return r.json();}catch(e){console.error(`DB error: ${t}`,e);if(window.bbReportDbError)bbReportDbError(t,'read',e);return[];}}
-async function sbPost(t,d){try{await ensureFreshToken();let r=await fetch(`${SB_URL}/${t}`,{method:'POST',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});if(r.status===401){await ensureFreshToken();r=await fetch(`${SB_URL}/${t}`,{method:'POST',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});}if(!r.ok){console.error(`DB post failed: ${t} (${r.status})`);if(r.status===401)toast&&toast('Session expired — please log in again','error');if(window.bbReportDbError)bbReportDbError(t,'insert',{message:`HTTP ${r.status}`});return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);if(window.bbReportDbError)bbReportDbError(t,'insert',e);return null;}}
-async function sbPatch(t,id,d){try{await ensureFreshToken();let r=await fetch(`${SB_URL}/${t}?id=eq.${id}`,{method:'PATCH',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});if(r.status===401){await ensureFreshToken();r=await fetch(`${SB_URL}/${t}?id=eq.${id}`,{method:'PATCH',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});}if(!r.ok){console.error(`DB patch failed: ${t} (${r.status})`);if(r.status===401)toast&&toast('Session expired — please log in again','error');if(window.bbReportDbError)bbReportDbError(t,'update',{message:`HTTP ${r.status}`});return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);if(window.bbReportDbError)bbReportDbError(t,'update',e);return null;}}
+async function sbPost(t,d){try{await ensureFreshToken();let r=await fetch(`${SB_URL}/${t}`,{method:'POST',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});if(r.status===401){await ensureFreshToken();r=await fetch(`${SB_URL}/${t}`,{method:'POST',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});}if(!r.ok){console.error(`DB post failed: ${t} (${r.status})`);if(r.status===401)toast&&toast('Session expired - please log in again','error');if(window.bbReportDbError)bbReportDbError(t,'insert',{message:`HTTP ${r.status}`});return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);if(window.bbReportDbError)bbReportDbError(t,'insert',e);return null;}}
+async function sbPatch(t,id,d){try{await ensureFreshToken();let r=await fetch(`${SB_URL}/${t}?id=eq.${id}`,{method:'PATCH',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});if(r.status===401){await ensureFreshToken();r=await fetch(`${SB_URL}/${t}?id=eq.${id}`,{method:'PATCH',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});}if(!r.ok){console.error(`DB patch failed: ${t} (${r.status})`);if(r.status===401)toast&&toast('Session expired - please log in again','error');if(window.bbReportDbError)bbReportDbError(t,'update',{message:`HTTP ${r.status}`});return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);if(window.bbReportDbError)bbReportDbError(t,'update',e);return null;}}
 
 /* ===== AUTH ===== */
 function updateLoginDate(){const el=document.getElementById('loginDate');if(el){const n=new Date();el.textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});}}
@@ -1224,11 +1224,11 @@ document.getElementById('loginPin').addEventListener('keydown',function(e){if(e.
 async function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('userName').textContent=currentUser.name;document.getElementById('userRole').textContent=currentUser.role;document.getElementById('userAvatar').textContent=currentUser.code.toUpperCase();if(isDemoMode){document.getElementById('demoBanner').classList.add('show');}else{document.getElementById('demoBanner').classList.remove('show');}startClock();await loadAllData();requestNotifPermission();document.querySelectorAll('.master-only').forEach(el=>{el.style.display=isMaster()?'':'none';});document.body.classList.toggle('staff-mode',!isMaster());auditLog('LOGIN',`${currentUser.name} (${currentUser.role})`);nav('dashboard');if(!isMaster()){}else if(!isDemoMode)loadLeadsAgentAlerts();}
 async function loadAllData(){if(isDemoMode){const demo=generateDemoData();allLeads=demo.leads;allActivities=demo.activities;allFollowUps=demo.followUps;todayActCount=2;updateFUBadge();return;}const[leads,acts,fus]=await Promise.all([sb('pipeline','select=*&order=created_at.desc'),sb('lead_activities','select=*&order=created_at.desc'),sb('lead_follow_ups','select=*&order=due_date.asc,due_time.asc')]);allLeads=leads||[];allActivities=acts||[];allFollowUps=fus||[];
 /* Normalize stages: other BB systems (e.g. Command Centre) share this table and may
-   write a blank/unknown stage — map those to a real stage so no lead is ever hidden */
+   write a blank/unknown stage - map those to a real stage so no lead is ever hidden */
 const _KNOWN=new Set([...STAGES,...CLOSED_STAGES].map(s=>s.key));
 allLeads.forEach(l=>{if(!_KNOWN.has(l.stage)){l.stage=String(l.status||'').toLowerCase().includes('clos')?'closed_won':'new_lead';}});
-if(!leads.length&&!acts.length&&!fus.length){toast('Could not load data — check connection','error');}todayActCount=allActivities.filter(a=>a.created_at&&a.created_at.startsWith(today())).length;updateFUBadge();}
-function demoGuard(){if(isDemoMode){toast('Demo mode — read only','error');return true;}return false;}
+if(!leads.length&&!acts.length&&!fus.length){toast('Could not load data - check connection','error');}todayActCount=allActivities.filter(a=>a.created_at&&a.created_at.startsWith(today())).length;updateFUBadge();}
+function demoGuard(){if(isDemoMode){toast('Demo mode - read only','error');return true;}return false;}
 function updateFUBadge(){const c=allFollowUps.filter(f=>!f.is_done&&f.due_date<=today()).length;const b=document.getElementById('sbFuBadge');if(c>0){b.textContent=c;b.style.display='inline';}else{b.style.display='none';}}
 
 /* ===== NAV ===== */
@@ -1266,11 +1266,11 @@ function daysSinceContact(l){if(l.last_contact_at)return daysSince(l.last_contac
 function stageInfo(k){return ALL_STAGES.find(s=>s.key===k)||ALL_STAGES[0];}
 function stageBadge(k){const s=stageInfo(k);return `<span class="badge badge-${s.dot}">${s.label}</span>`;}
 function sourceBadge(s){return `<span class="badge badge-grey">${SOURCES[s]||s||'?'}</span>`;}
-function ownerLabel(c){if(!c)return'—';const cl=c.toLowerCase();return cl==='th'||cl==='thulaib'?'Thulaib':cl==='sh'||cl==='shiara'?'Shiara':cl==='pv'||cl==='pavith'?'Pavith':cl==='nv'||cl==='nirvana'?'Nirvana':c;}
+function ownerLabel(c){if(!c)return'-';const cl=c.toLowerCase();return cl==='th'||cl==='thulaib'?'Thulaib':cl==='sh'||cl==='shiara'?'Shiara':cl==='pv'||cl==='pavith'?'Pavith':cl==='nv'||cl==='nirvana'?'Nirvana':c;}
 function ownerAvatar(c){return `<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--accent),#ea580c);color:#fff;font-size:9px;font-weight:700;font-family:Poppins">${(c||'?').toUpperCase().substring(0,2)}</span>`;}
-function fmtValue(v){if(v==null||v===''||v===undefined)return'—';v=Number(v);if(isNaN(v)||v===0)return'—';if(v>=1e6)return'LKR '+(v/1e6).toFixed(1)+'M';if(v>=1e3)return'LKR '+(v/1e3).toFixed(0)+'K';return'LKR '+v;}
-function fmtDate(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
-function fmtDateTime(d){if(!d)return'—';const dt=new Date(d);return dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+dt.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
+function fmtValue(v){if(v==null||v===''||v===undefined)return'-';v=Number(v);if(isNaN(v)||v===0)return'-';if(v>=1e6)return'LKR '+(v/1e6).toFixed(1)+'M';if(v>=1e3)return'LKR '+(v/1e3).toFixed(0)+'K';return'LKR '+v;}
+function fmtDate(d){if(!d)return'-';return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
+function fmtDateTime(d){if(!d)return'-';const dt=new Date(d);return dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+dt.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
 function timeAgo(d){const m=Math.floor((Date.now()-new Date(d).getTime())/6e4);if(m<1)return'now';if(m<60)return m+'m';if(m<1440)return Math.floor(m/60)+'h';return Math.floor(m/1440)+'d';}
 function toast(m,t='success'){const el=document.getElementById('toast');el.textContent=m;el.className='toast show '+t;setTimeout(()=>el.classList.remove('show'),3000);}
 function openModal(id){document.getElementById(id).classList.add('open');}
@@ -1310,10 +1310,10 @@ const myTodayCount=myActivities.filter(a=>a.created_at&&a.created_at.startsWith(
 
 // Build action queue
 let actions=[];
-overdueFUs.forEach(f=>{const l=myLeads.find(x=>x.id===f.pipeline_id);if(l)actions.push({urgency:'critical',svgIcon:icon('alert',18),lead:l,reason:`Overdue ${daysSince(f.due_date+'T00:00')}d — ${f.note||'Follow up'}`,fuId:f.id});});
+overdueFUs.forEach(f=>{const l=myLeads.find(x=>x.id===f.pipeline_id);if(l)actions.push({urgency:'critical',svgIcon:icon('alert',18),lead:l,reason:`Overdue ${daysSince(f.due_date+'T00:00')}d - ${f.note||'Follow up'}`,fuId:f.id});});
 dueFUs.filter(f=>f.due_date===todayStr).forEach(f=>{const l=myLeads.find(x=>x.id===f.pipeline_id);if(l&&!actions.find(a=>a.lead?.id===l.id))actions.push({urgency:'high',svgIcon:icon('clock',18),lead:l,reason:f.note||'Follow up today',fuId:f.id});});
-staleLeads.forEach(l=>{if(!actions.find(a=>a.lead?.id===l.id)){const d=daysSinceContact(l);actions.push({urgency:d>=10?'critical':'high',svgIcon:icon('alert',18),lead:l,reason:`${d} days silent — going cold`});}});
-hotLeads.forEach(l=>{if(!actions.find(a=>a.lead?.id===l.id))actions.push({urgency:'normal',svgIcon:icon('fire',18),lead:l,reason:'Hot lead — keep momentum'});});
+staleLeads.forEach(l=>{if(!actions.find(a=>a.lead?.id===l.id)){const d=daysSinceContact(l);actions.push({urgency:d>=10?'critical':'high',svgIcon:icon('alert',18),lead:l,reason:`${d} days silent - going cold`});}});
+hotLeads.forEach(l=>{if(!actions.find(a=>a.lead?.id===l.id))actions.push({urgency:'normal',svgIcon:icon('fire',18),lead:l,reason:'Hot lead - keep momentum'});});
 
 // Streak
 const streakLevel=myTodayCount>=5?'on-fire':myTodayCount>=3?'good':myTodayCount>=1?'started':'none';
@@ -1352,7 +1352,7 @@ const brParts=[];
 if(closingSoon.length)brParts.push(`<span class="br-hi"><b>${fmtValue(closingVal)}</b></span> is close to landing across ${closingSoon.length} deal${closingSoon.length>1?'s':''} in proposal or negotiation`);
 if(atRisk.length)brParts.push(`<span class="br-risk"><b>${atRisk.length} deal${atRisk.length>1?'s':''}</b> worth ${fmtValue(atRiskVal)}</span> ${atRisk.length>1?'are':'is'} going cold`);
 if(overdueFUs.length)brParts.push(`<span class="br-warn"><b>${overdueFUs.length}</b> follow-up${overdueFUs.length>1?'s are':' is'} overdue</span>`);
-if(!brParts.length)brParts.push(`your pipeline is calm — <b>${active.length}</b> active deals and nothing urgent right now`);
+if(!brParts.length)brParts.push(`your pipeline is calm - <b>${active.length}</b> active deals and nothing urgent right now`);
 const briefing=`${greet}, ${currentUser.name.split(' ')[0]}. ${brParts.slice(0,2).join(', and ')}.`;
 
 const dashLabel=isStaff?`${currentUser.name}'s Dashboard`:'Team Dashboard';
@@ -1372,7 +1372,7 @@ pg.innerHTML=`
 <div class="ad-card">
 <div class="ad-lbl">${closingSoon.length?'Closing this week':'Open pipeline'}</div>
 <div class="ad-focus-money" data-count="${closingSoon.length?closingVal:pipeVal}" data-fmt="value">${fmtValue(closingSoon.length?closingVal:pipeVal)}</div>
-<div class="ad-focus-ctx">${closingSoon.length?`${closingSoon.length} deal${closingSoon.length>1?'s':''} in proposal or negotiation. Your best shot is <b>${esc(_closeSorted[0].name)}</b> — keep it moving.`:`Push your active deals toward proposal to build momentum. Weighted pipeline is <b>${fmtValue(weightedVal)}</b>.`}</div>
+<div class="ad-focus-ctx">${closingSoon.length?`${closingSoon.length} deal${closingSoon.length>1?'s':''} in proposal or negotiation. Your best shot is <b>${esc(_closeSorted[0].name)}</b> - keep it moving.`:`Push your active deals toward proposal to build momentum. Weighted pipeline is <b>${fmtValue(weightedVal)}</b>.`}</div>
 ${closingSoon.length?`<div class="ad-chips">${_closeSorted.slice(0,3).map((l,i)=>`<span class="ad-chip ${i===0?'hot':''}">${esc(l.name)} · ${WIN_PROB[l.stage]||0}%</span>`).join('')}</div>`:''}
 </div>
 <div class="ad-card ad-ring-card">
@@ -1406,7 +1406,7 @@ ${actions.slice(0,6).map(a=>{const u=a.urgency;const dotc=u==='critical'?'var(--
 ${a.lead.estimated_value?`<div class="ad-ramt">${fmtValue(a.lead.estimated_value)}</div>`:''}
 <button class="btn btn-sm btn-primary" style="flex-shrink:0" onclick="event.stopPropagation();openLogActivity(${a.lead.id})">Log</button>
 </div>`;}).join('')}
-</div>`:`<div class="ad-card" style="text-align:center;padding:40px"><div style="color:var(--green);margin-bottom:10px;display:flex;justify-content:center">${icon('checkcircle',34)}</div><div style="font-size:16px;font-weight:600">You're all caught up.</div><div style="font-size:13px;color:var(--text-3);margin-top:4px">No urgent actions — go prospect some new leads.</div></div>`}
+</div>`:`<div class="ad-card" style="text-align:center;padding:40px"><div style="color:var(--green);margin-bottom:10px;display:flex;justify-content:center">${icon('checkcircle',34)}</div><div style="font-size:16px;font-weight:600">You're all caught up.</div><div style="font-size:13px;color:var(--text-3);margin-top:4px">No urgent actions - go prospect some new leads.</div></div>`}
 
 <div class="ad-grid2">
 <div class="ad-card" style="padding:0">
@@ -1554,7 +1554,7 @@ ${lastAct?.next_step?`<div class="cp-row"><div class="cp-label">Next step</div><
 ${lead.pain_points?`<div class="cp-row"><div class="cp-label">Their pain points</div><div class="cp-val">${esc(lead.pain_points)}</div></div>`:''}
 ${lead.objections?`<div class="cp-row"><div class="cp-label">Objections to address</div><div class="cp-val">${esc(lead.objections)}</div></div>`:''}
 ${lastAct?.talking_points?`<div class="cp-row"><div class="cp-label">Talking points from last call</div><div class="cp-val">${esc(lastAct.talking_points)}</div></div>`:''}
-${(!lastAct&&!lead.pain_points&&!lead.objections)?`<div class="cp-empty">Nothing logged yet — start with "Log Activity", or add details in the Intel tab.</div>`:''}
+${(!lastAct&&!lead.pain_points&&!lead.objections)?`<div class="cp-empty">Nothing logged yet - start with "Log Activity", or add details in the Intel tab.</div>`:''}
 </div>
 ${buildCallGamePlan(lead,lastAct)}
 </div>
@@ -1583,7 +1583,7 @@ if(acts.length)await fetch(`${SB_URL}/lead_activities?pipeline_id=eq.${id}`,{met
 if(fus.length)await fetch(`${SB_URL}/lead_follow_ups?pipeline_id=eq.${id}`,{method:'DELETE',headers:{...getHeaders(),Prefer:'return=minimal'}});
 await fetch(`${SB_URL}/pipeline?id=eq.${id}`,{method:'DELETE',headers:{...getHeaders(),Prefer:'return=minimal'}});
 allLeads=allLeads.filter(l=>l.id!==id);allActivities=allActivities.filter(a=>a.pipeline_id!==id);allFollowUps=allFollowUps.filter(f=>f.pipeline_id!==id);
-auditLog('DELETE_LEAD',`${lead.name} (ID:${id}) — ${acts.length} activities, ${fus.length} follow-ups removed`);
+auditLog('DELETE_LEAD',`${lead.name} (ID:${id}) - ${acts.length} activities, ${fus.length} follow-ups removed`);
 closeDetail();toast('Lead permanently deleted');updateFUBadge();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);
 }catch(e){toast('Delete failed','error');console.error(e);if(window.bbReportDbError)bbReportDbError('pipeline','delete',e);}}
 async function archiveLead(id){if(demoGuard())return;const lead=allLeads.find(l=>l.id===id);if(!lead)return;if(!confirm(`Archive "${lead.name}"?\n\nIt will be hidden from your lists but can be restored anytime.`))return;const ts=new Date().toISOString();const res=await sbPatch('pipeline',id,{archived_at:ts});if(!res){toast('Archive failed','error');return;}lead.archived_at=ts;auditLog('ARCHIVE_LEAD',`${lead.name} (ID:${id})`);closeDetail();toast('Lead archived');const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
@@ -1613,14 +1613,14 @@ allLeads.filter(l=>!['closed_won','closed_lost'].includes(l.stage)).forEach(l=>{
 const dsc=daysSinceContact(l);const sc=calcScore(l);const acts=allActivities.filter(a=>a.pipeline_id===l.id);
 const negCount=acts.filter(a=>a.outcome==='negative').length;
 const pendingFU=allFollowUps.filter(f=>f.pipeline_id===l.id&&!f.is_done&&f.due_date<today());
-if(dsc>=14)alerts.push({sev:'critical',icon:'alert',msg:`${l.name} has gone silent for ${dsc} days — at risk of going cold`,leadId:l.id});
-else if(dsc>=7)alerts.push({sev:'warning',icon:'warning',msg:`${l.name} — no contact in ${dsc} days. Follow up soon.`,leadId:l.id});
-if(l.stage==='proposal_sent'&&dsc>=5)alerts.push({sev:'warning',icon:'clipboard',msg:`${l.name} — proposal sent ${dsc}d ago with no response. Time to follow up.`,leadId:l.id});
-if(l.stage==='negotiation'&&l.estimated_value>=200000)alerts.push({sev:'info',icon:'dollar',msg:`${l.name} — high-value deal (${fmtValue(l.estimated_value)}) in negotiation. Prioritize closing.`,leadId:l.id});
-if(negCount>=2&&l.stage!=='on_hold')alerts.push({sev:'warning',icon:'trending',msg:`${l.name} — ${negCount} negative outcomes. Consider adjusting approach or putting on hold.`,leadId:l.id});
-if(pendingFU.length>=2)alerts.push({sev:'warning',icon:'clock',msg:`${l.name} — ${pendingFU.length} overdue follow-ups! Clear backlog.`,leadId:l.id});
+if(dsc>=14)alerts.push({sev:'critical',icon:'alert',msg:`${l.name} has gone silent for ${dsc} days - at risk of going cold`,leadId:l.id});
+else if(dsc>=7)alerts.push({sev:'warning',icon:'warning',msg:`${l.name} - no contact in ${dsc} days. Follow up soon.`,leadId:l.id});
+if(l.stage==='proposal_sent'&&dsc>=5)alerts.push({sev:'warning',icon:'clipboard',msg:`${l.name} - proposal sent ${dsc}d ago with no response. Time to follow up.`,leadId:l.id});
+if(l.stage==='negotiation'&&l.estimated_value>=200000)alerts.push({sev:'info',icon:'dollar',msg:`${l.name} - high-value deal (${fmtValue(l.estimated_value)}) in negotiation. Prioritize closing.`,leadId:l.id});
+if(negCount>=2&&l.stage!=='on_hold')alerts.push({sev:'warning',icon:'trending',msg:`${l.name} - ${negCount} negative outcomes. Consider adjusting approach or putting on hold.`,leadId:l.id});
+if(pendingFU.length>=2)alerts.push({sev:'warning',icon:'clock',msg:`${l.name} - ${pendingFU.length} overdue follow-ups! Clear backlog.`,leadId:l.id});
 if(sc>=70&&!l.is_hot)alerts.push({sev:'info',icon:'fire',msg:`${l.name} scores ${sc}/100 but isn't marked hot. Consider flagging.`,leadId:l.id});
-if(l.stage==='new_lead'&&dsc>=3)alerts.push({sev:'warning',icon:'alert',msg:`${l.name} — new lead sitting for ${dsc}d without being contacted.`,leadId:l.id});
+if(l.stage==='new_lead'&&dsc>=3)alerts.push({sev:'warning',icon:'alert',msg:`${l.name} - new lead sitting for ${dsc}d without being contacted.`,leadId:l.id});
 });
 const overdueFUs=allFollowUps.filter(f=>!f.is_done&&f.due_date<today());
 if(overdueFUs.length>=5)alerts.push({sev:'critical',icon:'pin',msg:`${overdueFUs.length} overdue follow-ups across all leads. Inbox is getting backed up.`});
@@ -1678,16 +1678,16 @@ async function saveFollowUp(){if(demoGuard())return;if(!fuLeadId)return;const d=
 /* ===== CONVERT ===== */
 function openConvert(id){convertLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('cv_name').value=l.name;document.getElementById('cv_industry').value=l.industry||'';document.getElementById('cv_contact').value=l.contact_name||l.contact_phone||'';document.getElementById('cv_start').value=today();const p=l.package_interest?.split(' (')[0]||'Spark';document.getElementById('cv_package').value=p;document.getElementById('cv_mrr').value=PKG_VALUES[p]||90000;openModal('convertModal');}
 document.getElementById('cv_package').addEventListener('change',function(){document.getElementById('cv_mrr').value=PKG_VALUES[this.value]||90000;});
-async function convertToClient(){if(demoGuard())return;if(!convertLeadId)return;const cd={name:document.getElementById('cv_name').value.trim(),package:document.getElementById('cv_package').value,mrr:parseInt(document.getElementById('cv_mrr').value)||0,industry:document.getElementById('cv_industry').value.trim()||null,contact:document.getElementById('cv_contact').value.trim()||null,start_date:document.getElementById('cv_start').value||null,health:'green',client_type:'sm'};const cr=await sbPost('clients',cd);if(!cr){toast('Failed','error');return;}await sbPatch('pipeline',convertLeadId,{stage:'closed_won',closed_at:new Date().toISOString()});const l=allLeads.find(x=>x.id===convertLeadId);if(l){l.stage='closed_won';}await sbPost('lead_activities',{pipeline_id:convertLeadId,type:'note',summary:`Converted! ${cd.package} @ LKR ${cd.mrr}`,outcome:'positive',logged_by:currentUser?.name?.toUpperCase()});closeModal('convertModal');closeDetail();celebrate();auditLog('CONVERT_CLIENT',`${cd.name} — ${cd.package} @ LKR ${cd.mrr}`);toast('🎉 Deal won — client converted!');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function convertToClient(){if(demoGuard())return;if(!convertLeadId)return;const cd={name:document.getElementById('cv_name').value.trim(),package:document.getElementById('cv_package').value,mrr:parseInt(document.getElementById('cv_mrr').value)||0,industry:document.getElementById('cv_industry').value.trim()||null,contact:document.getElementById('cv_contact').value.trim()||null,start_date:document.getElementById('cv_start').value||null,health:'green',client_type:'sm'};const cr=await sbPost('clients',cd);if(!cr){toast('Failed','error');return;}await sbPatch('pipeline',convertLeadId,{stage:'closed_won',closed_at:new Date().toISOString()});const l=allLeads.find(x=>x.id===convertLeadId);if(l){l.stage='closed_won';}await sbPost('lead_activities',{pipeline_id:convertLeadId,type:'note',summary:`Converted! ${cd.package} @ LKR ${cd.mrr}`,outcome:'positive',logged_by:currentUser?.name?.toUpperCase()});closeModal('convertModal');closeDetail();celebrate();auditLog('CONVERT_CLIENT',`${cd.name} - ${cd.package} @ LKR ${cd.mrr}`);toast('🎉 Deal won - client converted!');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== MARK LOST ===== */
 function openMarkLost(id){lostLeadId=id;document.getElementById('lost_reason').value='unresponsive';document.getElementById('lost_notes').value='';openModal('lostModal');}
-async function markLost(){if(demoGuard())return;if(!lostLeadId)return;const r=document.getElementById('lost_reason').value;const n=document.getElementById('lost_notes').value.trim();await sbPatch('pipeline',lostLeadId,{stage:'closed_lost',lost_reason:r,closed_at:new Date().toISOString()});await sbPost('lead_activities',{pipeline_id:lostLeadId,type:'note',summary:`Lost: ${r}${n?' — '+n:''}`,outcome:'negative',logged_by:currentUser?.name?.toUpperCase()});closeModal('lostModal');closeDetail();auditLog('MARK_LOST',`Lead ID:${lostLeadId} — ${r}`);toast('Marked lost');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function markLost(){if(demoGuard())return;if(!lostLeadId)return;const r=document.getElementById('lost_reason').value;const n=document.getElementById('lost_notes').value.trim();await sbPatch('pipeline',lostLeadId,{stage:'closed_lost',lost_reason:r,closed_at:new Date().toISOString()});await sbPost('lead_activities',{pipeline_id:lostLeadId,type:'note',summary:`Lost: ${r}${n?' - '+n:''}`,outcome:'negative',logged_by:currentUser?.name?.toUpperCase()});closeModal('lostModal');closeDetail();auditLog('MARK_LOST',`Lead ID:${lostLeadId} - ${r}`);toast('Marked lost');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== CSV IMPORT ===== */
 function openCSVImport(){csvData=null;document.getElementById('csvPreview').style.display='none';document.getElementById('csvImportBtn').style.display='none';document.getElementById('csvFile').value='';openModal('csvModal');}
 function handleCSVDrop(e){e.preventDefault();e.currentTarget.classList.remove('dragover');if(e.dataTransfer.files.length)handleCSVFile(e.dataTransfer.files[0]);}
-function handleCSVFile(file){if(!file)return;if(file.size>1048576){toast('File too large — max 1MB','error');return;}const reader=new FileReader();reader.onload=e=>{const lines=e.target.result.split('\n').filter(l=>l.trim());if(lines.length<2){toast('Empty CSV','error');return;}if(lines.length>501){toast('Too many rows — max 500 leads','error');return;}const headers=lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/['"]/g,''));const rows=lines.slice(1).map(line=>{const vals=line.split(',').map(v=>v.trim().replace(/^["']|["']$/g,''));const obj={};headers.forEach((h,i)=>obj[h]=vals[i]||'');return obj;}).filter(r=>r.name||r.business||r.company);
+function handleCSVFile(file){if(!file)return;if(file.size>1048576){toast('File too large - max 1MB','error');return;}const reader=new FileReader();reader.onload=e=>{const lines=e.target.result.split('\n').filter(l=>l.trim());if(lines.length<2){toast('Empty CSV','error');return;}if(lines.length>501){toast('Too many rows - max 500 leads','error');return;}const headers=lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/['"]/g,''));const rows=lines.slice(1).map(line=>{const vals=line.split(',').map(v=>v.trim().replace(/^["']|["']$/g,''));const obj={};headers.forEach((h,i)=>obj[h]=vals[i]||'');return obj;}).filter(r=>r.name||r.business||r.company);
 csvData=rows.map(r=>({name:r.name||r.business||r.company||'',contact_name:r.contact||r.contact_name||r.person||'',contact_phone:r.phone||r.contact_phone||r.mobile||r.tel||'',contact_email:r.email||r.contact_email||'',industry:r.industry||r.sector||r.category||'',source:r.source||'other'}));
 document.getElementById('csvPreview').style.display='block';document.getElementById('csvPreview').innerHTML=`<div style="font-size:13px;font-weight:600;margin-bottom:8px">${csvData.length} leads found</div><div style="max-height:200px;overflow-y:auto;font-size:12px;color:var(--text-2)">${csvData.slice(0,10).map(r=>`<div style="padding:4px 0;border-bottom:1px solid var(--border)">${esc(r.name)} ${r.contact_phone?' · '+esc(r.contact_phone):''}</div>`).join('')}${csvData.length>10?`<div style="color:var(--text-3);padding:4px 0">+${csvData.length-10} more</div>`:''}</div>`;
 document.getElementById('csvImportBtn').style.display='inline-flex';};reader.readAsText(file);}
@@ -1784,7 +1784,7 @@ body+= g.ls.length?g.ls.map(dealRow).join(''):`<tr><td colspan="6" style="color:
 body+=`<tr class="rev-sub"><td>Open Pipeline Subtotal</td><td></td><td></td><td class="num">${fmtLKR(pipeVal)}</td><td class="num rev-wt">${fmtLKR(weighted)}</td><td></td></tr>`;
 if(onHold.length){const ohVal=onHold.reduce((s,l)=>s+(l.estimated_value||0),0);body+=`<tr class="rev-grp"><td><span class="dot" style="background:var(--grey);display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px"></span>On Hold (${onHold.length})</td><td></td><td class="num">5%</td><td class="num">${fmtLKR(ohVal)}</td><td class="num rev-wt">${fmtLKR(Math.round(ohVal*0.05))}</td><td></td></tr>`+onHold.sort((a,b)=>(b.estimated_value||0)-(a.estimated_value||0)).map(dealRow).join('');}
 // realized (won)
-body+=`<tr class="rev-grp"><td><span class="dot" style="background:var(--green);display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px"></span>Realized — Closed Won (${won.length})</td><td></td><td class="num">100%</td><td class="num">${fmtLKR(realized)}</td><td class="num rev-wt">${fmtLKR(realized)}</td><td></td></tr>`;
+body+=`<tr class="rev-grp"><td><span class="dot" style="background:var(--green);display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px"></span>Realized - Closed Won (${won.length})</td><td></td><td class="num">100%</td><td class="num">${fmtLKR(realized)}</td><td class="num rev-wt">${fmtLKR(realized)}</td><td></td></tr>`;
 body+= won.length?won.sort((a,b)=>(b.estimated_value||0)-(a.estimated_value||0)).map(l=>{const age=daysSince(l.created_at);return `<tr class="rev-deal" onclick="openDetail(${l.id})"><td><div style="font-weight:600">${esc(l.name)}</div><div style="font-size:11px;color:var(--text-3)">${esc(l.contact_name||'')}</div></td><td>${ownerAvatar(l.owner)}</td><td class="num" style="color:var(--green)">Won</td><td class="num">${fmtLKR(l.estimated_value)}</td><td class="num rev-wt" style="color:var(--green)">${fmtLKR(l.estimated_value)}</td><td class="num" style="color:var(--text-3)">${fmtDate(l.updated_at||l.created_at)}</td></tr>`;}).join(''):`<tr><td colspan="6" style="color:var(--text-3);font-style:italic;font-size:11px;padding:8px 12px">No closed deals yet</td></tr>`;
 body+=`<tr class="rev-total"><td>TOTAL FORECAST (Realized + Weighted)</td><td></td><td></td><td class="num">${fmtLKR(realized+pipeVal)}</td><td class="num">${fmtLKR(forecast)}</td><td></td></tr>`;
 pg.innerHTML=`<div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="page-label">Finance</div><h1>Revenue Pipeline</h1><div class="page-sub">Every deal, its value, and what it's worth to the business right now</div></div><button class="btn btn-secondary" onclick="exportRevenueCSV()">${icon('download',14)} Export to Excel/CSV</button></div>
@@ -1827,7 +1827,7 @@ pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;ju
 <div class="stat-card amber"><div class="stat-icon" style="color:var(--amber)">${icon('chart',20)}</div><div class="stat-label">Win/Loss</div><div class="stat-val">${lost.length?`${(won.length/lost.length).toFixed(1)}:1`:'∞'}</div><div class="stat-sub">${won.length}W / ${lost.length}L</div></div>
 <div class="stat-card purple"><div class="stat-icon" style="color:var(--accent)">${icon('phone',20)}</div><div class="stat-label">Activities</div><div class="stat-val">${allActivities.length}</div><div class="stat-sub">total logged</div></div>
 </div>
-${bottleneck?`<div style="background:linear-gradient(135deg,var(--surface),var(--surface-2));border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px"><div style="color:var(--amber);flex-shrink:0">${icon('alert',22)}</div><div><div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);font-weight:700;margin-bottom:3px">Biggest Bottleneck</div><div style="font-size:15px;color:var(--text);font-weight:500">Deals stall most at <b>${bottleneck.from} → ${bottleneck.to}</b> — only <b style="color:var(--amber)">${bottleneck.rate}%</b> advance. Focus coaching here.</div></div></div>`:''}
+${bottleneck?`<div style="background:linear-gradient(135deg,var(--surface),var(--surface-2));border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px"><div style="color:var(--amber);flex-shrink:0">${icon('alert',22)}</div><div><div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);font-weight:700;margin-bottom:3px">Biggest Bottleneck</div><div style="font-size:15px;color:var(--text);font-weight:500">Deals stall most at <b>${bottleneck.from} → ${bottleneck.to}</b> - only <b style="color:var(--amber)">${bottleneck.rate}%</b> advance. Focus coaching here.</div></div></div>`:''}
 <div class="analytics-grid">
 <div class="chart-card"><h3>Pipeline Funnel</h3>${funnel.map(f=>`<div class="funnel-bar"><div class="fb-label">${f.label} <span style="color:var(--text-3);font-size:10px">${WIN_PROB[f.key]||0}%</span></div><div class="fb-track"><div class="fb-fill" style="width:${(f.count/mx)*100}%;background:${f.color}">${f.count}</div></div></div>`).join('')}</div>
 <div class="chart-card"><h3>Key Metrics</h3><div class="metric-row"><span class="mr-label">Active Leads</span><span class="mr-val">${active.length}</span></div><div class="metric-row"><span class="mr-label">Pipeline Value</span><span class="mr-val">${fmtValue(pipeVal)}</span></div><div class="metric-row"><span class="mr-label">Weighted Value</span><span class="mr-val">${fmtValue(Math.round(active.reduce((s,l)=>s+(l.estimated_value||0)*(WIN_PROB[l.stage]||10)/100,0)))}</span></div><div class="metric-row"><span class="mr-label">Avg Score</span><span class="mr-val">${active.length?Math.round(active.reduce((s,l)=>s+calcScore(l),0)/active.length):0}</span></div><div class="metric-row"><span class="mr-label">Hot Leads</span><span class="mr-val">${active.filter(l=>l.is_hot).length}</span></div><div class="metric-row"><span class="mr-label">Overdue FUs</span><span class="mr-val" style="color:var(--red)">${allFollowUps.filter(f=>!f.is_done&&f.due_date<today()).length}</span></div></div>
@@ -1909,7 +1909,7 @@ ${myCodes.map(c=>`<th style="text-align:right;padding:6px 4px;border-bottom:1px 
 <tbody>
 ${days.slice(-7).map(d=>`<tr style="${d===today()?'background:var(--surface-2);':''}">
 <td style="padding:6px 4px;border-bottom:1px solid var(--border);color:var(--text-2)">${d.slice(5)}</td>
-${myCodes.map(c=>{const h=hoursLog[d]?.[c];return`<td style="text-align:right;padding:6px 4px;border-bottom:1px solid var(--border);font-weight:${h?'600':'400'};color:${h?'var(--text)':'var(--text-3)'}">${h||'—'}</td>`;}).join('')}
+${myCodes.map(c=>{const h=hoursLog[d]?.[c];return`<td style="text-align:right;padding:6px 4px;border-bottom:1px solid var(--border);font-weight:${h?'600':'400'};color:${h?'var(--text)':'var(--text-3)'}">${h||'-'}</td>`;}).join('')}
 </tr>`).join('')}
 <tr style="font-weight:700;border-top:2px solid var(--border)">
 <td style="padding:6px 4px;color:var(--text-2)">Total</td>
@@ -1934,8 +1934,8 @@ ${allCodes.map(c=>`<th style="text-align:right;padding:8px 6px;border-bottom:2px
 <tbody>
 ${days.map(d=>{const row=hoursLog[d]||{};const total=allCodes.reduce((s,c)=>s+(row[c]||0),0);const dt=new Date(d+'T00:00');const wd=dt.toLocaleDateString('en-US',{weekday:'short'});const dd=dt.toLocaleDateString('en-US',{day:'numeric',month:'short'});const isToday=d===today();const isWeekend=dt.getDay()===0||dt.getDay()===6;return`<tr style="${isToday?'background:var(--accent-soft);':isWeekend?'background:var(--surface-2);opacity:.75;':''}">
 <td style="padding:7px 6px;border-bottom:1px solid var(--border);white-space:nowrap"><span style="font-weight:700;color:${isToday?'var(--accent)':'var(--text)'}">${wd}</span> <span style="color:var(--text-3);font-size:10px">${dd}</span>${isToday?' <span style="font-size:9px;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:1px 6px;border-radius:10px;margin-left:2px">TODAY</span>':''}</td>
-${allCodes.map(c=>{const h=row[c];return`<td style="text-align:right;padding:7px 6px;border-bottom:1px solid var(--border);font-weight:${h?'600':'400'};color:${h?'var(--text)':'var(--text-3)'}">${h||'—'}</td>`;}).join('')}
-<td style="text-align:right;padding:7px 6px;border-bottom:1px solid var(--border);font-weight:700;color:var(--accent)">${total||'—'}</td>
+${allCodes.map(c=>{const h=row[c];return`<td style="text-align:right;padding:7px 6px;border-bottom:1px solid var(--border);font-weight:${h?'600':'400'};color:${h?'var(--text)':'var(--text-3)'}">${h||'-'}</td>`;}).join('')}
+<td style="text-align:right;padding:7px 6px;border-bottom:1px solid var(--border);font-weight:700;color:var(--accent)">${total||'-'}</td>
 </tr>`;}).join('')}
 </tbody>
 </table>
@@ -1984,12 +1984,12 @@ _leadsAlertData=alerts||[];
 renderAgentCards(alerts);
 updateLeadsAgentsBadge(alerts.filter(a=>!a.read_at).length);
 }catch(e){
-el.innerHTML='<div style="color:var(--text-3);font-size:13px;padding:24px 0;text-align:center;">No alerts — everything running smoothly.</div>';
+el.innerHTML='<div style="color:var(--text-3);font-size:13px;padding:24px 0;text-align:center;">No alerts - everything running smoothly.</div>';
 }finally{if(btn){btn.textContent='↻ Refresh';btn.style.opacity='';btn.style.pointerEvents='';}}
 }
 function renderAgentCards(alerts){
 const el=document.getElementById('leads-agents-list');if(!el)return;
-if(!alerts||!alerts.length){el.innerHTML='<div style="color:var(--text-3);font-size:13px;padding:32px 0;text-align:center;">No alerts — everything running smoothly.</div>';return;}
+if(!alerts||!alerts.length){el.innerHTML='<div style="color:var(--text-3);font-size:13px;padding:32px 0;text-align:center;">No alerts - everything running smoothly.</div>';return;}
 const grouped={};alerts.forEach(a=>{if(!grouped[a.agent])grouped[a.agent]=[];grouped[a.agent].push(a);});
 const SEV_COLOR={critical:'#f87171',warning:'#fbbf24',info:'#60a5fa'};
 const cards=Object.keys(grouped).map(agent=>{
@@ -2018,7 +2018,7 @@ pg.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-
 <button id="agents-refresh-btn" onclick="loadLeadsAgentAlerts()" style="padding:8px 14px;border-radius:8px;background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer">↻ Refresh</button>
 <button onclick="markAllLeadsAlertsRead()" style="padding:8px 14px;border-radius:8px;background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer">Mark all read</button>
 </div></div>
-${smartAlerts.length?`<div class="section" style="margin-bottom:20px"><div class="section-head"><h3>${icon('brain',16)} Smart Alerts</h3><span class="count">${smartAlerts.length}</span></div><div class="section-body">${smartAlerts.map(a=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);border-left:3px solid ${SEV_COLOR[a.sev]};cursor:${a.leadId?'pointer':'default'}" ${a.leadId?`onclick="openDetail(${a.leadId})"`:''}><span style="flex-shrink:0">${icon(a.icon,18)}</span><div style="flex:1"><div style="font-size:12px;color:var(--text)">${esc(a.msg)}</div></div><span style="font-size:9px;font-weight:700;color:${SEV_COLOR[a.sev]};text-transform:uppercase">${a.sev}</span></div>`).join('')}</div></div>`:`<div style="background:var(--green-soft);border:1px solid var(--green);border-radius:var(--radius-lg);padding:18px;margin-bottom:20px;text-align:center;font-size:13px;color:var(--green)">${icon('checkcircle',16)} All clear — no smart alerts. Your pipeline is healthy!</div>`}
+${smartAlerts.length?`<div class="section" style="margin-bottom:20px"><div class="section-head"><h3>${icon('brain',16)} Smart Alerts</h3><span class="count">${smartAlerts.length}</span></div><div class="section-body">${smartAlerts.map(a=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);border-left:3px solid ${SEV_COLOR[a.sev]};cursor:${a.leadId?'pointer':'default'}" ${a.leadId?`onclick="openDetail(${a.leadId})"`:''}><span style="flex-shrink:0">${icon(a.icon,18)}</span><div style="flex:1"><div style="font-size:12px;color:var(--text)">${esc(a.msg)}</div></div><span style="font-size:9px;font-weight:700;color:${SEV_COLOR[a.sev]};text-transform:uppercase">${a.sev}</span></div>`).join('')}</div></div>`:`<div style="background:var(--green-soft);border:1px solid var(--green);border-radius:var(--radius-lg);padding:18px;margin-bottom:20px;text-align:center;font-size:13px;color:var(--green)">${icon('checkcircle',16)} All clear - no smart alerts. Your pipeline is healthy!</div>`}
 <h3 style="font-size:14px;font-weight:700;margin-bottom:12px">Agent Monitors</h3>
 <div id="leads-agents-list"><div style="color:var(--text-3);font-size:13px;padding:24px 0;text-align:center;">Loading...</div></div>`;
 loadLeadsAgentAlerts();
@@ -2066,12 +2066,12 @@ const b=document.getElementById('sbAgentsBadge');if(b){b.textContent=count;b.sty
 
 /* ===== INIT ===== */
 (async function(){const u=localStorage.getItem('bb_leads_user');if(u){const parsed=JSON.parse(u);const SESSION_MAX=8*60*60*1000;if(parsed.loginAt&&(Date.now()-parsed.loginAt)>SESSION_MAX){localStorage.removeItem('bb_leads_user');if(sbClient)await sbClient.auth.signOut().catch(()=>{});document.getElementById('loginScreen').style.display='flex';return;}if(sbClient&&!parsed.demo){const{data}=await sbClient.auth.getSession();if(data?.session){authToken=data.session.access_token;}else if(parsed.pin&&PIN_AUTH[parsed.pin]){try{const ai=PIN_AUTH[parsed.pin];const{data:d2}=await sbClient.auth.signInWithPassword({email:ai.email,password:ai.pass});if(d2?.session)authToken=d2.session.access_token;}catch(e){console.warn('Re-auth failed:',e);}}}
-/* HARDEN: a real (non-demo) user must have a valid token, else data is invisible under RLS — force a fresh login instead of showing an empty app */
+/* HARDEN: a real (non-demo) user must have a valid token, else data is invisible under RLS - force a fresh login instead of showing an empty app */
 if(!parsed.demo&&!authToken){localStorage.removeItem('bb_leads_user');if(sbClient)await sbClient.auth.signOut().catch(()=>{});document.getElementById('loginScreen').style.display='flex';return;}
 currentUser=parsed;if(parsed.demo)isDemoMode=true;showApp();}else{document.getElementById('loginScreen').style.display='flex';}})();
 </script>
 
-<!-- ===================== BB SENTINEL — system watchdog ===================== -->
+<!-- ===================== BB SENTINEL - system watchdog ===================== -->
 <script>
 (function(){
   'use strict';
@@ -2160,7 +2160,7 @@ currentUser=parsed;if(parsed.demo)isDemoMode=true;showApp();}else{document.getEl
     ov.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:20px';
     ov.innerHTML='<div style="background:var(--surface,#12121a);border:1px solid var(--border-strong,#3a3a4e);border-radius:14px;max-width:560px;width:100%;max-height:80vh;display:flex;flex-direction:column">'+
       '<div style="padding:16px 20px;border-bottom:1px solid var(--border,#2a2a3a);display:flex;align-items:center;justify-content:space-between">'+
-        '<div style="font:800 15px Poppins,Inter;color:var(--text,#fff)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Sentinel — '+_issues.length+' issue(s)</div>'+
+        '<div style="font:800 15px Poppins,Inter;color:var(--text,#fff)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Sentinel - '+_issues.length+' issue(s)</div>'+
         '<button id="bbSentClose" style="background:none;border:none;color:var(--text-2,#a0a0b8);font-size:22px;cursor:pointer">×</button>'+
       '</div>'+
       '<div style="padding:16px 20px;overflow-y:auto">'+rows+
@@ -2227,7 +2227,7 @@ currentUser=parsed;if(parsed.demo)isDemoMode=true;showApp();}else{document.getEl
 })();
 </script>
 <style id="v2skin">
-/* ═══ V2 SKIN — HD/BSWL elevation on the Leads System. Keeps the orange accent. Cascade-final. ═══ */
+/* ═══ V2 SKIN - HD/BSWL elevation on the Leads System. Keeps the orange accent. Cascade-final. ═══ */
 ::selection{background:var(--accent);color:#fff}
 *:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-glow);border-radius:var(--radius-sm)}
 ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:99px;border:2px solid var(--bg)}::-webkit-scrollbar-track{background:transparent}
