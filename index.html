@@ -1,8 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+/* @@BBLEADS_SELFTEST_LOG_START@@
+   Boot log for the self-test harness. FIRST script on purpose: a capture
+   installed later cannot see the errors it exists to catch. */
+window.__ST_LOG=[];
+(function(){
+ /* A dropped connection is not a bug in this app. Logging network blips as
+    errors makes the harness cry wolf. A suite that cries wolf gets waved
+    through. */
+ function isNetworkBlip(m){
+  return /failed to fetch|networkerror|network request failed|load failed|err_connection|err_network|aborted|timeout/i.test(String(m||''));
+ }
+ ['error','warn'].forEach(function(k){
+  var o=console[k].bind(console);
+  console[k]=function(){
+   try{
+    var msg=Array.prototype.slice.call(arguments).join(' ');
+    /* the harness reports failures through console.warn. Logging its own output
+       would fail the NEXT run's "zero console errors" check with the previous
+       run's noise, so it flags itself while reporting. */
+    /* AND the blip filter has to run HERE, not only on window error events.
+       The version this was ported from declared isNetworkBlip and then used it
+       only in the two listeners, so every dropped connection still arrived
+       through console.error and failed the run. Caught 2026-08-22 by the
+       Sentinel's own "Failed to fetch" going red on a local preview. */
+    if(!window.__ST_REPORTING&&!isNetworkBlip(msg))
+     window.__ST_LOG.push({kind:k,msg:msg.slice(0,300)});
+   }catch(e){}
+   o.apply(null,arguments);
+  };
+ });
+ window.addEventListener('error',function(e){
+  try{var m=String(e.message||e);if(isNetworkBlip(m))return;
+      window.__ST_LOG.push({kind:'error',msg:m.slice(0,300)});}catch(x){}
+ });
+ window.addEventListener('unhandledrejection',function(e){
+  try{var m=String((e.reason&&e.reason.message)||e.reason);if(isNetworkBlip(m))return;
+      window.__ST_LOG.push({kind:'error',msg:'unhandled promise: '+m.slice(0,300)});}catch(x){}
+ });
+})();
+/* @@BBLEADS_SELFTEST_LOG_END@@ */
+</script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0d10">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -13,6 +60,9 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
+/* ── BB APP SHELL: the phone reports its own insets, we never guess a model ── */
+--sat:env(safe-area-inset-top,0px);
+--sab:env(safe-area-inset-bottom,0px);
 --bg:#0c0d10;--surface:#16171c;--surface-2:#1c1d23;--surface-3:#24252d;
 --border:rgba(255,255,255,0.07);--border-strong:rgba(255,255,255,0.13);
 --text:#f4f5f7;--text-2:#aeb0ba;--text-3:#7c7e8a;
@@ -29,6 +79,9 @@
 --ease:cubic-bezier(.16,1,.3,1);--t-fast:.15s;--t:.25s;
 --glass:rgba(255,255,255,0.03);
 }
+/* the strip behind the clock and the battery. In standalone the page owns it,
+   so the page has to paint it or the content shows through. */
+.statusfill{position:fixed;top:0;left:0;right:0;height:var(--sat);z-index:60;pointer-events:none}
 .light{
 --bg:#f5f5f7;--surface:#ffffff;--surface-2:#f0f0f4;--surface-3:#e8e8ee;
 --border:#e0e0e8;--border-strong:#d0d0da;
@@ -841,6 +894,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 </style>
 </head>
 <body>
+<div class="statusfill" aria-hidden="true"></div>
 <!-- LOGIN -->
 <div class="login-wrap" id="loginScreen">
 <div class="login-card">
@@ -2203,14 +2257,28 @@ currentUser=parsed;if(parsed.demo)isDemoMode=true;showApp();}else{document.getEl
   }
   window.bbSentinelCheck=checkHealth;
 
+  /* L-006, fixed 2026-08-22. Both global listeners below call report(). In turn
+     report() POSTs a row to system_bug_log. So every time the connection
+     wobbled, the browser wrote junk rows to the database and console.error
+     under a Sentinel banner. A watchdog that cries wolf at a dropped wifi is a
+     watchdog people learn to scroll past.
+     The health probe deliberately does NOT use this: a probe that cannot reach
+     the database IS the signal it exists to send. Only the catch-all listeners
+     are filtered, which is exactly what guard.py's L-006 rule asks for.
+     Pre-existing: the file failed this rule before the harness work began. */
+  function isNetworkBlip(m){
+    return /failed to fetch|networkerror|network request failed|load failed|err_connection|err_network|aborted|timeout/i.test(String(m||''));
+  }
   window.addEventListener('error',function(e){
     if(!e)return;
     var msg=e.message||'script error';
+    if(isNetworkBlip(msg))return;
     var detail=(e.filename?e.filename+':'+e.lineno+':'+e.colno:'')+(e.error&&e.error.stack?'\n'+e.error.stack:'');
     report({severity:'error',category:'js_error',message:msg.slice(0,200),detail:detail.slice(0,800)});
   });
   window.addEventListener('unhandledrejection',function(e){
     var r=e&&e.reason; if(!r)return;
+    if(isNetworkBlip(r.message||r)) return;
     var msg=(r.message||r.msg||(typeof r==='string'?r:JSON.stringify(r))||'unhandled promise rejection');
     var code=r.code?(' ['+r.code+']'):'';
     report({severity:'error',category:'promise_rejection',message:('unhandled: '+msg+code).slice(0,200),detail:(r.stack||'').slice(0,800)});
@@ -2247,6 +2315,510 @@ currentUser=parsed;if(parsed.demo)isDemoMode=true;showApp();}else{document.getEl
 .modal{border-radius:var(--radius);box-shadow:var(--shadow-lg)}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)!important;box-shadow:0 0 0 3px var(--accent-glow)}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.06s!important}}
+
+/* guard L-004: iOS inflates text without this and content is pushed
+   past the right edge, where overflow:hidden makes it unreachable. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+
+/* ═══ BB APP FOUNDATIONS + SAFE AREA, cascade-final ══════════════════════
+   ONE block at the very end of the sheet on purpose. .topbar is declared 3
+   times and .sidebar 3 times across breakpoints. The documented trap is a
+   @media rule resetting the box and killing the inset on the ONE screen that
+   actually has a notch. Last in the sheet wins everywhere.
+   Rollback is deleting this block and the BBF script before </body>. */
+
+/* 1 · TOUCH. No double tap zoom, no pull to refresh, no blue flash, no long
+      press offering to copy a button. Text and values stay selectable, because
+      a salesperson copying a client's own phone number is fine and blocking it
+      is rude. */
+html{touch-action:manipulation}
+html,body{overscroll-behavior-y:none}
+*{-webkit-tap-highlight-color:transparent}
+button,label,.sb-link,.btn,.modal-close,.tab,.stage-head,[role="button"]{
+ -webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+
+/* 2 · THE FIELD ZOOM. iOS zooms the whole viewport when a focused input holds
+      text under 16px and it does not zoom back. 16 is the threshold in the
+      platform, not a taste. Coarse pointers only, so the desktop keeps its own
+      scale and nothing reflows on a laptop. 46 fields in this file. */
+@media (pointer:coarse){
+ input,select,textarea{font-size:16px!important}
+}
+
+/* 3 · A sheet must not chain its scroll into the page behind it. */
+.modal-overlay,.detail-overlay,.cmd-overlay,.sb-overlay,
+.modal,.detail-panel,.sidebar{overscroll-behavior:contain}
+
+/* 4 · SAFE AREA. Read from the device, never detected. The shell pass declared
+      --sat and --sab and then used --sat exactly once and --sab not at all, so
+      the chrome still sat under the notch and the toast still sat on the home
+      indicator. Declaring an inset is not honouring one. */
+.topbar{padding-top:calc(11px + var(--sat))}
+.sidebar{padding-top:var(--sat);padding-bottom:var(--sab)}
+.login-wrap{height:100dvh;padding-top:var(--sat);padding-bottom:var(--sab)}
+.detail-panel{padding-bottom:var(--sab)}
+.toast{bottom:calc(24px + var(--sab))}
+@media(max-width:768px){.toast{bottom:calc(12px + var(--sab))}}
+
+/* 5 · vh is measured against the TALLEST the viewport ever gets, so a sheet at
+      90vh pushes its own close button off the bottom the moment the address
+      bar appears. dvh tracks the height the screen actually has right now. */
+.modal{max-height:min(90dvh,calc(100dvh - var(--sat) - var(--sab) - 16px))}
+
+/* 6 · THE FREEZE. overflow:hidden alone does not hold on iOS: the page keeps
+      its rubber band and silently forgets where it was. BBF pins the body at a
+      negative top and puts it back on close. That restore is the only
+      reason a half-scrolled pipeline survives opening a lead. */
+body.sheet-open{position:fixed;left:0;right:0;width:100%}
 </style>
+
+<script>
+/* The shell tool copies a service worker and never registers it, so the app
+   installs and the worker never runs. Register it here. Network-first, and it
+   never caches the database: a stale board is worse than no board, because
+   somebody acts on work that has already moved on. */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
+</script>
+
+<script>
+/* ═══ BB APP FOUNDATIONS (BBF) ══════════════════════════════════════════════
+   Ported 2026-08-22 from bb-graphic-system, NOT from bb-video-system.
+   Video's copy calls sync() on every mutation of the whole body subtree, which
+   is the fault that froze the OS on 11 August: a render floods hundreds of
+   mutations and this dashboard runs count-up animations, so it would have
+   arrived here as a hang that a reload "fixes". Graphic, SMM, BSWL and both gym
+   skeletons carry the coalescing fix; Video, master-skeleton and
+   restaurant-skeleton do not. Measured, not assumed.
+
+   Makes this behave like an app rather than a page on a phone: the page behind
+   a sheet is frozen AND out of reach, Back closes the sheet instead of leaving
+   the app. The keyboard's action key says what the button says. */
+var BBF=(function(){
+ /* Backdrops only. NOT `.sidebar` or `.detail-panel`: both are permanently
+    laid out and hidden by transform, so they hold a non-zero rect at all times
+    and a visibility test would call them open forever. */
+ var OVS='.modal-overlay, .detail-overlay, .cmd-overlay, .sb-overlay';
+ /* Must stay reachable while a backdrop is up. Belt and braces here: #sbOverlay
+    sits INSIDE #app alongside #sidebar, so the shield skips #app wholesale and
+    the drawer survives anyway. It is listed because the day someone moves the
+    overlay up to body level, the drawer would go dead under the thumb with no
+    error and nothing to grep for. */
+ var KEEP='#sidebar';
+ var lockedY=0, locked=false, lastFocus=null, histDepth=0, closing=false;
+ try{if('scrollRestoration' in history)history.scrollRestoration='manual';}catch(e){}
+
+ /* AN OVERLAY IS OPEN WHEN IT IS VISIBLE, never when it carries a class. All
+    four families here happen to use .open today. The next one will not. */
+ function isOpen(el){
+  var cs=getComputedStyle(el);
+  if(cs.display==='none'||cs.visibility==='hidden')return false;
+  var r=el.getBoundingClientRect();
+  if(!(r.width>0&&r.height>0))return false;
+  /* A FADING OVERLAY IS OPEN THE MOMENT IT STARTS. Opacity reads 0 for one
+     frame and the observer fires BEFORE that frame, so it was judged closed and
+     the body was never pinned. A running transition means it is opening. */
+  if(parseFloat(cs.opacity||'1')<0.05){
+   var moving=false;
+   try{moving=el.getAnimations().some(function(a){
+    return a.playState==='running'||a.playState==='pending';});}catch(e){}
+   if(!moving)return false;
+  }
+  return true;
+ }
+ function anyOpen(){var n=document.querySelectorAll(OVS),i;
+  for(i=0;i<n.length;i++)if(isOpen(n[i]))return n[i];return null;}
+
+ function lock(){if(locked)return;
+  lockedY=window.scrollY||window.pageYOffset||0;
+  document.body.style.top=(-lockedY)+'px';
+  document.body.classList.add('sheet-open');locked=true;}
+ function unlock(){if(!locked)return;
+  document.body.classList.remove('sheet-open');document.body.style.top='';
+  window.scrollTo(0,lockedY);locked=false;}
+
+ /* Covered is not the same as out of reach: a thumb still hits a button through
+    the gap beside a sheet. A keyboard or a screen reader walks straight into
+    content the person cannot see. Generic, so it survives any later screen. */
+ var shielded=[];
+ function shield(ov){release();if(!ov)return;
+  [].slice.call(document.body.children).forEach(function(el){
+   if(el===ov||el.contains(ov))return;
+   if(/^(SCRIPT|STYLE|TEMPLATE|LINK)$/.test(el.tagName))return;
+   if(el.matches&&el.matches(KEEP))return;
+   if(el.querySelector&&el.querySelector(KEEP))return;
+   if(el.hasAttribute('inert'))return;
+   el.setAttribute('inert','');el.setAttribute('aria-hidden','true');shielded.push(el);});}
+ function release(){shielded.forEach(function(el){
+  el.removeAttribute('inert');el.removeAttribute('aria-hidden');});shielded=[];}
+
+ function takeFocus(ov){lastFocus=document.activeElement;
+  var f=ov.querySelector('button,[href],input,[tabindex]:not([tabindex="-1"])');
+  if(f){try{f.focus({preventScroll:true});}catch(e){}}}
+ function giveBackFocus(){if(lastFocus&&lastFocus.focus){
+  try{lastFocus.focus({preventScroll:true});}catch(e){}}lastFocus=null;}
+
+ /* BACK CLOSES THE SHEET, it does not leave the app. On Android this is the
+    loudest tell that a product is really a web page. */
+ function closeTop(){var ov=anyOpen();if(!ov)return false;
+  /* the drawer's backdrop calls toggleSidebar(), which does not match /close/.
+     Removing .open from the backdrop alone would leave the drawer itself
+     sitting open over the page. Named before the generic paths, not after. */
+  if(ov.id==='sbOverlay'&&typeof closeSidebar==='function'){
+   try{closeSidebar();return true;}catch(e){}}
+  var oc=ov.getAttribute&&ov.getAttribute('onclick');
+  if(oc&&/close/i.test(oc)){ov.click();return true;}
+  var btn=ov.querySelector('[onclick*="close"],[onclick*="Close"],[data-close]');
+  if(btn){btn.click();return true;}
+  ov.classList.remove('open');return true;}
+ window.addEventListener('popstate',function(){
+  if(closing)return;                 /* this pop is the one our own close asked for */
+  if(histDepth>0){histDepth--;closeTop();}});
+ window.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&anyOpen()){e.preventDefault();history.back();}});
+
+ /* COALESCE. A render can ask for a sync hundreds of times; the work runs once.
+    Doing layout work per mutation is what froze the OS on 11 August. */
+ var syncQueued=false,inSync=false,syncRuns=0;
+ function scheduleSync(){if(syncQueued)return;syncQueued=true;
+  setTimeout(function(){syncQueued=false;sync();},0);}
+ function sync(){if(inSync)return;inSync=true;syncRuns++;
+  try{syncBody();}finally{inSync=false;}}
+ function syncBody(){
+  var ov=anyOpen();
+  if(ov&&!locked){lock();shield(ov);takeFocus(ov);
+   histDepth++;try{history.pushState({bbSheet:1},'');}catch(e){}}
+  else if(!ov&&locked){release();giveBackFocus();
+   /* Unlock synchronously, always. Deferring it behind a timer left the body
+      pinned for whatever ran next. That could then not scroll at all. */
+   unlock();
+   if(histDepth>0){histDepth--;closing=true;
+    try{history.back();}catch(e){}
+    setTimeout(function(){closing=false;},0);}}}
+
+ /* ONE observer, never N edited open functions. The body observer's job is
+    spotting NEW overlays, so it only schedules when it actually saw one. */
+ function start(){
+  var mo=new MutationObserver(scheduleSync);
+  var watch=function(el){mo.observe(el,{attributes:true,attributeFilter:['class','style','hidden']});};
+  document.querySelectorAll(OVS).forEach(watch);
+  new MutationObserver(function(muts){
+   var sawOverlay=false;
+   muts.forEach(function(m){[].slice.call(m.addedNodes).forEach(function(n){
+    if(n.nodeType===1&&n.matches&&n.matches(OVS)){watch(n);sawOverlay=true;}});});
+   if(sawOverlay)scheduleSync();
+  }).observe(document.body,{childList:true,subtree:true});
+  sync();
+ }
+
+ /* THE KEYBOARD SAYS WHAT THE BUTTON SAYS. Applied at focus, which is the only
+    moment it is read, because most fields here do not exist until their modal
+    renders. A boot-only pass reaches a handful and looks like it worked. */
+ function hint(el){
+  if(!el||!/^(INPUT|TEXTAREA)$/.test(el.tagName))return;
+  if(el.getAttribute('enterkeyhint'))return;
+  var form=el.closest('.modal,.detail-panel,.cmd-box,.login-card,form')||document.body;
+  var peers=form.querySelectorAll('input:not([type=checkbox]):not([type=radio]),textarea');
+  el.setAttribute('enterkeyhint',peers.length&&peers[peers.length-1]===el?'go':'next');
+  if(el.type==='email'||el.inputMode==='email'||el.inputMode==='numeric'||el.inputMode==='decimal'){
+   el.setAttribute('autocapitalize','off');el.setAttribute('autocorrect','off');
+   el.setAttribute('spellcheck','false');}}
+ function hintKeyboards(){
+  document.addEventListener('focusin',function(e){hint(e.target);});
+  document.querySelectorAll('input,textarea').forEach(hint);}
+
+ /* The check asks the module for its selector. A hand written selector inside a
+    check is a selector that can be pointed at nothing and pass on silence. */
+ return {start:start,hintKeyboards:hintKeyboards,anyOpen:anyOpen,sync:sync,
+         ovs:OVS,
+         overlaySelector:function(){return OVS;},
+         keepSelector:function(){return KEEP;},
+         runs:function(){return syncRuns;},
+         isLocked:function(){return locked;}};
+})();
+BBF.start();BBF.hintKeyboards();
+</script>
+
+<script>
+/* @@BBLEADS_SELFTEST_START@@
+   ════════════════════════════════════════════════════════════════════════════
+   SECTION 12 · SELF-TEST HARNESS (the pre-deploy gate)
+   Run: runSelfTest() in the console. Or add ?selftest to the URL.
+
+   Must be green at DESKTOP and at ~390px. The field-zoom rule is coarse-pointer
+   only and can never fail on a laptop, so a desktop-only green proves nothing
+   about the phone.
+
+   THE RULE: a check that passes because it could not find its target is worse
+   than no check. Every check that selects something FAILS loudly when the
+   selection is empty.
+
+   ZERO DATABASE WRITES. No insert, update, delete or upsert anywhere below.
+   Role and stage state is mutated in memory and restored in a finally block.
+   There is exactly ONE network call, a read of pipeline stages. It is
+   scoped by RLS to whatever this seat is allowed to see.
+   ════════════════════════════════════════════════════════════════════════ */
+async function runSelfTest(){
+ const R=[];
+ const ok=(name,pass,detail)=>{R.push({name:name,pass:!!pass,detail:String(detail==null?'':detail).slice(0,220)});};
+ const cs=getComputedStyle;
+ const wasUser=(typeof currentUser!=='undefined')?currentUser:null;
+ const MASTER={name:'harness',code:'__ht',role:'CEO'};
+ try{
+  /* ── 0 · THE VIEWPORT ITSELF ──────────────────────────────────────────
+     Found on the first run of this harness, 2026-08-22. A preview pane that
+     has not painted yet reports innerWidth 0. Every rect is 0, so the whole
+     layout half of the suite then measures nothing. It did not go red: it went
+     GREEN, 27 of 27, because "scrollWidth 0 <= innerWidth 0" is true and an
+     overlay with a zero rect is simply never judged open.
+     A suite that reports green against a page with no size is the exact fault
+     this file exists to prevent, so the size is now check number one. */
+  ok('Viewport: the page has real dimensions to measure',
+     window.innerWidth>0&&window.innerHeight>0,
+     window.innerWidth+'x'+window.innerHeight+
+     (window.innerWidth>0?'':'. NOTHING BELOW THIS LINE MEASURED ANYTHING. Front the tab and run again.'));
+
+  /* ── A · BOOT INTEGRITY ─────────────────────────────────────────────── */
+  ok('Boot: core globals present',
+     Array.isArray(allLeads)&&typeof STAGES!=='undefined'&&typeof nav==='function'&&
+     typeof sb==='function'&&typeof visibleLeads==='function'&&typeof isMaster==='function',
+     'allLeads, STAGES, nav(), sb(), visibleLeads(), isMaster()');
+  ok('Boot: zero console errors since load',(window.__ST_LOG||[]).length===0,
+     (window.__ST_LOG||[]).length?window.__ST_LOG[0].kind+': '+window.__ST_LOG[0].msg:'clean');
+  const idSeen={};document.querySelectorAll('[id]').forEach(el=>idSeen[el.id]=(idSeen[el.id]||0)+1);
+  const idDupes=Object.keys(idSeen).filter(k=>idSeen[k]>1);
+  ok('Boot: no duplicate DOM ids',idDupes.length===0,idDupes.slice(0,5).join(', ')||'clean');
+  ok('Boot: data actually loaded',allLeads.length>0,
+     allLeads.length+' leads, '+(allActivities||[]).length+' activities, '+(allFollowUps||[]).length+' follow-ups');
+
+  /* THE APP'S source with this harness removed. Two checks below scan the source
+     for patterns they must also DESCRIBE. A check tripped by its own
+     description is a check that can never pass. */
+  const APPSRC=Array.from(document.scripts)
+    .filter(x=>x.textContent.indexOf('async function runSelf'+'Test')===-1)
+    .map(x=>x.textContent).join('\n');
+
+  /* ── B · ROLE SCOPING. The most valuable block in this system. ────────
+     Leads sells on the promise that a salesperson sees only their own work.
+     This drives the REAL visibleLeads() with a swapped in-memory role and puts
+     the role back in the finally below. It never touches the database and it
+     never loosens a policy to go green. */
+  (function(){
+   if(!wasUser){
+    ok('Roles: a salesperson sees only their own leads',false,'NOT SIGNED IN, this check proved nothing');
+    ok('Roles: a master sees every salesperson',false,'not proven');
+    ok('Roles: the master-only pages are guarded',false,'not proven');return;}
+   const owners=[...new Set(allLeads.map(l=>String(l.owner||'').trim().toLowerCase()).filter(Boolean))];
+   if(!owners.length){
+    ok('Roles: a salesperson sees only their own leads',false,
+       'NO LEAD IN VIEW CARRIES AN OWNER, this check proved nothing');
+    ok('Roles: a master sees every salesperson',false,'not proven');
+   }else{
+    const code=owners[0];
+    currentUser={name:'__harness_staff',code:code,role:'Staff'};
+    const mine=visibleLeads();
+    const foreign=mine.filter(l=>String(l.owner||'').trim().toLowerCase()!==code);
+    ok('Roles: a salesperson sees only their own leads',
+       mine.length>0&&foreign.length===0,
+       foreign.length?(foreign.length+' lead(s) belonging to someone else leaked into '+code+"'s view")
+                     :(mine.length+' leads, every one owned by '+code));
+    currentUser=MASTER;
+    const all=visibleLeads();
+    /* With fewer than two owners in view there is nothing to be isolated FROM,
+       so this cannot be proven from this seat. It says so rather than passing. */
+    ok('Roles: a master sees every salesperson',
+       owners.length>1&&all.length>mine.length,
+       owners.length>1?('master '+all.length+' vs '+code+' '+mine.length+', across owners '+owners.join(', '))
+                      :('ONLY ONE OWNER CODE IN VIEW ('+owners.join(',')+'), isolation cannot be proven from this seat. Run it from a master login.'));
+   }
+   /* The nav guard is the other half: seeing no revenue rows is worthless if
+      the page still opens. Drive the real nav(), do not read a constant. */
+   currentUser={name:'__harness_staff',code:'__hs',role:'Staff'};
+   let blocked=0;
+   (typeof MASTER_ONLY_PAGES!=='undefined'?MASTER_ONLY_PAGES:[]).forEach(p=>{
+    try{nav(p);}catch(e){}
+    const el=document.getElementById('page-'+p);
+    if(el&&!el.classList.contains('active'))blocked++;});
+   const guarded=(typeof MASTER_ONLY_PAGES!=='undefined')?MASTER_ONLY_PAGES.length:0;
+   ok('Roles: the master-only pages are guarded',guarded>0&&blocked===guarded,
+      guarded?(blocked+' of '+guarded+' master-only pages refused a Staff role'):'NO MASTER_ONLY_PAGES DECLARED, this check proved nothing');
+  })();
+  currentUser=wasUser;
+
+  /* ── C · THE BLANK STAGE COUNTER (L-LEADS-004) ────────────────────────
+     The Command Centre shares this table and keys off `status`, so it writes
+     rows with no `stage`. loadAllData() rewrites those in memory, which means
+     allLeads can never show the problem. Counting has to go back to the row.
+     THIS COUNTS. IT DOES NOT FIX. The real fix needs both chats to agree. */
+  ok('Stages: the in-memory patch for shared-table rows is still in place',
+     /_KNOWN\.has\(l\.stage\)/.test(APPSRC),
+     'without it, every Command Centre lead goes invisible on the board again');
+  await (async function(){
+   try{
+    const known=new Set([...STAGES,...CLOSED_STAGES].map(s=>s.key));
+    const rows=await sb('pipeline','select=id,stage&limit=2000');
+    if(!Array.isArray(rows)){
+     ok('Stages: blank stages counted at the source',false,
+        'COULD NOT READ pipeline, so nothing was counted');return;}
+    const blank=rows.filter(r=>!r.stage||!known.has(r.stage));
+    ok('Stages: blank stages counted at the source',true,
+       blank.length+' of '+rows.length+' rows carry a blank or unknown stage'+
+       (blank.length?(', ids '+blank.slice(0,8).map(r=>r.id).join(',')):'')+
+       ' (this seat only, RLS scoped)');
+   }catch(e){ ok('Stages: blank stages counted at the source',false,'read errored: '+e.message); }
+  })();
+
+  /* ── D · PAGE RENDER ──────────────────────────────────────────────────
+     Every page, driven through the real nav(). Runs under a master role so the
+     master-only pages actually render; the guard itself is proven in block B. */
+  (function(){
+   currentUser=MASTER;
+   const PAGES=[].slice.call(document.querySelectorAll('.page')).map(p=>p.id.replace(/^page-/,''));
+   if(!PAGES.length){ok('Pages: every page renders content',false,'NO .page ELEMENTS FOUND, this check proved nothing');return;}
+   const empty=[];
+   PAGES.forEach(k=>{
+    try{nav(k);}catch(e){empty.push(k+' threw '+e.message);return;}
+    const el=document.getElementById('page-'+k);
+    if(!el){empty.push(k+' missing');return;}
+    if(!el.classList.contains('active')){empty.push(k+' did not activate');return;}
+    if(el.children.length===0||el.textContent.trim().length===0)empty.push(k+' rendered empty');});
+   ok('Pages: every page renders content',empty.length===0,
+      empty.length?empty.slice(0,4).join('; '):(PAGES.length+' pages: '+PAGES.join(', ')));
+  })();
+  currentUser=wasUser;
+
+  /* ── E · BB APP SHELL ─────────────────────────────────────────────────── */
+  (function(){
+   const root=document.documentElement;
+   ok('Shell: viewport-fit=cover is set, so env() is not always 0',
+      /viewport-fit\s*=\s*cover/.test((document.querySelector('meta[name=viewport]')||{content:''}).content));
+   ok('Shell: the page paints the status bar strip',!!document.querySelector('.statusfill'));
+   ok('Shell: it is installable',!!document.querySelector('link[rel=manifest]'));
+   const bar=document.querySelector('.topbar');
+   if(!bar){ok('Shell: chrome moves down for a notch',false,'NO .topbar FOUND, this check proved nothing');
+            ok('Shell: and adds no phantom gap without one',false,'not proven');return;}
+   /* env() cannot be read or faked from JS, which is exactly WHY the inset is
+      stored in an overridable variable. Push it and assert the chrome moved.
+      Measured as a DELTA, because this top bar carries 11px of its own padding
+      and asserting a bare 0 would be asserting the wrong number. */
+   const had=root.style.getPropertyValue('--sat');
+   root.style.setProperty('--sat','59px');
+   const withNotch=parseFloat(cs(bar).paddingTop);
+   root.style.setProperty('--sat','0px');
+   const without=parseFloat(cs(bar).paddingTop);
+   if(had)root.style.setProperty('--sat',had);else root.style.removeProperty('--sat');
+   ok('Shell: chrome moves down for a notch',Math.round(withNotch-without)===59,
+      'padding-top '+without+'px -> '+withNotch+'px, the full 59px inset is honoured');
+   ok('Shell: and adds no phantom gap without one',without<59,
+      'padding-top without an inset is '+without+'px, the bar\'s own padding');
+  })();
+
+  /* ── F · BB APP FOUNDATIONS, the nine knobs ───────────────────────────── */
+  (function(){
+   ok('App: double tap does not zoom',cs(document.documentElement).touchAction==='manipulation',
+      cs(document.documentElement).touchAction);
+   ok('App: the page does not pull to refresh',cs(document.body).overscrollBehaviorY==='none',
+      cs(document.body).overscrollBehaviorY);
+   const b=document.querySelector('.sb-link');
+   ok('App: no blue flash on tap',!!b&&/rgba\(0, 0, 0, 0\)|transparent/.test(cs(b).webkitTapHighlightColor),
+      b?cs(b).webkitTapHighlightColor:'NO .sb-link FOUND, this check proved nothing');
+   ok('App: chrome does not select on drag',!!b&&cs(b).userSelect==='none',
+      b?cs(b).userSelect:'NO .sb-link FOUND, this check proved nothing');
+   const sheet=document.querySelector('.modal-overlay');
+   ok('App: a sheet does not chain its scroll to the page',
+      !!sheet&&cs(sheet).overscrollBehavior==='contain',
+      sheet?cs(sheet).overscrollBehavior:'NO .modal-overlay FOUND, this check proved nothing');
+   if(matchMedia('(pointer:coarse)').matches){
+    const small=[];
+    document.querySelectorAll('input,select,textarea').forEach(el=>{
+     if(el.type==='hidden')return;
+     if(parseFloat(cs(el).fontSize)<16)small.push((el.id||String(el.className).split(' ')[0]||el.tagName)+' '+cs(el).fontSize);});
+    ok('App: no field under 16px, so focusing one cannot zoom the screen',small.length===0,
+       small.slice(0,3).join(', ')||('all '+document.querySelectorAll('input,select,textarea').length+' fields at 16px or more'));
+   }else ok('App: no field under 16px, so focusing one cannot zoom the screen',true,
+            'fine pointer: the rule is coarse only, RUN AT 390px TO PROVE IT');
+   ok('App: the foundation layer is present',typeof BBF==='object'&&!!BBF.start);
+   ok('App: scroll restoration is manual',history.scrollRestoration==='manual',history.scrollRestoration);
+  })();
+
+  /* ── G · THE FREEZE, proven by doing it ───────────────────────────────
+     The check asks the module for its selector, so there is no hand written
+     selector left here to aim at nothing. It tries every declared overlay until
+     one opens. It names which one proved it. */
+  (function(){
+   let frozen=false,shielded=false,used='';
+   const all=[].slice.call(document.querySelectorAll(BBF.overlaySelector()));
+   if(!all.length){
+    ok('App: the page behind an open sheet is frozen',false,
+       'NO OVERLAY MATCHED '+BBF.overlaySelector()+', so this check proved nothing');
+    ok('App: the page behind an open sheet is out of reach',false,'not proven');return;}
+   for(let i=0;i<all.length&&!frozen;i++){
+    const ov=all[i];
+    const had=ov.classList.contains('open');
+    ov.classList.add('open');
+    BBF.sync();                      /* the observer coalesces a tick later; drive it */
+    if(cs(document.body).position==='fixed'){
+     frozen=true;shielded=!!document.querySelector('[inert]');
+     used=(ov.id||String(ov.className).split(' ')[0]||ov.tagName);}
+    if(!had)ov.classList.remove('open');
+    BBF.sync();}
+   ok('App: the page behind an open sheet is frozen',frozen,
+      frozen?('body pinned, proven on #'+used):('none of '+all.length+' overlays froze it'));
+   ok('App: the page behind an open sheet is out of reach',shielded,
+      shielded?'inert applied to the rest of the body':'still tappable and tabbable');
+  })();
+
+  /* ── H · THE SYNC STORM (the 11 August freeze) ─────────────────────────
+     A render is not an overlay change. Four navigations may schedule at most
+     three sync runs. If the storm ever returns this goes red before a person
+     feels the app hang. */
+  await (async function(){
+   if(typeof BBF.runs!=='function'){
+    ok('App: a page render does not storm the overlay observer',false,
+       'BBF EXPOSES NO RUN COUNTER, this check proved nothing');return;}
+   currentUser=MASTER;
+   const before=BBF.runs();
+   ['dashboard','pipeline','leads','dashboard'].forEach(p=>{try{nav(p);}catch(e){}});
+   await new Promise(r=>setTimeout(r,60));
+   const delta=BBF.runs()-before;
+   currentUser=wasUser;
+   ok('App: a page render does not storm the overlay observer',delta<=3,
+      '4 navigations scheduled '+delta+' sync run(s), the ceiling is 3');
+  })();
+
+  /* ── I · no horizontal scroll ─────────────────────────────────────────── */
+  ok('Layout: the page does not scroll sideways',
+     document.documentElement.scrollWidth<=window.innerWidth+1,
+     document.documentElement.scrollWidth+' vs '+window.innerWidth);
+
+ }catch(e){
+  ok('HARNESS: completed without crashing',false,String(e&&e.message||e));
+ }finally{
+  /* The role is put back whatever happened above. A harness that leaves the app
+     in a role it invented is a harness that edits the app instead of measuring
+     it. The next check then reports a state the test itself created. */
+  try{currentUser=wasUser;}catch(e){}
+  try{nav('dashboard');}catch(e){}
+ }
+
+ const failed=R.filter(r=>!r.pass);
+ const pass=failed.length===0;
+ window.__ST_REPORTING=true;
+ console.log('%c BB LEADS SELF-TEST  '+(pass?'ALL GREEN':failed.length+' FAILED')+'  '+R.length+' checks',
+             'background:'+(pass?'#16a34a':'#dc2626')+';color:#fff;padding:3px 8px;border-radius:4px;font-weight:700');
+ console.table(R.map(r=>({check:r.name,result:r.pass?'PASS':'FAIL',detail:r.detail})));
+ if(!pass)console.warn('FAILED:\n'+failed.map(f=>'  - '+f.name+(f.detail?('  ['+f.detail+']'):'')).join('\n'));
+ window.__ST_REPORTING=false;
+ return {pass:pass,failed:failed.length,total:R.length,results:R};
+}
+window.runSelfTest=runSelfTest;
+if(location.search.indexOf('selftest')>-1){
+ window.addEventListener('load',function(){setTimeout(function(){runSelfTest();},4000);});
+}
+/* @@BBLEADS_SELFTEST_END@@ */
+</script>
 </body>
 </html>
