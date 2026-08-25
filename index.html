@@ -907,7 +907,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 <img src="bb-logo.png" class="login-logo" alt="Business Booster">
 <div class="subtitle">Leads System</div>
 <div class="login-date" id="loginDate"></div>
-<div class="login-pin" style="margin-bottom:12px"><input type="tel" id="loginPin" maxlength="4" placeholder="PIN" autofocus inputmode="numeric" pattern="[0-9]*" autocomplete="off"></div>
+<!-- WHO. Replaces the 4-digit PIN box, which was never a secret: it only ever
+     looked up an email. All four numbers are readable in this page's source.
+     Asking somebody to remember a number that is printed on the page is friction
+     with nothing bought for it. Tap your name instead. -->
+<div class="who-row" id="whoRow"></div>
+<input type="hidden" id="loginPin">
 <div class="login-pw"><input type="password" id="loginPw" placeholder="PASSWORD" autocomplete="current-password" enterkeyhint="go" onkeydown="if(event.key==='Enter')doLogin()"></div>
 <button class="login-btn" onclick="doLogin()">Sign In</button>
 <div class="login-err" id="loginErr"></div>
@@ -1277,11 +1282,33 @@ async function sbPatch(t,id,d){try{await ensureFreshToken();let r=await fetch(`$
 /* ===== AUTH ===== */
 function updateLoginDate(){const el=document.getElementById('loginDate');if(el){const n=new Date();el.textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});}}
 updateLoginDate();setInterval(updateLoginDate,60000);
-async function doLogin(){const loginBtn=document.querySelector('.login-btn');loginBtn.classList.add('loading');loginBtn.disabled=true;const pin=document.getElementById('loginPin').value;const typedPw=document.getElementById('loginPw').value;const authInfo=PIN_AUTH[pin];/* Say PIN OR password, never which one was wrong. Naming the wrong field tells anyone guessing which half they already have right. */if(!authInfo||!typedPw){document.getElementById('loginErr').textContent='Wrong PIN or password';document.getElementById('loginPin').value='';document.getElementById('loginPin').focus();loginBtn.classList.remove('loading');loginBtn.disabled=false;const card=document.querySelector('.login-card');card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');return;}if(sbClient){try{const{data,error}=await sbClient.auth.signInWithPassword({email:authInfo.email,password:typedPw});if(data?.session){authToken=data.session.access_token;currentUser={name:authInfo.name,code:authInfo.code,role:authInfo.role};localStorage.setItem('bb_leads_user',JSON.stringify({...currentUser,pin,loginAt:Date.now()}));showApp();return;}}catch(e){console.warn('Auth error:',e);}
+/* WHO ARE YOU. Built from PIN_AUTH so the list can never drift from the logins
+   that actually exist. The old failure mode was a name on a screen with no
+   account behind it, which reads as "wrong password" to the one person it is
+   not the fault of. Remembers the last person on this device, because a phone
+   belongs to one salesperson and asking every time is the friction we removed. */
+function renderWho(){
+ const row=document.getElementById('whoRow'); if(!row)return;
+ const last=localStorage.getItem('bb_leads_who');
+ row.innerHTML=Object.keys(PIN_AUTH).map(function(pin){
+  return '<button type="button" class="who-btn'+(pin===last?' on':'')+
+         '" data-pin="'+pin+'" onclick="pickWho(\''+pin+'\')">'+PIN_AUTH[pin].name+'</button>';
+ }).join('');
+ if(last&&PIN_AUTH[last])document.getElementById('loginPin').value=last;
+}
+function pickWho(pin){
+ document.getElementById('loginPin').value=pin;
+ localStorage.setItem('bb_leads_who',pin);
+ document.querySelectorAll('.who-btn').forEach(function(b){
+  b.classList.toggle('on',b.getAttribute('data-pin')===pin);});
+ document.getElementById('loginErr').textContent='';
+ const pw=document.getElementById('loginPw'); if(pw)pw.focus();
+}
+async function doLogin(){const loginBtn=document.querySelector('.login-btn');loginBtn.classList.add('loading');loginBtn.disabled=true;const pin=document.getElementById('loginPin').value;const typedPw=document.getElementById('loginPw').value;const authInfo=PIN_AUTH[pin];/* On a REAL sign-in failure the message stays vague, because naming the wrong field tells anyone guessing which half they already have right. But these two are pure client-side validation and they leak nothing: the four names are buttons on the screen, so 'tap your name' is not a hint, it is an instruction the person needs. */if(!authInfo){document.getElementById('loginErr').textContent='Tap your name first';loginBtn.classList.remove('loading');loginBtn.disabled=false;return;}if(!typedPw){document.getElementById('loginErr').textContent='Enter your password';document.getElementById('loginPw').focus();loginBtn.classList.remove('loading');loginBtn.disabled=false;const card=document.querySelector('.login-card');card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');return;}if(sbClient){try{const{data,error}=await sbClient.auth.signInWithPassword({email:authInfo.email,password:typedPw});if(data?.session){authToken=data.session.access_token;currentUser={name:authInfo.name,code:authInfo.code,role:authInfo.role};localStorage.setItem('bb_leads_user',JSON.stringify({...currentUser,pin,loginAt:Date.now()}));showApp();return;}}catch(e){console.warn('Auth error:',e);}
 /* sbClient present but sign-in failed → show error, do NOT enter a token-less (dataless) state */
 document.getElementById('loginErr').textContent='Wrong PIN or password';loginBtn.classList.remove('loading');loginBtn.disabled=false;const c=document.querySelector('.login-card');if(c){c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');}return;}
 /* THE BYPASS THAT USED TO SIT HERE. If supabase-js failed to load, this logged anyone with a PIN straight into the app on the strength of the PIN alone. It reached no data, because there is no token and RLS refuses, but being inside a system you cannot authenticate to is not a state worth having, and blocking one script is not hard. No client, no sign-in. */document.getElementById('loginErr').textContent='Cannot reach the sign-in service. Check your connection and reload.';loginBtn.classList.remove('loading');loginBtn.disabled=false;}
-async function signOut(){auditLog('LOGOUT',`${currentUser?.name}`);if(sbClient)await sbClient.auth.signOut().catch(()=>{});authToken=null;localStorage.removeItem('bb_leads_user');currentUser=null;isDemoMode=false;document.getElementById('demoBanner').classList.remove('show');document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginPin').value='';document.getElementById('loginPw').value='';document.getElementById('loginPin').focus();}
+async function signOut(){auditLog('LOGOUT',`${currentUser?.name}`);if(sbClient)await sbClient.auth.signOut().catch(()=>{});authToken=null;localStorage.removeItem('bb_leads_user');currentUser=null;isDemoMode=false;document.getElementById('demoBanner').classList.remove('show');document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';renderWho();document.getElementById('loginPin').value='';document.getElementById('loginPw').value='';document.getElementById('loginPin').focus();}
 document.getElementById('loginPin').addEventListener('input',function(){if(this.value.length===4)doLogin();});
 document.getElementById('loginPin').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
 
@@ -2130,10 +2157,16 @@ const b=document.getElementById('sbAgentsBadge');if(b){b.textContent=count;b.sty
 }
 
 /* ===== INIT ===== */
-(async function(){const u=localStorage.getItem('bb_leads_user');if(u){const parsed=JSON.parse(u);const SESSION_MAX=8*60*60*1000;if(parsed.loginAt&&(Date.now()-parsed.loginAt)>SESSION_MAX){localStorage.removeItem('bb_leads_user');if(sbClient)await sbClient.auth.signOut().catch(()=>{});document.getElementById('loginScreen').style.display='flex';return;}if(sbClient&&!parsed.demo){const{data}=await sbClient.auth.getSession();if(data?.session){authToken=data.session.access_token;}else{/* No live session. This used to silently sign back in with the password from source, which is the whole bug. supabase-js persists and auto-refreshes its own session, so if there is none here it has genuinely expired and the right answer is to ask for the password again. */localStorage.removeItem('bb_leads_user');document.getElementById('loginScreen').style.display='flex';return;}}
+(async function(){const u=localStorage.getItem('bb_leads_user');if(u){const parsed=JSON.parse(u);/* 30 days, not 8 hours. The old cap logged everyone out overnight, so a
+   salesperson typed a password they do not know every single morning. It
+   bought nothing: Supabase issues the real security boundary as a JWT it
+   refreshes by itself for about 30 days. This constant only decided how
+   often to throw away a session that was still perfectly valid. Sign Out
+   still ends it immediately. Revoking the account still ends it for good. */
+const SESSION_MAX=30*24*60*60*1000;if(parsed.loginAt&&(Date.now()-parsed.loginAt)>SESSION_MAX){localStorage.removeItem('bb_leads_user');if(sbClient)await sbClient.auth.signOut().catch(()=>{});document.getElementById('loginScreen').style.display='flex';renderWho();return;}if(sbClient&&!parsed.demo){const{data}=await sbClient.auth.getSession();if(data?.session){authToken=data.session.access_token;}else{/* No live session. This used to silently sign back in with the password from source, which is the whole bug. supabase-js persists and auto-refreshes its own session, so if there is none here it has genuinely expired and the right answer is to ask for the password again. */localStorage.removeItem('bb_leads_user');document.getElementById('loginScreen').style.display='flex';renderWho();return;}}
 /* HARDEN: a real (non-demo) user must have a valid token, else data is invisible under RLS - force a fresh login instead of showing an empty app */
-if(!parsed.demo&&!authToken){localStorage.removeItem('bb_leads_user');if(sbClient)await sbClient.auth.signOut().catch(()=>{});document.getElementById('loginScreen').style.display='flex';return;}
-currentUser=parsed;if(parsed.demo)isDemoMode=true;showApp();}else{document.getElementById('loginScreen').style.display='flex';}})();
+if(!parsed.demo&&!authToken){localStorage.removeItem('bb_leads_user');if(sbClient)await sbClient.auth.signOut().catch(()=>{});document.getElementById('loginScreen').style.display='flex';renderWho();return;}
+currentUser=parsed;if(parsed.demo)isDemoMode=true;showApp();}else{document.getElementById('loginScreen').style.display='flex';renderWho();}})();
 </script>
 
 <!-- ===================== BB SENTINEL - system watchdog ===================== -->
@@ -2330,6 +2363,18 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)!
 /* guard L-004: iOS inflates text without this and content is pushed
    past the right edge, where overflow:hidden makes it unreachable. */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+
+/* ═══ WHO ARE YOU. The name picker that replaced the PIN box ════════════
+   Four names, one tap. 44px minimum height because this is the first thing a
+   thumb touches and a miss here means a wrong password error for the right
+   person. Wraps to two rows on a narrow phone rather than shrinking. */
+.who-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.who-btn{flex:1 1 calc(50% - 4px);min-height:44px;padding:11px 8px;
+ background:var(--surface-2);border:1px solid var(--border);border-radius:10px;
+ color:var(--text-2);font-size:13.5px;font-weight:700;font-family:inherit;
+ cursor:pointer;transition:border-color .15s,color .15s,background .15s}
+.who-btn:hover{border-color:var(--accent);color:var(--text)}
+.who-btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
 
 /* ═══ BB APP FOUNDATIONS + SAFE AREA, cascade-final ══════════════════════
    ONE block at the very end of the sheet on purpose. .topbar is declared 3
