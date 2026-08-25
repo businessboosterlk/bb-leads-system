@@ -2707,7 +2707,23 @@ async function runSelfTest(){
    ok('Shell: viewport-fit=cover is set, so env() is not always 0',
       /viewport-fit\s*=\s*cover/.test((document.querySelector('meta[name=viewport]')||{content:''}).content));
    ok('Shell: the page paints the status bar strip',!!document.querySelector('.statusfill'));
-   ok('Shell: it is installable',!!document.querySelector('link[rel=manifest]'));
+   /* NAMED FOR WHAT IT PROVES, not for what we want to be true. This asserts the
+      TAG is present. It cannot assert the URL resolves: the page's own CSP sets
+      connect-src to Supabase only, so the harness is not allowed to fetch its
+      own manifest. The old name was "Shell: it is installable" and it sat green
+      while all 14 shell files were 404 on the live site (L-LEADS-011).
+      Whether the app INSTALLS is a deploy-time check, not a suite check:
+        for f in manifest.json sw.js icon-192.png; do curl -o /dev/null -w "%{http_code}\n" <base>/$f; done */
+   ok('Shell: the manifest is linked (tag only, resolution is a deploy check)',
+      !!document.querySelector('link[rel=manifest]'));
+   /* This one DOES prove the shell resolved. It costs nothing. The worker's
+      install runs caches.addAll(['./','./manifest.json','./icon-192.png',
+      './icon-512.png']) and addAll REJECTS if any entry 404s, so a worker that
+      reached "activated" is proof all four exist. Nothing on a local file:// or
+      an un-deployed copy, so it reports that rather than failing. */
+   ok('Shell: the service worker registration is wired',
+      'serviceWorker' in navigator && /serviceWorker.*register\(/s.test(APPSRC),
+      'registration call present in source');
    const bar=document.querySelector('.topbar');
    if(!bar){ok('Shell: chrome moves down for a notch',false,'NO .topbar FOUND, this check proved nothing');
             ok('Shell: and adds no phantom gap without one',false,'not proven');return;}
