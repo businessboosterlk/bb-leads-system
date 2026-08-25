@@ -1123,8 +1123,8 @@ async function ensureFreshToken(){
    PIN now says WHO you are, exactly like a username, and the password you type
    is what the database actually checks. A PIN in public source was never a
    lock, it was a label on a door. */
-const PIN_AUTH={1031:{email:'thulaib@bb-leads.app',name:'Thulaib',code:'th',role:'CEO'},1006:{email:'shiara@bb-leads.app',name:'Shiara',code:'sh',role:'COO'},1111:{email:'pavith@bb-leads.app',name:'Pavith',code:'pv',role:'Staff'},2222:{email:'nirvana@bb-leads.app',name:'Nirvana',code:'nv',role:'Staff'}};
-const USERS={1031:{name:'Thulaib',code:'th',role:'CEO'},1006:{name:'Shiara',code:'sh',role:'COO'},1111:{name:'Pavith',code:'pv',role:'Staff'},2222:{name:'Nirvana',code:'nv',role:'Staff'}};
+const PIN_AUTH={1031:{email:'thulaib@bb-leads.app',name:'Thulaib',code:'th',role:'CEO'},1006:{email:'shiara@bb-leads.app',name:'Shiara',code:'sh',role:'COO'},1111:{email:'pavith@bb-leads.app',name:'Pavith',code:'pv',role:'Manager'},2222:{email:'nirvana@bb-leads.app',name:'Nirvana',code:'nv',role:'Staff'}};
+const USERS={1031:{name:'Thulaib',code:'th',role:'CEO'},1006:{name:'Shiara',code:'sh',role:'COO'},1111:{name:'Pavith',code:'pv',role:'Manager'},2222:{name:'Nirvana',code:'nv',role:'Staff'}};
 const STAGES=[{key:'new_lead',label:'New Lead',color:'var(--blue)',dot:'blue'},{key:'contacted',label:'Contacted',color:'var(--amber)',dot:'amber'},{key:'discovery',label:'Discovery',color:'var(--accent)',dot:'accent'},{key:'proposal_sent',label:'Proposal Sent',color:'var(--pink)',dot:'pink'},{key:'negotiation',label:'Negotiation',color:'var(--purple)',dot:'purple'}];
 const CLOSED_STAGES=[{key:'closed_won',label:'Closed Won',color:'var(--green)',dot:'green'},{key:'closed_lost',label:'Lost',color:'var(--red)',dot:'red'},{key:'on_hold',label:'On Hold',color:'var(--grey)',dot:'grey'}];
 const ALL_STAGES=[...STAGES,...CLOSED_STAGES];
