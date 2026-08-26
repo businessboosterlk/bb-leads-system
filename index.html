@@ -1276,8 +1276,39 @@ function getHeaders(){const token=authToken||SB_KEY;return{'apikey':SB_KEY,'Auth
 window.bbAuthHeaders=getHeaders;
 const H_LEGACY={'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'};
 async function sb(t,p=''){try{const r=await fetch(`${SB_URL}/${t}?${p}`,{headers:getHeaders()});if(!r.ok){console.error(`DB load failed: ${t} (${r.status})`);if(window.bbReportDbError)bbReportDbError(t,'read',{message:`HTTP ${r.status}`});return[];}return r.json();}catch(e){console.error(`DB error: ${t}`,e);if(window.bbReportDbError)bbReportDbError(t,'read',e);return[];}}
-async function sbPost(t,d){try{await ensureFreshToken();let r=await fetch(`${SB_URL}/${t}`,{method:'POST',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});if(r.status===401){await ensureFreshToken();r=await fetch(`${SB_URL}/${t}`,{method:'POST',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});}if(!r.ok){console.error(`DB post failed: ${t} (${r.status})`);if(r.status===401)toast&&toast('Session expired - please log in again','error');if(window.bbReportDbError)bbReportDbError(t,'insert',{message:`HTTP ${r.status}`});return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);if(window.bbReportDbError)bbReportDbError(t,'insert',e);return null;}}
-async function sbPatch(t,id,d){try{await ensureFreshToken();let r=await fetch(`${SB_URL}/${t}?id=eq.${id}`,{method:'PATCH',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});if(r.status===401){await ensureFreshToken();r=await fetch(`${SB_URL}/${t}?id=eq.${id}`,{method:'PATCH',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});}if(!r.ok){console.error(`DB patch failed: ${t} (${r.status})`);if(r.status===401)toast&&toast('Session expired - please log in again','error');if(window.bbReportDbError)bbReportDbError(t,'update',{message:`HTTP ${r.status}`});return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);if(window.bbReportDbError)bbReportDbError(t,'update',e);return null;}}
+/* WHY A WRITE FAILED, in the words of the database.
+   Postgres tells us exactly what went wrong ("new row violates row-level
+   security policy for table pipeline") and the old code read r.status, threw the
+   BODY away and showed the person the word "Failed". That is how a login problem
+   spends an afternoon looking like a broken Add Lead button. Read the body. */
+async function dbWhy(r){
+ try{const b=await r.clone().json();return (b&&(b.message||b.hint||b.details))||('HTTP '+r.status);}
+ catch(e){return 'HTTP '+r.status;}
+}
+/* A DEAD SESSION MUST SEND YOU TO THE LOGIN SCREEN, not print a note about it.
+   Deleting and recreating a user leaves every open tab holding a token for
+   somebody who no longer exists: reads come back empty and writes 401, while the
+   app just sat there saying "Failed" as the person retried. Self-heal. */
+function forceRelogin(why){
+ try{localStorage.removeItem('bb_leads_user');}catch(e){}
+ try{if(sbClient)sbClient.auth.signOut();}catch(e){}
+ authToken=null;currentUser=null;
+ try{
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  if(typeof renderWho==='function')renderWho();
+  const el=document.getElementById('loginErr');
+  if(el)el.textContent='Your session ended. Please sign in again.';
+ }catch(e){}
+ if(typeof toast==='function')toast('Session ended, please sign in again','error');
+}
+function dbFail(t,op,status,why){
+ if(window.bbReportDbError)bbReportDbError(t,op,{message:'HTTP '+status+' '+why});
+ if(status===401||status===403){forceRelogin(why);return;}
+ if(typeof toast==='function')toast(why,'error');
+}
+async function sbPost(t,d){try{await ensureFreshToken();let r=await fetch(`${SB_URL}/${t}`,{method:'POST',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});if(r.status===401){await ensureFreshToken();r=await fetch(`${SB_URL}/${t}`,{method:'POST',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});}if(!r.ok){const why=await dbWhy(r);console.error(`DB post failed: ${t} (${r.status}) ${why}`);dbFail(t,'insert',r.status,why);return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);dbFail(t,'insert',0,(e&&e.message)||'Could not reach the database');return null;}}
+async function sbPatch(t,id,d){try{await ensureFreshToken();let r=await fetch(`${SB_URL}/${t}?id=eq.${id}`,{method:'PATCH',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});if(r.status===401){await ensureFreshToken();r=await fetch(`${SB_URL}/${t}?id=eq.${id}`,{method:'PATCH',headers:{...getHeaders(),'Prefer':'return=representation'},body:JSON.stringify(d)});}if(!r.ok){const why=await dbWhy(r);console.error(`DB patch failed: ${t} (${r.status}) ${why}`);dbFail(t,'update',r.status,why);return null;}return r.json();}catch(e){console.error(`DB error: ${t}`,e);dbFail(t,'update',0,(e&&e.message)||'Could not reach the database');return null;}}
 
 /* ===== AUTH ===== */
 function updateLoginDate(){const el=document.getElementById('loginDate');if(el){const n=new Date();el.textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});}}
@@ -1541,7 +1572,7 @@ setTimeout(()=>layer.remove(),2000);
 }
 
 function setMonthTarget(){const cur=parseInt(localStorage.getItem('bb_month_target')||'1000000');const v=prompt('Set this month\'s revenue target (LKR):',cur);if(v!==null){const n=parseInt(String(v).replace(/[^0-9]/g,''))||0;if(n>0){localStorage.setItem('bb_month_target',n);toast('Monthly target updated ✓');renderDashboard();}else{toast('Enter a valid number','error');}}}
-async function completeFU(id){if(demoGuard())return;const res=await sbPatch('lead_follow_ups',id,{is_done:true,completed_at:new Date().toISOString()});if(!res){toast('Failed','error');return;}const i=allFollowUps.findIndex(f=>f.id===id);if(i>=0)allFollowUps[i].is_done=true;toast('Follow-up done ✓');updateFUBadge();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function completeFU(id){if(demoGuard())return;const res=await sbPatch('lead_follow_ups',id,{is_done:true,completed_at:new Date().toISOString()});if(!res){/* the helper already reported the real reason */0;return;}const i=allFollowUps.findIndex(f=>f.id===id);if(i>=0)allFollowUps[i].is_done=true;toast('Follow-up done ✓');updateFUBadge();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== PIPELINE BOARD ===== */
 function renderPipeline(){
@@ -1691,7 +1722,7 @@ async function saveIntel(id,f,v){const d={};const val=v.trim();d[f]=val===''||va
 document.addEventListener('focusin',e=>{if(e.target.classList?.contains('ic-val')&&e.target.textContent.trim()==='Click to add...'){e.target.textContent='';e.target.classList.remove('empty');}});
 document.addEventListener('focusout',e=>{if(e.target.classList?.contains('ic-val')&&!e.target.textContent.trim()){e.target.textContent='Click to add...';e.target.classList.add('empty');}});
 async function toggleHot(id){if(demoGuard())return;const l=allLeads.find(x=>x.id===id);if(!l)return;const newHot=!l.is_hot;const res=await sbPatch('pipeline',id,{is_hot:newHot});if(!res){toast('Failed to update','error');return;}l.is_hot=newHot;toast(l.is_hot?'Marked hot':'Unmarked');openDetail(id);}
-async function removeTag(id,tag){if(demoGuard())return;const l=allLeads.find(x=>x.id===id);if(!l)return;const tags=(l.tags||[]).filter(t=>t!==tag);const res=await sbPatch('pipeline',id,{tags:tags.length?tags:null});if(!res){toast('Failed','error');return;}l.tags=tags.length?tags:null;openDetail(id);}
+async function removeTag(id,tag){if(demoGuard())return;const l=allLeads.find(x=>x.id===id);if(!l)return;const tags=(l.tags||[]).filter(t=>t!==tag);const res=await sbPatch('pipeline',id,{tags:tags.length?tags:null});if(!res){/* the helper already reported the real reason */0;return;}l.tags=tags.length?tags:null;openDetail(id);}
 function getWATemplates(lead){const name=lead.contact_name||lead.name;return[
 {icon:'message',label:'Introduction',msg:`Hi ${name}, this is ${currentUser?.name} from Business Booster. We help businesses grow their online presence with digital marketing. Would you be open to a quick chat about how we can help ${lead.name}?`},
 {icon:'clipboard',label:'Follow-up',msg:`Hi ${name}, just following up on our conversation about ${lead.name}. Have you had a chance to think about our proposal? Happy to answer any questions!`},
@@ -1733,7 +1764,7 @@ const phone=document.getElementById('al_phone').value.trim()||null;const email=d
 if(!editingLeadId){const dupes=allLeads.filter(l=>{if(phone&&l.contact_phone&&l.contact_phone.replace(/\D/g,'')===phone.replace(/\D/g,''))return true;if(email&&l.contact_email&&l.contact_email.toLowerCase()===email.toLowerCase())return true;return false;});if(dupes.length){const dupNames=dupes.map(d=>d.name).join(', ');if(!confirm(`Possible duplicate detected: ${dupNames}\n\nAdd anyway?`))return;}}
 const data={name,contact_name:document.getElementById('al_contact').value.trim()||null,contact_phone:phone,contact_email:email,industry:document.getElementById('al_industry').value||null,source:document.getElementById('al_source').value,estimated_value:document.getElementById('al_value').value?parseInt(document.getElementById('al_value').value):null,package_interest:document.getElementById('al_package').value||null,owner:document.getElementById('al_owner').value,stage:document.getElementById('al_stage').value,tags:tags.length?tags:null,notes:document.getElementById('al_notes').value.trim()||null};
 if(data.estimated_value==null){const m=data.package_interest?.match(/\((\d+)K\)/);if(m)data.estimated_value=parseInt(m[1])*1000;}
-if(editingLeadId){await sbPatch('pipeline',editingLeadId,data);const l=allLeads.find(x=>x.id===editingLeadId);if(l)Object.assign(l,data);closeModal('addLeadModal');toast('Lead updated ✓');auditLog('UPDATE_LEAD',`${name} (ID:${editingLeadId})`);openDetail(editingLeadId);}else{data.status='active';data.temperature='cold';data.stage_changed_at=new Date().toISOString();const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);closeModal('addLeadModal');toast('Lead added');auditLog('ADD_LEAD',`${name} (ID:${r[0].id})`);}else{toast('Failed','error');return;}}
+if(editingLeadId){await sbPatch('pipeline',editingLeadId,data);const l=allLeads.find(x=>x.id===editingLeadId);if(l)Object.assign(l,data);closeModal('addLeadModal');toast('Lead updated ✓');auditLog('UPDATE_LEAD',`${name} (ID:${editingLeadId})`);openDetail(editingLeadId);}else{data.status='active';data.temperature='cold';data.stage_changed_at=new Date().toISOString();const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);closeModal('addLeadModal');toast('Lead added');auditLog('ADD_LEAD',`${name} (ID:${r[0].id})`);}else{/* sbPost has already said WHY, in the database's own words. Or it sent the person back to the login screen. Do not paint the word "Failed" over a real explanation. */return;}}
 const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== LOG ACTIVITY ===== */
@@ -1750,7 +1781,7 @@ function checkStageSuggest(l){const t=document.getElementById('act_type').value;
 document.getElementById('stageSuggest').innerHTML=sg?`<div class="suggest-bar"><span class="sg-text">${icon('lightbulb',14)} Move to <strong>${sg.l}</strong>?</span><button class="btn btn-sm btn-primary" onclick="this.dataset.stage='${sg.s}';this.textContent='✓ Will move';this.disabled=true">Yes</button></div>`:'';}
 async function saveActivity(){if(demoGuard())return;if(!activityLeadId)return;const sum=document.getElementById('act_summary').value.trim();if(!sum){toast('Summary required','error');return;}
 const data={pipeline_id:activityLeadId,type:document.getElementById('act_type').value,summary:sum,outcome:document.getElementById('act_outcome').value,talking_points:document.getElementById('act_talking').value.trim()||null,pain_points_discovered:document.getElementById('act_pain').value.trim()||null,objections_raised:document.getElementById('act_obj').value.trim()||null,next_step:document.getElementById('act_next').value.trim()||null,logged_by:currentUser?.name?.toUpperCase()};
-const r=await sbPost('lead_activities',data);if(!r){toast('Failed','error');return;}allActivities.unshift(r[0]);todayActCount++;
+const r=await sbPost('lead_activities',data);if(!r){/* the helper already reported the real reason */0;return;}allActivities.unshift(r[0]);todayActCount++;
 const upd={last_contact_at:new Date().toISOString()};if(data.next_step)upd.next_action=data.next_step;
 const lead=allLeads.find(l=>l.id===activityLeadId);
 if(data.pain_points_discovered)upd.pain_points=lead?.pain_points?lead.pain_points+'; '+data.pain_points_discovered:data.pain_points_discovered;
@@ -1770,7 +1801,7 @@ async function saveFollowUp(){if(demoGuard())return;if(!fuLeadId)return;const d=
 /* ===== CONVERT ===== */
 function openConvert(id){convertLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('cv_name').value=l.name;document.getElementById('cv_industry').value=l.industry||'';document.getElementById('cv_contact').value=l.contact_name||l.contact_phone||'';document.getElementById('cv_start').value=today();const p=l.package_interest?.split(' (')[0]||'Spark';document.getElementById('cv_package').value=p;document.getElementById('cv_mrr').value=PKG_VALUES[p]||90000;openModal('convertModal');}
 document.getElementById('cv_package').addEventListener('change',function(){document.getElementById('cv_mrr').value=PKG_VALUES[this.value]||90000;});
-async function convertToClient(){if(demoGuard())return;if(!convertLeadId)return;const cd={name:document.getElementById('cv_name').value.trim(),package:document.getElementById('cv_package').value,mrr:parseInt(document.getElementById('cv_mrr').value)||0,industry:document.getElementById('cv_industry').value.trim()||null,contact:document.getElementById('cv_contact').value.trim()||null,start_date:document.getElementById('cv_start').value||null,health:'green',client_type:'sm'};const cr=await sbPost('clients',cd);if(!cr){toast('Failed','error');return;}await sbPatch('pipeline',convertLeadId,{stage:'closed_won',closed_at:new Date().toISOString()});const l=allLeads.find(x=>x.id===convertLeadId);if(l){l.stage='closed_won';}await sbPost('lead_activities',{pipeline_id:convertLeadId,type:'note',summary:`Converted! ${cd.package} @ LKR ${cd.mrr}`,outcome:'positive',logged_by:currentUser?.name?.toUpperCase()});closeModal('convertModal');closeDetail();celebrate();auditLog('CONVERT_CLIENT',`${cd.name} - ${cd.package} @ LKR ${cd.mrr}`);toast('🎉 Deal won - client converted!');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function convertToClient(){if(demoGuard())return;if(!convertLeadId)return;const cd={name:document.getElementById('cv_name').value.trim(),package:document.getElementById('cv_package').value,mrr:parseInt(document.getElementById('cv_mrr').value)||0,industry:document.getElementById('cv_industry').value.trim()||null,contact:document.getElementById('cv_contact').value.trim()||null,start_date:document.getElementById('cv_start').value||null,health:'green',client_type:'sm'};const cr=await sbPost('clients',cd);if(!cr){/* the helper already reported the real reason */0;return;}await sbPatch('pipeline',convertLeadId,{stage:'closed_won',closed_at:new Date().toISOString()});const l=allLeads.find(x=>x.id===convertLeadId);if(l){l.stage='closed_won';}await sbPost('lead_activities',{pipeline_id:convertLeadId,type:'note',summary:`Converted! ${cd.package} @ LKR ${cd.mrr}`,outcome:'positive',logged_by:currentUser?.name?.toUpperCase()});closeModal('convertModal');closeDetail();celebrate();auditLog('CONVERT_CLIENT',`${cd.name} - ${cd.package} @ LKR ${cd.mrr}`);toast('🎉 Deal won - client converted!');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== MARK LOST ===== */
 function openMarkLost(id){lostLeadId=id;document.getElementById('lost_reason').value='unresponsive';document.getElementById('lost_notes').value='';openModal('lostModal');}
