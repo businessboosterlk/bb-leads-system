@@ -1344,7 +1344,7 @@ document.getElementById('loginPin').addEventListener('input',function(){if(this.
 document.getElementById('loginPin').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
 
 /* ===== APP INIT ===== */
-async function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('userName').textContent=currentUser.name;document.getElementById('userRole').textContent=currentUser.role;document.getElementById('userAvatar').textContent=currentUser.code.toUpperCase();if(isDemoMode){document.getElementById('demoBanner').classList.add('show');}else{document.getElementById('demoBanner').classList.remove('show');}startClock();await loadAllData();requestNotifPermission();document.querySelectorAll('.master-only').forEach(el=>{el.style.display=isMaster()?'':'none';});document.body.classList.toggle('staff-mode',!isMaster());auditLog('LOGIN',`${currentUser.name} (${currentUser.role})`);nav('dashboard');if(!isMaster()){}else if(!isDemoMode)loadLeadsAgentAlerts();}
+async function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='flex';document.getElementById('userName').textContent=currentUser.name;document.getElementById('userRole').textContent=currentUser.role;document.getElementById('userAvatar').textContent=currentUser.code.toUpperCase();if(isDemoMode){document.getElementById('demoBanner').classList.add('show');}else{document.getElementById('demoBanner').classList.remove('show');}startClock();await loadAllData();document.querySelectorAll('.master-only').forEach(el=>{el.style.display=isMaster()?'':'none';});document.body.classList.toggle('staff-mode',!isMaster());auditLog('LOGIN',`${currentUser.name} (${currentUser.role})`);nav('dashboard');if(!isMaster()){}else if(!isDemoMode)loadLeadsAgentAlerts();}
 async function loadAllData(){if(isDemoMode){const demo=generateDemoData();allLeads=demo.leads;allActivities=demo.activities;allFollowUps=demo.followUps;todayActCount=2;updateFUBadge();return;}const[leads,acts,fus]=await Promise.all([sb('pipeline','select=*&order=created_at.desc'),sb('lead_activities','select=*&order=created_at.desc'),sb('lead_follow_ups','select=*&order=due_date.asc,due_time.asc')]);allLeads=leads||[];allActivities=acts||[];allFollowUps=fus||[];
 /* Normalize stages: other BB systems (e.g. Command Centre) share this table and may
    write a blank/unknown stage - map those to a real stage so no lead is ever hidden */
@@ -1369,7 +1369,15 @@ if(localStorage.getItem('bb_leads_theme')==='light')document.documentElement.cla
 initTheme();
 
 /* ===== BROWSER NOTIFICATIONS ===== */
-function requestNotifPermission(){if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();}
+/* DELETED 2026-09-05, on Thulaib's ruling. This asked for notification
+   permission during sign-in, before the person had done anything or been told
+   why. A page that asks on load gets denied, and on iPhone a denial is
+   PERMANENT: there is no second prompt, the person has to find it in phone
+   Settings. Leads was spending the one ask it gets, on nothing, because Leads
+   has no push block and no service worker handlers, so a granted permission
+   delivered no alert either way. Permission is asked only after a tap, in the
+   @@BB_PUSH_BEGIN@@ block the other five apps carry, and Leads gets that block
+   once every active person has a confirmed delivery. */
 function fireNotif(title,body){if('Notification' in window&&Notification.permission==='granted')new Notification(title,{body,icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23f97316" stroke-width="2"><path d="M12 2c0 0-6 8-6 13a6 6 0 0012 0c0-5-6-13-6-13z"/></svg>'});}
 
 /* ===== COMMAND PALETTE ===== */
