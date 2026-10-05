@@ -314,6 +314,7 @@ select{cursor:pointer}
 .dp-action:hover{border-color:var(--accent);color:var(--accent)}
 .dp-action.primary{background:linear-gradient(135deg,var(--accent),#ea580c);border-color:var(--accent);color:#fff}
 .dp-action.primary:hover{box-shadow:0 2px 12px rgba(249,115,22,0.3)}
+.dp-quick{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border)}.dp-quick>span{flex-basis:100%}.dp-quick>span{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);margin-right:2px}
 .dp-action.danger:hover{background:var(--red-soft);border-color:var(--red);color:var(--red)}
 .dp-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 20px;overflow-x:auto}
 .dp-tab{padding:10px 16px;font-size:12px;font-weight:600;color:var(--text-3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
@@ -669,6 +670,7 @@ html:not(.light) #page-revenue .rev-wrap{box-shadow:0 1px 2px rgba(0,0,0,0.3),0 
 .dp-company{font-size:12px}
 .dp-contact{font-size:12px;gap:8px;flex-wrap:wrap}
 .dp-actions{overflow-x:auto;flex-wrap:nowrap;padding:12px 16px;gap:8px;-webkit-overflow-scrolling:touch}
+.dp-actions{align-items:center}.dp-quick{padding:10px 16px 12px}
 .dp-action{white-space:nowrap;flex-shrink:0;padding:8px 12px;font-size:12px;min-height:36px}
 .dp-tabs{padding:0 12px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
 .dp-tab{padding:10px 14px;font-size:12px;white-space:nowrap;flex-shrink:0}
@@ -981,7 +983,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 <div class="form-row2"><div class="form-row"><label>Business Name *</label><input id="al_name" placeholder="Company name"></div><div class="form-row"><label>Contact Person</label><input id="al_contact" placeholder="Decision maker"></div></div>
 <div class="form-row2"><div class="form-row"><label>Phone</label><input id="al_phone" placeholder="+94 77 123 4567"></div><div class="form-row"><label>Email</label><input id="al_email" placeholder="email@company.com"></div></div>
 <div class="form-row2"><div class="form-row"><label>Industry</label><select id="al_industry"><option value="">Select...</option><option>Automotive</option><option>Food & Beverage</option><option>Fashion</option><option>Technology</option><option>Real Estate</option><option>Education</option><option>Healthcare</option><option>Hospitality</option><option>Retail</option><option>Service</option><option>Construction</option><option>Finance</option><option>Fitness</option><option>Beauty</option><option>Legal</option><option>Other</option></select></div><div class="form-row"><label>Source</label><select id="al_source"><option value="social_media">Social Media</option><option value="website">Website</option><option value="referral">Referral</option><option value="cold_call">Cold Call</option><option value="walk_in">Walk-in</option><option value="other">Other</option></select></div></div>
-<div class="form-row2"><div class="form-row"><label>Estimated Value (LKR)</label><input type="number" id="al_value" placeholder="150000"></div><div class="form-row"><label>Package Interest</label><select id="al_package"><option value="">Not sure yet</option><option>Spark (90K)</option><option>Ignite (150K)</option><option>Blaze (230K)</option><option>SEO Essential (40K)</option><option>SEO+Maintenance (50K)</option></select></div></div>
+<div class="form-row2"><div class="form-row"><label>Estimated Value (LKR)</label><input type="number" id="al_value" placeholder="150000"></div><div class="form-row"><label>Package Interest</label><select id="al_package"><option value="">Not sure yet</option><option>Studio (150K)</option><option>Managed (220K)</option><option>Apex (440K)</option><option>Website build (350K once)</option><option>SEO (from 65K)</option></select></div></div>
 <div class="form-row2"><div class="form-row master-only"><label>Assign To</label><select id="al_owner"><option value="th">Thulaib</option><option value="sh">Shiara</option><option value="pv">Pavith</option><option value="nv">Nirvana</option></select></div><div class="form-row"><label>Stage</label><select id="al_stage"><option value="new_lead">New Lead</option><option value="contacted">Contacted</option><option value="discovery">Discovery</option></select></div></div>
 <div class="form-row"><label>Tags</label><input id="al_tags" placeholder="e.g. urgent, vip, follow-up (comma separated)"></div>
 <div class="form-row"><label>Notes</label><textarea id="al_notes" placeholder="First impressions..."></textarea></div>
@@ -1018,7 +1020,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 <!-- CONVERT MODAL -->
 <div class="modal-overlay" id="convertModal"><div class="modal">
 <div class="modal-head"><h3>Convert to Client</h3><button class="modal-close" onclick="closeModal('convertModal')">✕</button></div>
-<div class="modal-body"><div class="form-row"><label>Client Name</label><input id="cv_name"></div><div class="form-row2"><div class="form-row"><label>Package</label><select id="cv_package"><option value="Spark">Spark (90K)</option><option value="Ignite">Ignite (150K)</option><option value="Blaze">Blaze (230K)</option><option value="SEO Essential">SEO Essential (40K)</option><option value="SEO+Maintenance">SEO+Maintenance (50K)</option></select></div><div class="form-row"><label>MRR (LKR)</label><input type="number" id="cv_mrr" value="90000"></div></div><div class="form-row2"><div class="form-row"><label>Industry</label><input id="cv_industry"></div><div class="form-row"><label>Start Date</label><input type="date" id="cv_start"></div></div><div class="form-row"><label>Contact</label><input id="cv_contact"></div></div>
+<div class="modal-body"><div class="form-row"><label>Client Name</label><input id="cv_name"></div><div class="form-row2"><div class="form-row"><label>Package</label><select id="cv_package"><option value="Studio">Studio (150K)</option><option value="Managed">Managed (220K)</option><option value="Apex">Apex (440K)</option><option value="SEO Foundation">SEO Foundation (65K)</option><option value="SEO Aggressive">SEO Aggressive (95K)</option><option value="Website care Light">Website care Light (25K)</option><option value="Website care Heavy">Website care Heavy (45K)</option></select></div><div class="form-row"><label>MRR (LKR)</label><input type="number" id="cv_mrr" value="150000"></div></div><div class="form-row2"><div class="form-row"><label>Industry</label><input id="cv_industry"></div><div class="form-row"><label>Start Date</label><input type="date" id="cv_start"></div></div><div class="form-row"><label>Contact</label><input id="cv_contact"></div></div>
 <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('convertModal')">Cancel</button><button class="btn btn-success" onclick="convertToClient()">Convert</button></div>
 </div></div>
 
@@ -1173,7 +1175,7 @@ download:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke
 };return icons[n]||icons.note;}
 
 const ACT_ICONS={call:icon('phone',15),message:icon('message',15),meeting:icon('meeting',15),email:icon('email',15),proposal:icon('proposal',15),note:icon('note',15),follow_up:icon('clock',15)};
-const PKG_VALUES={Spark:90000,Ignite:150000,Blaze:230000,'SEO Essential':40000,'SEO+Maintenance':50000};
+const PKG_VALUES={Studio:150000,Managed:220000,Apex:440000,'SEO Foundation':65000,'SEO Aggressive':95000,'Website care Light':25000,'Website care Heavy':45000};
 const WIN_PROB={new_lead:5,contacted:10,discovery:30,proposal_sent:60,negotiation:90,closed_won:100,closed_lost:0,on_hold:5};
 const STAGE_PLAYBOOK={
 new_lead:{goal:'Make first contact & qualify the lead',ask:'Confirm the need and book a real conversation',next:'contacted'},
@@ -1211,6 +1213,8 @@ let currentUser=null,allLeads=[],allActivities=[],allFollowUps=[];
 function isMaster(){return !!currentUser&&currentUser.role!=='Staff';}
 function scopedLeads(){if(currentUser&&currentUser.role==='Staff'){const c=currentUser.code;const n=(currentUser.name||'').toLowerCase();return allLeads.filter(l=>{if(!l.owner)return false;const o=l.owner.toLowerCase();return o===c||o===n;});}return allLeads;}
 function visibleLeads(){return scopedLeads().filter(l=>!l.archived_at);}
+/* 5 Oct 2026: an archived lead's open follow-ups are not work. Every count of follow-ups reads this. */
+function liveFUs(){const ids=new Set(visibleLeads().map(l=>l.id));return allFollowUps.filter(f=>ids.has(f.pipeline_id));}
 function archivedLeads(){return scopedLeads().filter(l=>l.archived_at);}
 const MASTER_ONLY_PAGES=['revenue','analytics','agents'];
 let currentDetailId=null,activityLeadId=null,convertLeadId=null,lostLeadId=null,fuLeadId=null;
@@ -1352,7 +1356,7 @@ const _KNOWN=new Set([...STAGES,...CLOSED_STAGES].map(s=>s.key));
 allLeads.forEach(l=>{if(!_KNOWN.has(l.stage)){l.stage=String(l.status||'').toLowerCase().includes('clos')?'closed_won':'new_lead';}});
 if(!leads.length&&!acts.length&&!fus.length){toast('Could not load data - check connection','error');}todayActCount=allActivities.filter(a=>a.created_at&&a.created_at.startsWith(today())).length;updateFUBadge();}
 function demoGuard(){if(isDemoMode){toast('Demo mode - read only','error');return true;}return false;}
-function updateFUBadge(){const c=allFollowUps.filter(f=>!f.is_done&&f.due_date<=today()).length;const b=document.getElementById('sbFuBadge');if(c>0){b.textContent=c;b.style.display='inline';}else{b.style.display='none';}}
+function updateFUBadge(){const c=liveFUs().filter(f=>!f.is_done&&f.due_date<=today()).length;const b=document.getElementById('sbFuBadge');if(c>0){b.textContent=c;b.style.display='inline';}else{b.style.display='none';}}
 
 /* ===== NAV ===== */
 function nav(page){if(MASTER_ONLY_PAGES.includes(page)&&!isMaster())page='dashboard';document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));const pg=document.getElementById('page-'+page);if(pg)pg.classList.add('active');const ln=document.querySelector(`.sb-link[data-page="${page}"]`);if(ln)ln.classList.add('active');closeSidebar();if(page==='dashboard')renderDashboard();else if(page==='pipeline')renderPipeline();else if(page==='leads')renderLeads();else if(page==='playbook')renderPlaybook();else if(page==='revenue')renderRevenue();else if(page==='analytics')renderAnalytics();else if(page==='hours')renderHours();else if(page==='agents')renderAgents();}
@@ -1410,6 +1414,9 @@ function activeLeads(){return visibleLeads().filter(l=>!['closed_won','closed_lo
 function today(){return localDateStr(new Date());}
 function localDateStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+/* The packages page with the client's name on it; visits are recorded under that name on the team screen (packages/views).
+   The cleaning is the same rule packages/link uses, so the name matches what the team screen shows. */
+function pkgLink(lead){const n=String(lead.name||'').replace(/\s*\(.*?\)\s*/g,' ').replace(/[^A-Za-z0-9 &'.\-]/g,'').replace(/\s+/g,' ').trim().slice(0,60);return 'https://businessboosterlk.github.io/packages/'+(n?'?for='+encodeURIComponent(n).replace(/%20/g,'+'):'');}
 function waLink(phone){if(!phone)return'';const clean=phone.replace(/[^0-9+]/g,'');return `https://wa.me/${clean.startsWith('+')? clean.substring(1):clean}`;}
 function calcScore(l){let s=0;if(l.contact_phone)s+=10;if(l.contact_email)s+=10;if(l.contact_name)s+=5;const acts=allActivities.filter(a=>a.pipeline_id===l.id);s+=Math.min(acts.length*5,30);s+=Math.min(acts.filter(a=>a.outcome==='positive').length*10,30);if(l.estimated_value>0)s+=10;if(l.package_interest)s+=5;if(l.pain_points)s+=5;if(l.is_hot)s+=15;if(l.tags?.length)s+=3;if(l.decision_maker)s+=5;
 const dsc=daysSinceContact(l);if(dsc>14)s-=20;else if(dsc>7)s-=10;else if(dsc>3)s-=5;
@@ -1424,7 +1431,7 @@ const isStaff=currentUser.role==='Staff';
 const myCode=currentUser.code;
 // Personalize: Staff see only their own leads/FUs/activities
 const myLeads=visibleLeads();
-const myFUs=isStaff?allFollowUps.filter(f=>myLeads.some(l=>l.id===f.pipeline_id)):allFollowUps;
+const myFUs=isStaff?liveFUs().filter(f=>myLeads.some(l=>l.id===f.pipeline_id)):liveFUs();
 const myActivities=isStaff?allActivities.filter(a=>a.logged_by===currentUser.name.toUpperCase()):allActivities;
 
 const active=myLeads.filter(l=>!['closed_won','closed_lost'].includes(l.stage));
@@ -1676,6 +1683,7 @@ ${isMaster()?`<button class="danger" onclick="closeMoreMenu();deleteLead(${id})"
 </div>
 </div>
 </div>
+${!['closed_won','closed_lost'].includes(lead.stage)?`<div class="dp-quick" role="group" aria-label="Call outcome"><span>After the call</span><button class="dp-action" onclick="quickOutcome(${id},'noanswer')">No answer</button><button class="dp-action" onclick="quickOutcome(${id},'callback')">Call back</button><button class="dp-action" onclick="quickOutcome(${id},'packages')">Packages sent</button><button class="dp-action" onclick="quickOutcome(${id},'report')">Report booked</button><button class="dp-action danger" onclick="openMarkLost(${id})">Not interested</button></div>`:''}
 <div class="dp-tabs"><div class="dp-tab active" onclick="switchTab(this,'tab-prep')">Call Prep</div><div class="dp-tab" onclick="switchTab(this,'tab-activity')">Activity (${acts.length})</div><div class="dp-tab" onclick="switchTab(this,'tab-fu')">Follow-Ups (${fus.filter(f=>!f.is_done).length})</div><div class="dp-tab" onclick="switchTab(this,'tab-intel')">Intel</div>${lead.contact_phone?`<div class="dp-tab" onclick="switchTab(this,'tab-wa')">WhatsApp</div>`:''}</div>
 <div class="dp-tab-content">
 <div class="dp-tab-pane active" id="tab-prep">
@@ -1734,7 +1742,8 @@ async function removeTag(id,tag){if(demoGuard())return;const l=allLeads.find(x=>
 function getWATemplates(lead){const name=lead.contact_name||lead.name;return[
 {icon:'message',label:'Introduction',msg:`Hi ${name}, this is ${currentUser?.name} from Business Booster. We help businesses grow their online presence with digital marketing. Would you be open to a quick chat about how we can help ${lead.name}?`},
 {icon:'clipboard',label:'Follow-up',msg:`Hi ${name}, just following up on our conversation about ${lead.name}. Have you had a chance to think about our proposal? Happy to answer any questions!`},
-{icon:'star',label:'Special Offer',msg:`Hi ${name}, we have a special offer running this month for our ${lead.package_interest||'digital marketing'} package. Would you like to hear the details?`},
+{icon:'star',label:'Packages link',msg:`Hi ${name}, this is ${currentUser?.name} from Business Booster. As promised, here are our packages: ${pkgLink(lead)} Have a look and I will call you to answer any questions.`},
+{icon:'clock',label:'Meeting confirmed',msg:`Hi ${name}, this is ${currentUser?.name} from Business Booster. Confirming our call on [day] at [time] to walk you through the free consultancy report for ${lead.name.replace(/\s*\(.*?\)\s*/g,' ').trim()}. Please reply YES to confirm.`},
 {icon:'clock',label:'Meeting Request',msg:`Hi ${name}, I'd love to schedule a quick 15-min call to discuss how we can help ${lead.name} grow online. When would be a good time for you?`},
 {icon:'check',label:'Thank You',msg:`Hi ${name}, thank you for your time today! As discussed, I'll send over the proposal for ${lead.name}. Looking forward to working together!`},
 {icon:'clock',label:'Gentle Reminder',msg:`Hi ${name}, hope you're doing well! Just a gentle reminder about our discussion regarding ${lead.package_interest||'digital marketing services'} for ${lead.name}. Let me know if you have any questions.`}
@@ -1753,7 +1762,7 @@ if(pendingFU.length>=2)alerts.push({sev:'warning',icon:'clock',msg:`${l.name} - 
 if(sc>=70&&!l.is_hot)alerts.push({sev:'info',icon:'fire',msg:`${l.name} scores ${sc}/100 but isn't marked hot. Consider flagging.`,leadId:l.id});
 if(l.stage==='new_lead'&&dsc>=3)alerts.push({sev:'warning',icon:'alert',msg:`${l.name} - new lead sitting for ${dsc}d without being contacted.`,leadId:l.id});
 });
-const overdueFUs=allFollowUps.filter(f=>!f.is_done&&f.due_date<today());
+const overdueFUs=liveFUs().filter(f=>!f.is_done&&f.due_date<today());
 if(overdueFUs.length>=5)alerts.push({sev:'critical',icon:'pin',msg:`${overdueFUs.length} overdue follow-ups across all leads. Inbox is getting backed up.`});
 const todayActs=allActivities.filter(a=>a.created_at?.startsWith(today())).length;
 if(todayActs===0){const hour=new Date().getHours();if(hour>=11)alerts.push({sev:'info',icon:'phone',msg:`No activities logged today yet. Start making calls!`});}
@@ -1804,11 +1813,28 @@ const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)n
 
 /* ===== FOLLOW-UP ===== */
 function openScheduleFU(id){fuLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('fuLeadInfo').innerHTML=`<div style="font-size:14px;font-weight:700">${esc(l.name)}</div>`;const tom=new Date();tom.setDate(tom.getDate()+1);document.getElementById('fu_date').value=localDateStr(tom);document.getElementById('fu_time').value='10:00';document.getElementById('fu_priority').value='normal';document.getElementById('fu_note').value='';openModal('followUpModal');}
+const QUICK={
+ noanswer:{type:'call',outcome:'no_answer',sum:'No answer',stage:null,next:'Call again',days:1,fu:'Call again'},
+ callback:{type:'call',outcome:'neutral',sum:'Spoke briefly, asked to be called back',stage:'contacted',next:'Call back',days:0,fu:'Call back'},
+ packages:{type:'message',outcome:'positive',sum:'Packages link sent on WhatsApp',stage:'proposal_sent',next:'Follow up: have they read the packages?',days:2,fu:'Follow up on the packages'},
+ report:{type:'call',outcome:'positive',sum:'Agreed to a free consultancy report and a 20 minute meeting',stage:'discovery',next:'Make the free report, then present it',days:2,fu:'Present the free report'}};
+async function quickOutcome(id,k){if(demoGuard())return;const q=QUICK[k];const lead=allLeads.find(l=>l.id===id);if(!q||!lead)return;
+ const d=new Date();d.setDate(d.getDate()+q.days);const due=localDateStr?localDateStr(d):d.toISOString().slice(0,10);
+ const up={next_action:q.next,last_contact_at:new Date().toISOString(),updated_at:new Date().toISOString()};
+ if(q.stage&&q.stage!==lead.stage){up.stage=q.stage;up.stage_changed_at=new Date().toISOString();}
+ if(k==='noanswer'&&lead.stage==='new_lead'){up.stage='contacted';up.stage_changed_at=new Date().toISOString();}
+ const r=await sbPatch('pipeline',id,up);if(!r){return;}Object.assign(lead,up);
+ const a=await sbPost('lead_activities',{pipeline_id:id,type:q.type,summary:q.sum,outcome:q.outcome,next_step:q.next,logged_by:currentUser?.name?.toUpperCase()});if(a&&a[0])allActivities.unshift(a[0]);
+ for(const f of allFollowUps.filter(f=>f.pipeline_id===id&&!f.is_done)){const ok=await sbPatch('lead_follow_ups',f.id,{is_done:true,completed_at:new Date().toISOString()});if(ok)f.is_done=true;}
+ const fr=await sbPost('lead_follow_ups',{pipeline_id:id,due_date:due,note:q.fu,priority:k==='report'||k==='callback'?'high':'normal',created_by:currentUser?.name?.toUpperCase()});if(fr&&fr[0])allFollowUps.push(fr[0]);
+ auditLog('QUICK_OUTCOME',`${lead.name} (ID:${id}) ${q.sum}`);toast(q.sum+(q.days?` · follow-up ${fmtDate(due)}`:' · follow-up today'));updateFUBadge();
+ if(k==='packages'&&lead.contact_phone){const name=lead.contact_name||lead.name;const msg=`Hi ${name}, this is ${currentUser?.name} from Business Booster. As promised, here are our packages: ${pkgLink(lead)} Have a look and I will call you to answer any questions.`;window.open(waLink(lead.contact_phone)+'?text='+encodeURIComponent(msg),'_blank','noopener');}
+ openDetail(id);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg&&pg!=='leads')nav(pg);}
 async function saveFollowUp(){if(demoGuard())return;if(!fuLeadId)return;const d=document.getElementById('fu_date').value;if(!d){toast('Date required','error');return;}const data={pipeline_id:fuLeadId,due_date:d,due_time:document.getElementById('fu_time').value||null,priority:document.getElementById('fu_priority').value,note:document.getElementById('fu_note').value.trim()||null,created_by:currentUser?.name?.toUpperCase()};const r=await sbPost('lead_follow_ups',data);if(r){allFollowUps.push(r[0]);closeModal('followUpModal');toast('Follow-up scheduled');updateFUBadge();if(currentDetailId===fuLeadId)openDetail(fuLeadId);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg==='dashboard')renderDashboard();}}
 
 /* ===== CONVERT ===== */
-function openConvert(id){convertLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('cv_name').value=l.name;document.getElementById('cv_industry').value=l.industry||'';document.getElementById('cv_contact').value=l.contact_name||l.contact_phone||'';document.getElementById('cv_start').value=today();const p=l.package_interest?.split(' (')[0]||'Spark';document.getElementById('cv_package').value=p;document.getElementById('cv_mrr').value=PKG_VALUES[p]||90000;openModal('convertModal');}
-document.getElementById('cv_package').addEventListener('change',function(){document.getElementById('cv_mrr').value=PKG_VALUES[this.value]||90000;});
+function openConvert(id){convertLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('cv_name').value=l.name;document.getElementById('cv_industry').value=l.industry||'';document.getElementById('cv_contact').value=l.contact_name||l.contact_phone||'';document.getElementById('cv_start').value=today();let p=l.package_interest?.split(' (')[0]||'Studio';if(!PKG_VALUES[p])p='Studio';document.getElementById('cv_package').value=p;document.getElementById('cv_mrr').value=PKG_VALUES[p]||90000;openModal('convertModal');}
+document.getElementById('cv_package').addEventListener('change',function(){document.getElementById('cv_mrr').value=PKG_VALUES[this.value]||150000;});
 async function convertToClient(){if(demoGuard())return;if(!convertLeadId)return;const cd={name:document.getElementById('cv_name').value.trim(),package:document.getElementById('cv_package').value,mrr:parseInt(document.getElementById('cv_mrr').value)||0,industry:document.getElementById('cv_industry').value.trim()||null,contact:document.getElementById('cv_contact').value.trim()||null,start_date:document.getElementById('cv_start').value||null,health:'green',client_type:'sm'};const cr=await sbPost('clients',cd);if(!cr){/* the helper already reported the real reason */0;return;}await sbPatch('pipeline',convertLeadId,{stage:'closed_won',closed_at:new Date().toISOString()});const l=allLeads.find(x=>x.id===convertLeadId);if(l){l.stage='closed_won';}await sbPost('lead_activities',{pipeline_id:convertLeadId,type:'note',summary:`Converted! ${cd.package} @ LKR ${cd.mrr}`,outcome:'positive',logged_by:currentUser?.name?.toUpperCase()});closeModal('convertModal');closeDetail();celebrate();auditLog('CONVERT_CLIENT',`${cd.name} - ${cd.package} @ LKR ${cd.mrr}`);toast('🎉 Deal won - client converted!');await loadAllData();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== MARK LOST ===== */
@@ -1819,15 +1845,26 @@ async function markLost(){if(demoGuard())return;if(!lostLeadId)return;const r=do
 function openCSVImport(){csvData=null;document.getElementById('csvPreview').style.display='none';document.getElementById('csvImportBtn').style.display='none';document.getElementById('csvFile').value='';openModal('csvModal');}
 function handleCSVDrop(e){e.preventDefault();e.currentTarget.classList.remove('dragover');if(e.dataTransfer.files.length)handleCSVFile(e.dataTransfer.files[0]);}
 function handleCSVFile(file){if(!file)return;if(file.size>1048576){toast('File too large - max 1MB','error');return;}const reader=new FileReader();reader.onload=e=>{const lines=e.target.result.split('\n').filter(l=>l.trim());if(lines.length<2){toast('Empty CSV','error');return;}if(lines.length>501){toast('Too many rows - max 500 leads','error');return;}const headers=lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/['"]/g,''));const rows=lines.slice(1).map(line=>{const vals=line.split(',').map(v=>v.trim().replace(/^["']|["']$/g,''));const obj={};headers.forEach((h,i)=>obj[h]=vals[i]||'');return obj;}).filter(r=>r.name||r.business||r.company);
-csvData=rows.map(r=>({name:r.name||r.business||r.company||'',contact_name:r.contact||r.contact_name||r.person||'',contact_phone:r.phone||r.contact_phone||r.mobile||r.tel||'',contact_email:r.email||r.contact_email||'',industry:r.industry||r.sector||r.category||'',source:r.source||'other'}));
+const isMeta=headers.includes('email address')||headers.includes('form');
+/* Meta writes Sri Lankan numbers as +940771234567: the 0 after 94 is dropped */
+const fixPhone=v=>{v=String(v||'').replace(/[^0-9+]/g,'');if(v.startsWith('+940'))v='+94'+v.slice(4);else if(v.startsWith('0')&&v.length===10)v='+94'+v.slice(1);return v;};
+const have=new Set(allLeads.map(l=>fixPhone(l.contact_phone)).filter(Boolean));
+csvData=rows.map(r=>({name:r.name||r.business||r.company||'',contact_name:r.contact||r.contact_name||r.person||(isMeta?r.name:'')||'',contact_phone:fixPhone(r.phone||r.contact_phone||r.mobile||r.tel||''),contact_email:r.email||r['email address']||r.contact_email||'',industry:r.industry||r.sector||r.category||'',source:isMeta?'social_media':(r.source||'other'),meta:isMeta,form:r.form||''})).filter(r=>!r.contact_phone||!have.has(r.contact_phone));
+const skipped=rows.length-csvData.length;if(skipped)toast(`${skipped} already in the system, skipped`);
 document.getElementById('csvPreview').style.display='block';document.getElementById('csvPreview').innerHTML=`<div style="font-size:13px;font-weight:600;margin-bottom:8px">${csvData.length} leads found</div><div style="max-height:200px;overflow-y:auto;font-size:12px;color:var(--text-2)">${csvData.slice(0,10).map(r=>`<div style="padding:4px 0;border-bottom:1px solid var(--border)">${esc(r.name)} ${r.contact_phone?' · '+esc(r.contact_phone):''}</div>`).join('')}${csvData.length>10?`<div style="color:var(--text-3);padding:4px 0">+${csvData.length-10} more</div>`:''}</div>`;
 document.getElementById('csvImportBtn').style.display='inline-flex';};reader.readAsText(file);}
-async function importCSV(){if(demoGuard())return;if(!csvData||!csvData.length)return;let imported=0;for(const row of csvData){const data={name:row.name,contact_name:row.contact_name||null,contact_phone:row.contact_phone||null,contact_email:row.contact_email||null,industry:row.industry||null,source:row.source||'other',stage:'new_lead',status:'active',owner:currentUser?.code||'th',estimated_value:null,temperature:'cold'};const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);imported++;}}closeModal('csvModal');auditLog('IMPORT_CSV',`${imported} leads imported`);toast(`${imported} leads imported`);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
+async function importCSV(){if(demoGuard())return;if(!csvData||!csvData.length)return;let imported=0;for(const row of csvData){const data={name:row.name,contact_name:row.contact_name||null,contact_phone:row.contact_phone||null,contact_email:row.contact_email||null,industry:row.industry||null,source:row.source||'other',stage:'new_lead',status:'active',owner:currentUser?.code||'th',estimated_value:null,temperature:'cold',next_action:row.meta?'First call':null,tags:row.meta?['meta-lead-form'].concat(row.form?[row.form]:[]):null};const r=await sbPost('pipeline',data);if(r&&r[0]){allLeads.unshift(r[0]);imported++;if(row.meta){const fr=await sbPost('lead_follow_ups',{pipeline_id:r[0].id,due_date:today(),note:'First call',priority:'high',created_by:currentUser?.name?.toUpperCase()});if(fr&&fr[0])allFollowUps.push(fr[0]);}}}closeModal('csvModal');auditLog('IMPORT_CSV',`${imported} leads imported`);toast(`${imported} leads imported`);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== SALES PLAYBOOK (read-only reference, no DB) ===== */
 const PLAYBOOK=[
-{key:'web',label:'Website & SEO',pitch:'We keep your website fast, fresh, and found on Google, so it earns instead of leaks.',
-who:'E-commerce stores and any business with a website that just sits there. They want it maintained, updated, and actually bringing enquiries.',
+{key:'calls',label:'Form lead calls',pitch:'They filled in our form, so they came to us. Read their answers back, check the price fits, then book the free report.',
+who:'Every lead from the BB lead form. Their three form answers are in the Intel tab under pain points.',
+note:'Price check before any report: "Our clients invest from 150,000 a month, with their own ad budget on top. Set against what fixing this means to you, is that a level you are comfortable with?" Yes earns the report. Not sure gets the packages link, the video and client pages. No report.',
+packages:[{n:'Studio',p:'LKR 150,000/mo',i:'We make it, you post it'},{n:'Managed',p:'LKR 220,000/mo',i:'We make it and run it'},{n:'Apex',p:'LKR 440,000/mo',i:'We make it sell'}],
+discovery:['Open: "You filled in our form yesterday. I have your answers in front of me. Have you got two minutes?"','Read their first answer back: "You told us: [answer]. Tell me more about that."','Read their second answer back, then ask what fixing it would mean: a few more customers a month, a change to the whole year or not sure.','The price check (above). Then stay quiet.','Yes: say their two answers back and offer the free report on their pages and website, 20 minutes.','Lock the day and time. Ask for a YES on WhatsApp. Not sure: send the packages link with their name on it.'],
+objections:[{q:'How much is it?',a:'Packages start at 150,000 a month and a website build at 350,000. I will send the full packages on WhatsApp with a short video.'},{q:'Just WhatsApp me the details',a:'I will. When can I walk you through it, tomorrow or the day after?'},{q:'We tried an agency. It did not work',a:'What did they promise and what did you get? That is why we start with a free report on your own pages.'},{q:'Can you guarantee results?',a:'No honest agency can. I can show you real work and a clear plan. Then you decide.'}]},
+{key:'web',label:'Website & SEO',pitch:'We keep your website fast, fresh and found on Google, so it earns instead of leaks.',
+who:'E-commerce stores and any business with a website that just sits there. They want it maintained, updated and actually bringing enquiries.',
 note:'6-month minimum. SEO results compound from month 4. Ad boosting spend is always the client\'s, on top.',
 packages:[
 {n:'Website build',p:'from LKR 250,000 one-time',i:'Custom, responsive, fast-loading site'},
@@ -1846,13 +1883,13 @@ objections:[
 who:'Businesses whose social is just a presence, not a revenue channel. They want growth, enquiries, and sales from social, done for them.',
 note:'Ad boosting spend is separate, paid by the client to the platform.',
 packages:[
-{n:'Spark',p:'LKR 150,000/mo',i:'12 posts, 6 camera videos, 12 stories. IG, FB, TikTok + LinkedIn. Ad management, analytics, captions and strategy'},
-{n:'Ignite',p:'LKR 200,000/mo',i:'15 posts, 10 camera videos, 18 stories. Same platforms, more output and strategy weight'},
-{n:'Blaze',p:'LKR 280,000/mo',i:'18 posts, 15 camera videos, 20 stories. Our fullest content and strategy package'}],
+{n:'Studio',p:'LKR 150,000/mo',i:'We make it, you post it. 8 posts, 4 camera videos, 12 stories, a content plan and captions. Ads run by the client'},
+{n:'Managed',p:'LKR 220,000/mo',tag:'Most clients',i:'We make it and run it. 12 posts, 6 camera videos, a story every day, posting, ads managed and a Friday call'},
+{n:'Apex',p:'LKR 440,000/mo',i:'We make it sell. 15 posts, 8 camera videos, a story every day, ads, leads, a blog post every week and website maintenance. Six months'}],
 discovery:['Is your social media actually bringing you enquiries and customers, or is it more just a presence thing?','If nothing changed on your social in six months, what would that cost you?','Who runs it now, and are they growing your revenue or mainly posting?'],
 objections:[
 {q:'We tried ads and they did not work',a:'Usually it is one of three things: the offer, the creative, or the targeting. We fix all three, and boosting is your spend so you stay in control.'},
-{q:'It is too expensive',a:'Look at it as a path to break-even. We map how the package pays for itself, then profits after.'},
+{q:'It is too expensive',a:'With us you get a full team: a strategist, a camera crew, editors and designers. Building that yourself costs a lot more. We are not the cheapest; cheap marketing usually gets paid for twice.'},
 {q:'We already have someone',a:'Great. Are they growing your revenue consistently, or mainly posting content? We complement, we do not disrupt.'}]},
 {key:'sys',label:'Systems',pitch:'Software that runs your business so you do not have to. Built for you, maintained by us.',
 who:'Owners who are the bottleneck, teams buried in spreadsheets and WhatsApp, businesses where things fall through the cracks.',
@@ -1866,7 +1903,7 @@ objections:[
 {q:'Building it sounds expensive',a:'We scope it to fit your budget and only build what you need. It pays for itself in the hours it saves you every month.'},
 {q:'What if it breaks',a:'That is what the 30,000 a month retainer is for. We maintain it, fix it, and improve it, so you are never stuck.'}]}
 ];
-let playbookTab=localStorage.getItem('bb_playbook_tab')||'dm';
+let playbookTab=localStorage.getItem('bb_playbook_tab')||'calls';
 function playbookLineFor(lead){
 const hay=((lead.package_interest||'')+' '+(lead.type||'')+' '+(lead.notes||'')).toLowerCase();
 if(/seo|website|web site|maintenance|combo/.test(hay)||lead.type==='web')return PLAYBOOK[0];
@@ -1961,7 +1998,7 @@ pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;ju
 ${bottleneck?`<div style="background:linear-gradient(135deg,var(--surface),var(--surface-2));border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px"><div style="color:var(--amber);flex-shrink:0">${icon('alert',22)}</div><div><div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);font-weight:700;margin-bottom:3px">Biggest Bottleneck</div><div style="font-size:15px;color:var(--text);font-weight:500">Deals stall most at <b>${bottleneck.from} → ${bottleneck.to}</b> - only <b style="color:var(--amber)">${bottleneck.rate}%</b> advance. Focus coaching here.</div></div></div>`:''}
 <div class="analytics-grid">
 <div class="chart-card"><h3>Pipeline Funnel</h3>${funnel.map(f=>`<div class="funnel-bar"><div class="fb-label">${f.label} <span style="color:var(--text-3);font-size:10px">${WIN_PROB[f.key]||0}%</span></div><div class="fb-track"><div class="fb-fill" style="width:${(f.count/mx)*100}%;background:${f.color}">${f.count}</div></div></div>`).join('')}</div>
-<div class="chart-card"><h3>Key Metrics</h3><div class="metric-row"><span class="mr-label">Active Leads</span><span class="mr-val">${active.length}</span></div><div class="metric-row"><span class="mr-label">Pipeline Value</span><span class="mr-val">${fmtValue(pipeVal)}</span></div><div class="metric-row"><span class="mr-label">Weighted Value</span><span class="mr-val">${fmtValue(Math.round(active.reduce((s,l)=>s+(l.estimated_value||0)*(WIN_PROB[l.stage]||10)/100,0)))}</span></div><div class="metric-row"><span class="mr-label">Avg Score</span><span class="mr-val">${active.length?Math.round(active.reduce((s,l)=>s+calcScore(l),0)/active.length):0}</span></div><div class="metric-row"><span class="mr-label">Hot Leads</span><span class="mr-val">${active.filter(l=>l.is_hot).length}</span></div><div class="metric-row"><span class="mr-label">Overdue FUs</span><span class="mr-val" style="color:var(--red)">${allFollowUps.filter(f=>!f.is_done&&f.due_date<today()).length}</span></div></div>
+<div class="chart-card"><h3>Key Metrics</h3><div class="metric-row"><span class="mr-label">Active Leads</span><span class="mr-val">${active.length}</span></div><div class="metric-row"><span class="mr-label">Pipeline Value</span><span class="mr-val">${fmtValue(pipeVal)}</span></div><div class="metric-row"><span class="mr-label">Weighted Value</span><span class="mr-val">${fmtValue(Math.round(active.reduce((s,l)=>s+(l.estimated_value||0)*(WIN_PROB[l.stage]||10)/100,0)))}</span></div><div class="metric-row"><span class="mr-label">Avg Score</span><span class="mr-val">${active.length?Math.round(active.reduce((s,l)=>s+calcScore(l),0)/active.length):0}</span></div><div class="metric-row"><span class="mr-label">Hot Leads</span><span class="mr-val">${active.filter(l=>l.is_hot).length}</span></div><div class="metric-row"><span class="mr-label">Overdue FUs</span><span class="mr-val" style="color:var(--red)">${liveFUs().filter(f=>!f.is_done&&f.due_date<today()).length}</span></div></div>
 <div class="chart-card"><h3>Lead Sources</h3>${sources.map(s=>`<div class="funnel-bar"><div class="fb-label">${s.l}</div><div class="fb-track"><div class="fb-fill" style="width:${(s.c/Math.max(...sources.map(x=>x.c),1))*100}%;background:var(--accent)">${s.c}</div></div></div>`).join('')}${!sources.length?'<div class="section-empty">No data</div>':''}</div>
 <div class="chart-card"><h3>Activity Types</h3>${actTypes.map(t=>`<div class="funnel-bar"><div class="fb-label">${ACT_ICONS[t.t]||''} ${t.t}</div><div class="fb-track"><div class="fb-fill" style="width:${(t.c/Math.max(...actTypes.map(x=>x.c),1))*100}%;background:var(--blue)">${t.c}</div></div></div>`).join('')}${!actTypes.length?'<div class="section-empty">No data</div>':''}</div>
 <div class="chart-card"><h3>Stage Conversion Rates</h3>${stageFlow.map(s=>`<div class="metric-row"><span class="mr-label">${s.from} → ${s.to}</span><span class="mr-val" style="color:${parseInt(s.rate)>=60?'var(--green)':parseInt(s.rate)>=30?'var(--amber)':'var(--red)'}">${s.rate}%</span></div>`).join('')}</div>

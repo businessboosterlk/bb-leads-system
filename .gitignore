@@ -4,3 +4,4 @@ MASTER-PROMPT.md
 index-work.html
 index-rollback-*.html
 .backups/
+ops/index.before-*.html
