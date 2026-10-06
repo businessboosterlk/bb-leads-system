@@ -899,6 +899,43 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 .gp-playbook .gpb-pitch{font-size:13.5px;font-weight:600;line-height:1.5;margin-bottom:8px}
 .gp-playbook .gpb-obj{font-size:12px;color:var(--text-2);line-height:1.55}
 .gp-playbook .gpb-obj b{color:var(--text)}
+
+/* Package Links, 6 Oct 2026 */
+.pk-block{border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;margin-bottom:14px;background:var(--surface)}
+.pk-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.pk-title{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-2)}
+.pk-facts{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--text-2)}
+.pk-facts b{color:var(--text)}
+.pk-muted{font-size:13px;color:var(--text-3);margin-bottom:8px}
+.pk-hot{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--accent);margin-bottom:6px}
+.pk-linkrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pk-url{flex:1 1 200px;min-width:0;font-size:12px;color:var(--text-3);overflow-wrap:anywhere;background:var(--surface-2);border-radius:8px;padding:8px 10px}
+.pk-textbtn{background:none;border:0;padding:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline}
+.pk-sub{font-size:13px;color:var(--text-3);margin-top:4px;max-width:60ch}
+.pk-maker-body{padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+.pk-label{font-size:12px;font-weight:600;color:var(--text-2)}
+.pk-maker input{width:100%;font-size:16px}
+.pk-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.pk-note{font-size:12px;color:var(--text-3)}
+.pk-chips{display:flex;gap:6px;flex-wrap:wrap}
+.pk-chip{border:1px solid var(--border);background:var(--surface);color:var(--text-2);border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;min-height:36px}
+.pk-chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pk-count{font-size:12px;color:var(--text-3);margin:0 0 10px}
+.pk-card{padding:14px 18px}
+.pk-card-head{margin-bottom:8px}
+.pk-who{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pk-lead{font-size:13px;color:var(--text-3);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pk-match{display:flex;flex-direction:column;gap:4px;flex:1 1 220px}
+.pk-select{position:relative}
+.pk-select select{width:100%;appearance:none;-webkit-appearance:none;padding-right:34px;font-size:16px}
+.pk-select svg{position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text-3)}
+.pk-empty{padding:22px 18px;font-size:14px;color:var(--text-3)}
+.pk-dash-list{display:flex;flex-direction:column}
+.pk-dash-item{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:none;border:0;border-top:1px solid var(--border);padding:12px 18px;font:inherit;color:inherit;cursor:pointer;width:100%}
+.pk-dash-item:first-child{border-top:0}
+.pk-dash-name{font-weight:700;font-size:14px}
+.pk-dash-meta{font-size:12px;color:var(--text-3)}
+@media(max-width:767px){.pk-actions .btn{flex:1 1 100%;justify-content:center}.pk-chips{width:100%}}
 </style>
 </head>
 <body>
@@ -935,6 +972,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 <div class="sb-section">Pipeline</div>
 <div class="sb-link active" data-page="dashboard" onclick="nav('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard<span class="sb-badge" id="sbFuBadge" style="display:none">0</span></div>
 <div class="sb-link" data-page="pipeline" onclick="nav('pipeline')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Pipeline Board</div>
+<div class="sb-link master-only" data-page="pkglinks" onclick="nav('pkglinks')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Package Links<span class="sb-badge" id="sbPkgBadge" style="display:none">0</span></div>
 <div class="sb-link" data-page="leads" onclick="nav('leads')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>All Leads</div>
 <div class="sb-section master-only">Analytics</div>
 <div class="sb-link master-only" data-page="revenue" onclick="nav('revenue')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>Revenue Pipeline</div>
@@ -960,6 +998,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 <div class="page active" id="page-dashboard"></div>
 <div class="page" id="page-pipeline"></div>
 <div class="page" id="page-leads"></div>
+<div class="page" id="page-pkglinks"></div>
 <div class="page" id="page-playbook"></div>
 <div class="page" id="page-revenue"></div>
 <div class="page" id="page-analytics"></div>
@@ -1134,6 +1173,7 @@ const SOURCES={social_media:'SM',website:'Web',referral:'Ref',cold_call:'Cold',w
 
 /* ===== ICON SYSTEM ===== */
 function icon(n,s=16){const w=s,h=s;const icons={
+chevron:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`,
 phone:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.22 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>`,
 message:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`,
 meeting:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>`,
@@ -1216,7 +1256,7 @@ function visibleLeads(){return scopedLeads().filter(l=>!l.archived_at);}
 /* 5 Oct 2026: an archived lead's open follow-ups are not work. Every count of follow-ups reads this. */
 function liveFUs(){const ids=new Set(visibleLeads().map(l=>l.id));return allFollowUps.filter(f=>ids.has(f.pipeline_id));}
 function archivedLeads(){return scopedLeads().filter(l=>l.archived_at);}
-const MASTER_ONLY_PAGES=['revenue','analytics','agents'];
+const MASTER_ONLY_PAGES=['revenue','analytics','agents','pkglinks'];
 let currentDetailId=null,activityLeadId=null,convertLeadId=null,lostLeadId=null,fuLeadId=null;
 let editingLeadId=null,csvData=null;
 let todayActCount=0;
@@ -1354,12 +1394,12 @@ async function loadAllData(){if(isDemoMode){const demo=generateDemoData();allLea
    write a blank/unknown stage - map those to a real stage so no lead is ever hidden */
 const _KNOWN=new Set([...STAGES,...CLOSED_STAGES].map(s=>s.key));
 allLeads.forEach(l=>{if(!_KNOWN.has(l.stage)){l.stage=String(l.status||'').toLowerCase().includes('clos')?'closed_won':'new_lead';}});
-if(!leads.length&&!acts.length&&!fus.length){toast('Could not load data - check connection','error');}todayActCount=allActivities.filter(a=>a.created_at&&a.created_at.startsWith(today())).length;updateFUBadge();}
+if(!leads.length&&!acts.length&&!fus.length){toast('Could not load data - check connection','error');}todayActCount=allActivities.filter(a=>a.created_at&&a.created_at.startsWith(today())).length;updateFUBadge();loadPkgViews();}
 function demoGuard(){if(isDemoMode){toast('Demo mode - read only','error');return true;}return false;}
 function updateFUBadge(){const c=liveFUs().filter(f=>!f.is_done&&f.due_date<=today()).length;const b=document.getElementById('sbFuBadge');if(c>0){b.textContent=c;b.style.display='inline';}else{b.style.display='none';}}
 
 /* ===== NAV ===== */
-function nav(page){if(MASTER_ONLY_PAGES.includes(page)&&!isMaster())page='dashboard';document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));const pg=document.getElementById('page-'+page);if(pg)pg.classList.add('active');const ln=document.querySelector(`.sb-link[data-page="${page}"]`);if(ln)ln.classList.add('active');closeSidebar();if(page==='dashboard')renderDashboard();else if(page==='pipeline')renderPipeline();else if(page==='leads')renderLeads();else if(page==='playbook')renderPlaybook();else if(page==='revenue')renderRevenue();else if(page==='analytics')renderAnalytics();else if(page==='hours')renderHours();else if(page==='agents')renderAgents();}
+function nav(page){if(MASTER_ONLY_PAGES.includes(page)&&!isMaster())page='dashboard';document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));const pg=document.getElementById('page-'+page);if(pg)pg.classList.add('active');const ln=document.querySelector(`.sb-link[data-page="${page}"]`);if(ln)ln.classList.add('active');closeSidebar();if(page==='dashboard')renderDashboard();else if(page==='pipeline')renderPipeline();else if(page==='leads')renderLeads();else if(page==='pkglinks')renderPkgLinks();else if(page==='playbook')renderPlaybook();else if(page==='revenue')renderRevenue();else if(page==='analytics')renderAnalytics();else if(page==='hours')renderHours();else if(page==='agents')renderAgents();}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbOverlay').classList.toggle('open');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOverlay').classList.remove('open');}
 
@@ -1416,7 +1456,44 @@ function localDateStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padSt
 function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 /* The packages page with the client's name on it; visits are recorded under that name on the team screen (packages/views).
    The cleaning is the same rule packages/link uses, so the name matches what the team screen shows. */
-function pkgLink(lead){const n=String(lead.name||'').replace(/\s*\(.*?\)\s*/g,' ').replace(/[^A-Za-z0-9 &'.\-]/g,'').replace(/\s+/g,' ').trim().slice(0,60);return 'https://businessboosterlk.github.io/packages/'+(n?'?for='+encodeURIComponent(n).replace(/%20/g,'+'):'');}
+/* ===== PACKAGE LINKS (6 Oct 2026, Thulaib: "I want everything together") =====
+   Who opened the packages page link, read through leads_pkg_views(): CEO, COO and Manager only, checked IN THE DATABASE
+   (app_is_master), the public key is refused. A visit is matched to a lead by the name on the link, cleaned exactly as the
+   packages page cleans it, or by a tag pkg:<name> that "Match to a lead" writes. /packages/link and /packages/views still
+   work, this screen is the one place for the team. */
+const PKG_BASE='https://businessboosterlk.github.io/packages/';
+const PKG_STAGES=[['fit','the fit finder'],['work','the work'],['packages','the packages'],['month','the first month'],['compare','the comparison'],['next','the recommendation']];
+let pkgViews=[],pkgViewsAt=null,pkgViewsState='idle',pkgFilter='all';
+function pkgClean(v){return String(v||'').replace(/[^A-Za-z0-9 &'.\-]/g,'').replace(/\s+/g,' ').trim().slice(0,60);}
+function pkgLinkFor(name){const n=pkgClean(name);return PKG_BASE+(n?'?for='+encodeURIComponent(n).replace(/%20/g,'+'):'');}
+function pkgName(lead){return pkgClean(String(lead.name||'').replace(/\s*\(.*?\)\s*/g,' '));}
+function pkgLink(lead){return pkgLinkFor(pkgName(lead));}
+function pkgKey(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');}
+function pkgTagKeys(l){return (l.tags||[]).filter(t=>/^pkg:/i.test(t)).map(t=>pkgKey(t.slice(4)));}
+function pkgLeadKeys(l){const k=new Set(pkgTagKeys(l));[pkgName(l),l.name,l.contact_name].forEach(v=>{const x=pkgKey(v);if(x.length>=4)k.add(x);});return k;}
+function pkgLeadFor(row){const k=pkgKey(row&&row.who);if(!k)return null;return allLeads.find(l=>pkgTagKeys(l).includes(k))||allLeads.find(l=>!l.archived_at&&pkgLeadKeys(l).has(k))||allLeads.find(l=>pkgLeadKeys(l).has(k))||null;}
+function pkgRowsFor(lead){return pkgViews.filter(r=>{const m=pkgLeadFor(r);return m&&m.id===lead.id;});}
+function pkgMerge(rows){if(rows.length===1)return rows[0];const u=a=>[...new Set([].concat(...a))];return{who:rows.map(r=>r.who).join(', '),visits:rows.reduce((s,r)=>s+(r.visits||0),0),devices:rows.reduce((s,r)=>s+(r.devices||0),0),seconds:rows.reduce((s,r)=>s+(r.seconds||0),0),first_opened:rows.map(r=>r.first_opened).sort()[0],last_opened:rows.map(r=>r.last_opened).sort().pop(),reached:u(rows.map(r=>r.reached||[])),finder_suggested:u(rows.map(r=>r.finder_suggested||[])),opened_package:u(rows.map(r=>r.opened_package||[])),whatsapp_taps:rows.reduce((s,r)=>s+(r.whatsapp_taps||0),0),device_kinds:u(rows.map(r=>r.device_kinds||[])),countries:u(rows.map(r=>r.countries||[]))};}
+function pkgDur(s){s=+s||0;if(s<60)return s+' sec';return Math.round(s/60)+' min';}
+function pkgFurthest(r){let f='';PKG_STAGES.forEach(([id,label])=>{if((r.reached||[]).includes(id))f=label;});return f;}
+function pkgFresh(r){return r&&r.last_opened&&(Date.now()-new Date(r.last_opened).getTime())<864e5;}
+function pkgFacts(r){const f=[];f.push(`<b>Opened ${r.visits} time${r.visits===1?'':'s'}</b>, last ${timeAgo(r.last_opened)==='now'?'just now':timeAgo(r.last_opened)+' ago'}`);f.push(`${pkgDur(r.seconds)} on the page`);const fu=pkgFurthest(r);if(fu)f.push(`Got as far as ${fu}`);if((r.finder_suggested||[]).length)f.push(`Fit finder said ${esc(r.finder_suggested.join(' or '))}`);if((r.opened_package||[]).length)f.push(`Opened the details of ${esc(r.opened_package.join(' and '))}`);if(r.whatsapp_taps)f.push(`Tapped WhatsApp ${r.whatsapp_taps} time${r.whatsapp_taps===1?'':'s'}`);if((r.device_kinds||[]).length)f.push('On '+r.device_kinds.map(d=>d==='phone'?'a phone':d==='desk'?'a computer':esc(d)).join(' and '));if((r.devices||0)>=2)f.push(`${r.devices} devices: may have been shared`);return `<ul class="pk-facts">${f.map(x=>`<li>${x}</li>`).join('')}</ul>`;}
+async function loadPkgViews(){if(isDemoMode||!isMaster()){pkgViews=[];pkgViewsState='off';updatePkgBadge();return;}pkgViewsState='loading';try{await ensureFreshToken();let r=await fetch(`${SB_URL}/rpc/leads_pkg_views`,{method:'POST',headers:getHeaders(),body:'{}'});if(r.status===401){await ensureFreshToken();r=await fetch(`${SB_URL}/rpc/leads_pkg_views`,{method:'POST',headers:getHeaders(),body:'{}'});}if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();if(!j||!j.ok)throw new Error('not allowed');pkgViews=Array.isArray(j.clients)?j.clients:[];pkgViewsAt=j.as_of;pkgViewsState='ok';}catch(e){console.warn('Package link visits:',e);pkgViewsState='error';}pkgRepaint();}
+function pkgRepaint(){updatePkgBadge();const pg=document.querySelector('.page.active');const id=pg&&pg.id;if(id==='page-pkglinks')renderPkgList();if(id==='page-dashboard'){const s=document.getElementById('pkgDash');if(s)s.outerHTML=pkgDashStrip();}const b=document.getElementById('pkgBlock');if(b&&currentDetailId){const l=allLeads.find(x=>x.id===currentDetailId);if(l)b.outerHTML=pkgBlock(l);}}
+function updatePkgBadge(){const b=document.getElementById('sbPkgBadge');if(!b)return;const c=pkgViews.filter(pkgFresh).length;if(c>0){b.textContent=c;b.style.display='inline';}else b.style.display='none';}
+async function pkgCopy(text,btn){let done=false;try{await navigator.clipboard.writeText(text);done=true;}catch(e){try{const t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();done=document.execCommand('copy');t.remove();}catch(_){}}toast(done?'Link copied':'Could not copy. Press and hold the link to copy it',done?'success':'error');if(done&&btn){const o=btn.textContent;btn.textContent='Copied';setTimeout(()=>{btn.textContent=o;},1600);}}
+function pkgBlock(lead){const link=pkgLink(lead);let status='';if(isMaster()){const rows=pkgRowsFor(lead);const sent=allActivities.some(a=>a.pipeline_id===lead.id&&/packages/i.test(a.summary||''));if(rows.length){const r=pkgMerge(rows);status=(pkgFresh(r)&&!['closed_won','closed_lost'].includes(lead.stage)?`<div class="pk-hot">${icon('fire',13)} Opened in the last day. Call while it is fresh.</div>`:'')+pkgFacts(r);}else if(pkgViewsState==='error')status=`<div class="pk-muted">Could not read who opened it. <button class="pk-textbtn" onclick="loadPkgViews()">Try again</button></div>`;else if(pkgViewsState!=='ok')status=`<div class="pk-muted">Checking who opened it</div>`;else status=`<div class="pk-muted">${sent?'Sent, not opened yet.':'Not opened yet.'}</div>`;}const opened=isMaster()&&pkgRowsFor(lead).length;return `<div class="pk-block" id="pkgBlock"><div class="pk-head"><span class="pk-title">${icon('star',13)} Packages link</span>${opened?'<span class="badge badge-green">Opened</span>':''}</div>${status}<div class="pk-linkrow"><span class="pk-url">${esc(link)}</span><button class="btn btn-sm btn-secondary" data-link="${esc(link)}" onclick="pkgCopy(this.dataset.link,this)">Copy link</button></div></div>`;}
+function pkgDashStrip(){if(!isMaster())return '<div id="pkgDash"></div>';const fresh=pkgViews.filter(pkgFresh);if(!fresh.length)return '<div id="pkgDash"></div>';return `<div id="pkgDash" class="section pk-dash"><div class="section-head"><h3>${icon('star',14)} Opened the packages in the last day</h3><span class="count">${fresh.length}</span></div><div class="pk-dash-list">${fresh.map(r=>{const l=pkgLeadFor(r);return `<button class="pk-dash-item" onclick="${l?`openDetail(${l.id})`:`nav('pkglinks')`}"><span class="pk-dash-name">${esc(l?l.name:r.who)}</span><span class="pk-dash-meta">${timeAgo(r.last_opened)} ago · ${pkgDur(r.seconds)}${(r.finder_suggested||[]).length?' · '+esc(r.finder_suggested.join(' or ')):''}${l?'':' · not in the sales system'}</span></button>`;}).join('')}</div></div>`;}
+function renderPkgLinks(){const pg=document.getElementById('page-pkglinks');pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="page-label">Sales</div><h1>Package Links</h1><div class="pk-sub">Make a packages link for a client and see who opened it. Visits are matched to leads by the name on the link.</div></div><button class="btn btn-secondary" id="pkRefresh" onclick="pkgViewsState='loading';renderPkgList();loadPkgViews()">Refresh</button></div>
+<div class="section pk-maker"><div class="section-head"><h3>Make a link for a client</h3></div><div class="pk-maker-body"><label class="pk-label" for="pkName">Client or business name</label><input id="pkName" type="text" autocomplete="off" placeholder="For example Sunrise Cabs" oninput="pkgMakerUpdate()"><div class="pk-linkrow"><span class="pk-url" id="pkOut">${PKG_BASE}</span></div><div class="pk-actions"><button class="btn btn-primary" onclick="pkgCopy(pkgLinkFor(document.getElementById('pkName').value),this)">Copy link</button><button class="btn btn-secondary" onclick="pkgMakerWA()">Send on WhatsApp</button><button class="btn btn-secondary" onclick="window.open(pkgLinkFor(document.getElementById('pkName').value)+(pkgClean(document.getElementById('pkName').value)?'&':'?')+'preview=1','_blank','noopener')">See it as the client does</button></div><div class="pk-note">Your own preview is never counted as a visit.</div></div></div>
+<div class="leads-toolbar"><div class="search-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search names..." id="pkSearch" oninput="renderPkgList()"></div><div class="pk-chips" role="group" aria-label="Show">${[['all','All'],['fresh','Last day'],['matched','In the sales system'],['unmatched','Not in the system']].map(([k,v])=>`<button class="pk-chip${pkgFilter===k?' on':''}" data-f="${k}" aria-pressed="${pkgFilter===k}" onclick="pkgFilter='${k}';document.querySelectorAll('.pk-chip').forEach(c=>{const on=c.dataset.f===pkgFilter;c.classList.toggle('on',on);c.setAttribute('aria-pressed',on)});renderPkgList()">${v}</button>`).join('')}</div></div>
+<div id="pkList"></div>`;renderPkgList();if(pkgViewsState!=='ok'&&pkgViewsState!=='loading')loadPkgViews();}
+function pkgMakerUpdate(){const o=document.getElementById('pkOut');if(o)o.textContent=pkgLinkFor(document.getElementById('pkName').value);}
+function pkgMakerWA(){const n=pkgClean(document.getElementById('pkName').value);const msg=`Hi${n?' '+n:''}, this is ${currentUser?.name||'Business Booster'} from Business Booster. As promised, here are our packages: ${pkgLinkFor(n)} Have a look and I will call you to answer any questions.`;window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank','noopener');}
+function renderPkgList(){const box=document.getElementById('pkList');if(!box)return;if(pkgViewsState==='loading'||pkgViewsState==='idle'){box.innerHTML=`<div class="section"><div class="pk-empty">Reading who opened the packages</div></div>`;return;}if(pkgViewsState==='error'){box.innerHTML=`<div class="section"><div class="pk-empty">Could not read the visits. <button class="pk-textbtn" onclick="pkgViewsState='loading';renderPkgList();loadPkgViews()">Try again</button></div></div>`;return;}const q=pkgKey(document.getElementById('pkSearch')?.value||'');let rows=pkgViews.map(r=>({r,l:pkgLeadFor(r)}));if(q)rows=rows.filter(x=>pkgKey(x.r.who).includes(q)||(x.l&&pkgKey(x.l.name).includes(q)));if(pkgFilter==='fresh')rows=rows.filter(x=>pkgFresh(x.r));if(pkgFilter==='matched')rows=rows.filter(x=>x.l);if(pkgFilter==='unmatched')rows=rows.filter(x=>!x.l);if(!rows.length){box.innerHTML=`<div class="section"><div class="pk-empty">${pkgViews.length?'Nobody matches this filter.':'No named link has been opened yet. Send one from a lead or make one above.'}</div></div>`;return;}const opts=allLeads.filter(l=>!l.archived_at).sort((a,b)=>(a.name||'').localeCompare(b.name||''));box.innerHTML=`<div class="pk-count">${rows.length} name${rows.length===1?'':'s'}${pkgViewsAt?' · read '+fmtDateTime(pkgViewsAt):''}</div>`+rows.map(({r,l})=>`<div class="section pk-card"><div class="pk-card-head"><div><div class="pk-who">${esc(r.who)}${pkgFresh(r)?' <span class="badge badge-green">Last day</span>':''}</div><div class="pk-lead">${l?`Lead: <b>${esc(l.name)}</b> ${stageBadge(l.stage)}`:'Not in the sales system'}</div></div></div>${pkgFacts(r)}<div class="pk-actions">${l?`<button class="btn btn-primary" onclick="openDetail(${l.id})">Open the lead</button>`:`<button class="btn btn-primary" data-who="${esc(r.who)}" onclick="pkgAddLead(this.dataset.who)">Add as a lead</button><div class="pk-match"><label class="pk-label" for="pkm-${pkgKey(r.who)}">Or match to a lead</label><div class="pk-select"><select id="pkm-${pkgKey(r.who)}" data-who="${esc(r.who)}" onchange="if(this.value)pkgMatch(this.dataset.who,+this.value)"><option value="">Choose a lead</option>${opts.map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('')}</select>${icon('chevron',14)}</div></div>`}<button class="btn btn-secondary" data-link="${esc(pkgLinkFor(r.who))}" onclick="pkgCopy(this.dataset.link,this)">Copy link</button></div></div>`).join('');}
+async function pkgMatch(who,leadId){if(demoGuard())return;const l=allLeads.find(x=>x.id===leadId);if(!l)return;const tag='pkg:'+pkgClean(who);const tags=[...new Set([...(l.tags||[]),tag])];const r=await sbPatch('pipeline',leadId,{tags});if(r&&r[0]){Object.assign(l,r[0]);toast(`Matched to ${l.name}`);auditLog('PKG_MATCH',`${who} matched to ${l.name}`);}else toast('Could not save the match','error');renderPkgList();}
+function pkgAddLead(who){openAddLead();document.getElementById('al_name').value=pkgClean(who);document.getElementById('al_tags').value='pkg:'+pkgClean(who);const s=document.getElementById('al_stage');if(s)s.value='contacted';}
+
 function waLink(phone){if(!phone)return'';const clean=phone.replace(/[^0-9+]/g,'');return `https://wa.me/${clean.startsWith('+')? clean.substring(1):clean}`;}
 function calcScore(l){let s=0;if(l.contact_phone)s+=10;if(l.contact_email)s+=10;if(l.contact_name)s+=5;const acts=allActivities.filter(a=>a.pipeline_id===l.id);s+=Math.min(acts.length*5,30);s+=Math.min(acts.filter(a=>a.outcome==='positive').length*10,30);if(l.estimated_value>0)s+=10;if(l.package_interest)s+=5;if(l.pain_points)s+=5;if(l.is_hot)s+=15;if(l.tags?.length)s+=3;if(l.decision_maker)s+=5;
 const dsc=daysSinceContact(l);if(dsc>14)s-=20;else if(dsc>7)s-=10;else if(dsc>3)s-=5;
@@ -1524,6 +1601,7 @@ ${closingSoon.length?`<div class="ad-chips">${_closeSorted.slice(0,3).map((l,i)=
 </div>
 </div>
 
+${pkgDashStrip()}
 ${atRisk.length?`<div class="at-risk" style="border-radius:20px;margin-bottom:18px">
 <div class="ar-head"><div class="ar-title">${icon('alert',15)} At-Risk Radar</div><div class="ar-sub">${fmtValue(atRiskVal)} at risk · high-value & going cold</div></div>
 ${atRisk.slice(0,5).map(l=>{const d=daysSinceContact(l);return `<div class="ar-item" onclick="openDetail(${l.id})"><div style="flex:1;min-width:0"><div class="ar-name">${esc(l.name)}</div><div class="ar-meta">${stageInfo(l.stage).label} · ${ownerLabel(l.owner)}${l.contact_name?' · '+esc(l.contact_name):''}</div></div><div style="text-align:right"><div class="ar-val">${fmtValue(l.estimated_value)}</div><div class="ar-days">${d}d silent</div></div>${l.contact_phone?`<a href="${waLink(l.contact_phone)}" target="_blank" style="color:#25D366;flex-shrink:0" onclick="event.stopPropagation()" title="WhatsApp now">${icon('message',18)}</a>`:''}</div>`;}).join('')}
@@ -1687,6 +1765,7 @@ ${!['closed_won','closed_lost'].includes(lead.stage)?`<div class="dp-quick" role
 <div class="dp-tabs"><div class="dp-tab active" onclick="switchTab(this,'tab-prep')">Call Prep</div><div class="dp-tab" onclick="switchTab(this,'tab-activity')">Activity (${acts.length})</div><div class="dp-tab" onclick="switchTab(this,'tab-fu')">Follow-Ups (${fus.filter(f=>!f.is_done).length})</div><div class="dp-tab" onclick="switchTab(this,'tab-intel')">Intel</div>${lead.contact_phone?`<div class="dp-tab" onclick="switchTab(this,'tab-wa')">WhatsApp</div>`:''}</div>
 <div class="dp-tab-content">
 <div class="dp-tab-pane active" id="tab-prep">
+${pkgBlock(lead)}
 <div class="call-prep"><h4>${icon('clipboard',14)} Call Preparation</h4>
 ${lastAct?`<div class="cp-row"><div class="cp-label">Last interaction</div><div class="cp-val">${esc(lastAct.summary)}</div></div>`:''}
 ${lastAct?.next_step?`<div class="cp-row"><div class="cp-label">Next step</div><div class="cp-val">${esc(lastAct.next_step)}</div></div>`:''}
@@ -2718,6 +2797,16 @@ async function runSelfTest(){
      Array.isArray(allLeads)&&typeof STAGES!=='undefined'&&typeof nav==='function'&&
      typeof sb==='function'&&typeof visibleLeads==='function'&&typeof isMaster==='function',
      'allLeads, STAGES, nav(), sb(), visibleLeads(), isMaster()');
+
+  /* ── P · PACKAGE LINKS (6 Oct 2026) ── the name is cleaned exactly as the packages page cleans it, or no visit ever matches */
+  ok('Package links: name cleaned the way the packages page cleans it',
+     pkgClean("  Sun<b>rise</b>  Cabs!! ")==="Sunbriseb Cabs",
+     pkgClean("  Sun<b>rise</b>  Cabs!! "));
+  ok('Package links: a lead link drops the bracketed contact name',
+     pkgLink({name:'Sunrise Cabs (Gagana)'})==='https://businessboosterlk.github.io/packages/?for=Sunrise+Cabs',pkgLink({name:'Sunrise Cabs (Gagana)'}));
+  ok('Package links: a pkg: tag matches a visit to the right lead',
+     (function(){const keep=allLeads;try{allLeads=[{id:1,name:'Alpha Ltd',tags:null},{id:2,name:'Beta',tags:['pkg:revonit']}];return (pkgLeadFor({who:'REVONIT'})||{}).id===2&&(pkgLeadFor({who:'Alpha Ltd'})||{}).id===1&&pkgLeadFor({who:'Nobody Here'})===null;}finally{allLeads=keep;}})(),'tag, name and no match');
+  ok('Package links: staff never see the screen',MASTER_ONLY_PAGES.includes('pkglinks'),MASTER_ONLY_PAGES.join(','));
   ok('Boot: zero console errors since load',(window.__ST_LOG||[]).length===0,
      (window.__ST_LOG||[]).length?window.__ST_LOG[0].kind+': '+window.__ST_LOG[0].msg:'clean');
   const idSeen={};document.querySelectorAll('[id]').forEach(el=>idSeen[el.id]=(idSeen[el.id]||0)+1);
