@@ -2646,6 +2646,11 @@ button,label,.sb-link,.btn,.modal-close,.tab,.stage-head,[role="button"]{
 .detail-panel{padding-bottom:var(--sab)}
 .toast{bottom:calc(24px + var(--sab))}
 @media(max-width:768px){.toast{bottom:calc(12px + var(--sab))}}
+/* Decision 104 repair, 7 Oct 2026: the phone alerts pill from the push canon is fixed
+   bottom left, 12px above the safe area and 44px tall. It sat on Sign Out. The
+   sidebar already pads the safe area, so 68px keeps Sign Out 12px clear of the pill on
+   desk and in the phone drawer. The canon block itself stays untouched for parity.sh. */
+.sb-footer{padding-bottom:68px}
 
 /* 5 · vh is measured against the TALLEST the viewport ever gets, so a sheet at
       90vh pushes its own close button off the bottom the moment the address
