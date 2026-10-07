@@ -1410,7 +1410,7 @@ async function showApp(){document.getElementById('loginScreen').style.display='n
    tapped while the app was open). It survives the sign-in screen and is handed to the sheet guard (BBF.adoptEntry)
    when the lead opens, so Back once closes the sheet and Back twice leaves. A cold load pushed nothing and never sets it. */
 let leadAlertEntry=false;
-async function openLeadFromHash(ev){/* the event's own newURL, because a sheet closing calls history.back() a tick later and can change location.hash first */let h=location.hash||'';try{if(ev&&ev.newURL)h=new URL(ev.newURL).hash;}catch(e){}const m=/^#lead=(\d+)$/.exec(h);if(!m){if(ev)leadAlertEntry=false;return;}if(ev)leadAlertEntry=true;if(!currentUser)return;const pushed=leadAlertEntry;leadAlertEntry=false;const id=+m[1];try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}if(!isDemoMode){const rows=await sb('pipeline','select=*&id=eq.'+id);if(rows&&rows[0]){const i=allLeads.findIndex(l=>l.id===id);if(i>-1)allLeads[i]=rows[0];else allLeads.unshift(rows[0]);}}const found=allLeads.some(l=>l.id===id);if(pushed&&typeof BBF!=='undefined'&&BBF.adoptEntry)BBF.adoptEntry(found);if(found)openDetail(id);else toast('That lead is not in your list','error');}
+async function openLeadFromHash(ev){/* the event's own newURL, because a sheet closing calls history.back() a tick later and can change location.hash first */let h=location.hash||'';try{if(ev&&ev.newURL)h=new URL(ev.newURL).hash;}catch(e){}const m=/^#lead=(\d+)$/.exec(h);if(!m){if(ev)leadAlertEntry=false;return;}if(ev)leadAlertEntry=true;if(!currentUser)return;const pushed=leadAlertEntry;leadAlertEntry=false;const id=+m[1];try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}if(!isDemoMode){const rows=await sb('pipeline','select=*&id=eq.'+id);if(rows&&rows[0]){const i=allLeads.findIndex(l=>l.id===id);if(i>-1)allLeads[i]=rows[0];else allLeads.unshift(rows[0]);}}const found=allLeads.some(l=>l.id===id);/* LEADS F1 review, 7 Oct 2026: a form, the command palette or the phone drawer left open sat ON TOP of the lead the alert opened. Close it through its own close control first, synchronously, before adoptEntry counts the steps. A lead outside the list leaves it open. */if(found&&typeof BBF!=='undefined'&&BBF.closeAllBut)BBF.closeAllBut(document.getElementById('detailOverlay'));if(pushed&&typeof BBF!=='undefined'&&BBF.adoptEntry)BBF.adoptEntry(found);if(found)openDetail(id);else toast('That lead is not in your list','error');}
 window.addEventListener('hashchange',openLeadFromHash);
 async function loadAllData(){if(isDemoMode){const demo=generateDemoData();allLeads=demo.leads;allActivities=demo.activities;allFollowUps=demo.followUps;todayActCount=2;updateFUBadge();return;}const readFailsBefore=sbReadFails;const[leads,acts,fus]=await Promise.all([sb('pipeline','select=*&order=created_at.desc'),sb('lead_activities','select=*&order=created_at.desc'),sb('lead_follow_ups','select=*&order=due_date.asc,due_time.asc')]);allLeads=leads||[];allActivities=acts||[];allFollowUps=fus||[];
 /* Normalize stages: other BB systems (e.g. Command Centre) share this table and may
@@ -2740,6 +2740,14 @@ var BBF=(function(){
  }
  function anyOpen(){var n=document.querySelectorAll(OVS),i;
   for(i=0;i<n.length;i++)if(isOpen(n[i]))return n[i];return null;}
+ /* LEADS F1 review, 7 Oct 2026: the open overlay that is ON TOP (highest z-index, the later one on a
+    tie). anyOpen() answers in page order, so the shield went on the lead sheet while a form sat over
+    it and the form went inert: Log activity, Follow-up, Convert and Lost from the sheet. A phone alert
+    over a form did the same. Null exactly when anyOpen() is null. Back still closes anyOpen(). */
+ function topOpen(){var n=document.querySelectorAll(OVS),i,top=null,tz=-Infinity,z;
+  for(i=0;i<n.length;i++)if(isOpen(n[i])){z=parseInt(getComputedStyle(n[i]).zIndex,10)||0;
+   if(z>=tz){tz=z;top=n[i];}}
+  return top;}
 
  function lock(){if(locked)return;
   lockedY=window.scrollY||window.pageYOffset||0;
@@ -2753,7 +2761,11 @@ var BBF=(function(){
     the gap beside a sheet. A keyboard or a screen reader walks straight into
     content the person cannot see. Generic, so it survives any later screen. */
  var shielded=[];
- function shield(ov){release();if(!ov)return;
+ /* LEADS F1 review, 7 Oct 2026: the overlay the shield was raised for. When another overlay takes
+    its place while the body stays locked (a phone alert opening a lead over a form), syncBody
+    raises the shield again for the new one; left on the first, it made the lead sheet inert. */
+ var shieldFor=null;
+ function shield(ov){release();if(!ov)return;shieldFor=ov;
   [].slice.call(document.body.children).forEach(function(el){
    if(el===ov||el.contains(ov))return;
    if(/^(SCRIPT|STYLE|TEMPLATE|LINK)$/.test(el.tagName))return;
@@ -2762,9 +2774,12 @@ var BBF=(function(){
    if(el.hasAttribute('inert'))return;
    el.setAttribute('inert','');el.setAttribute('aria-hidden','true');shielded.push(el);});}
  function release(){shielded.forEach(function(el){
-  el.removeAttribute('inert');el.removeAttribute('aria-hidden');});shielded=[];}
+  el.removeAttribute('inert');el.removeAttribute('aria-hidden');});shielded=[];shieldFor=null;}
 
- function takeFocus(ov){lastFocus=document.activeElement;
+ function takeFocus(ov){lastFocus=document.activeElement;focusInto(ov);}
+ /* LEADS F1 review, 7 Oct 2026: split out so a swap of overlays moves focus into the new one
+    without overwriting lastFocus, which must stay what was focused before the FIRST one opened. */
+ function focusInto(ov){
   var f=ov.querySelector('button,[href],input,[tabindex]:not([tabindex="-1"])');
   if(f){try{f.focus({preventScroll:true});}catch(e){}}}
  function giveBackFocus(){if(lastFocus&&lastFocus.focus){
@@ -2772,7 +2787,8 @@ var BBF=(function(){
 
  /* BACK CLOSES THE SHEET, it does not leave the app. On Android this is the
     loudest tell that a product is really a web page. */
- function closeTop(){var ov=anyOpen();if(!ov)return false;
+ function closeTop(){return closeOv(anyOpen());}
+ function closeOv(ov){if(!ov)return false;
   /* the drawer's backdrop calls toggleSidebar(), which does not match /close/.
      Removing .open from the backdrop alone would leave the drawer itself
      sitting open over the page. Named before the generic paths, not after. */
@@ -2783,6 +2799,11 @@ var BBF=(function(){
   var btn=ov.querySelector('[onclick*="close"],[onclick*="Close"],[data-close]');
   if(btn){btn.click();return true;}
   ov.classList.remove('open');return true;}
+ /* LEADS F1 review, 7 Oct 2026. Closes every open overlay except keep, each through its own close
+    control as Back would. History is left alone: the caller opens keep in the same tick, so the
+    next sync still finds an overlay and the steps already counted pass to it. */
+ function closeAllBut(keep){var n=document.querySelectorAll(OVS),i;
+  for(i=0;i<n.length;i++)if(n[i]!==keep&&isOpen(n[i]))closeOv(n[i]);}
  window.addEventListener('popstate',function(){
   /* LEADS F1, 7 Oct 2026: a fragment navigation to #lead=<id> (an alert tapped while the app is
      open) fires popstate just before hashchange. It is an arrival, not a Back press: counting it
@@ -2803,9 +2824,12 @@ var BBF=(function(){
  function sync(){if(inSync)return;inSync=true;syncRuns++;
   try{syncBody();}finally{inSync=false;}}
  function syncBody(){
-  var ov=anyOpen();
+  var ov=topOpen();
   if(ov&&!locked){lock();shield(ov);takeFocus(ov);
    histDepth++;if(adopted)adopted=false;else{try{history.pushState({bbSheet:1},'');}catch(e){}}}
+  /* LEADS F1 review, 7 Oct 2026: still locked while a different overlay is on top now. Shield and
+     focus follow it; the history count stays as it is, because nothing was closed by Back. */
+  else if(ov&&locked&&ov!==shieldFor){shield(ov);focusInto(ov);}
   else if(!ov&&locked){release();giveBackFocus();
    /* Unlock synchronously, always. Deferring it behind a timer left the body
       pinned for whatever ran next. That could then not scroll at all. */
@@ -2859,7 +2883,7 @@ var BBF=(function(){
 
  /* The check asks the module for its selector. A hand written selector inside a
     check is a selector that can be pointed at nothing and pass on silence. */
- return {start:start,hintKeyboards:hintKeyboards,anyOpen:anyOpen,sync:sync,adoptEntry:adoptEntry,
+ return {start:start,hintKeyboards:hintKeyboards,anyOpen:anyOpen,sync:sync,adoptEntry:adoptEntry,closeAllBut:closeAllBut,
          ovs:OVS,
          overlaySelector:function(){return OVS;},
          keepSelector:function(){return KEEP;},
