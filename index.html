@@ -1406,7 +1406,11 @@ async function showApp(){document.getElementById('loginScreen').style.display='n
 /* Decision 104, 7 Oct 2026: a phone alert from bb_leads_* opens the app at #lead=<id>. The row is read
    fresh (the alert may be newer than this page), the hash is cleared so a second alert for the same lead
    still fires hashchange. A lead outside this person's list says so instead of opening nothing. */
-async function openLeadFromHash(ev){/* the event's own newURL, because a sheet closing calls history.back() a tick later and can change location.hash first */let h=location.hash||'';try{if(ev&&ev.newURL)h=new URL(ev.newURL).hash;}catch(e){}const m=/^#lead=(\d+)$/.exec(h);if(!m||!currentUser)return;const id=+m[1];try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}if(!isDemoMode){const rows=await sb('pipeline','select=*&id=eq.'+id);if(rows&&rows[0]){const i=allLeads.findIndex(l=>l.id===id);if(i>-1)allLeads[i]=rows[0];else allLeads.unshift(rows[0]);}}if(allLeads.some(l=>l.id===id))openDetail(id);else toast('That lead is not in your list','error');}
+/* LEADS F1, 7 Oct 2026: true while the current history entry was pushed by a #lead= fragment navigation (an alert
+   tapped while the app was open). It survives the sign-in screen and is handed to the sheet guard (BBF.adoptEntry)
+   when the lead opens, so Back once closes the sheet and Back twice leaves. A cold load pushed nothing and never sets it. */
+let leadAlertEntry=false;
+async function openLeadFromHash(ev){/* the event's own newURL, because a sheet closing calls history.back() a tick later and can change location.hash first */let h=location.hash||'';try{if(ev&&ev.newURL)h=new URL(ev.newURL).hash;}catch(e){}const m=/^#lead=(\d+)$/.exec(h);if(!m){if(ev)leadAlertEntry=false;return;}if(ev)leadAlertEntry=true;if(!currentUser)return;const pushed=leadAlertEntry;leadAlertEntry=false;const id=+m[1];try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}if(!isDemoMode){const rows=await sb('pipeline','select=*&id=eq.'+id);if(rows&&rows[0]){const i=allLeads.findIndex(l=>l.id===id);if(i>-1)allLeads[i]=rows[0];else allLeads.unshift(rows[0]);}}const found=allLeads.some(l=>l.id===id);if(pushed&&typeof BBF!=='undefined'&&BBF.adoptEntry)BBF.adoptEntry(found);if(found)openDetail(id);else toast('That lead is not in your list','error');}
 window.addEventListener('hashchange',openLeadFromHash);
 async function loadAllData(){if(isDemoMode){const demo=generateDemoData();allLeads=demo.leads;allActivities=demo.activities;allFollowUps=demo.followUps;todayActCount=2;updateFUBadge();return;}const readFailsBefore=sbReadFails;const[leads,acts,fus]=await Promise.all([sb('pipeline','select=*&order=created_at.desc'),sb('lead_activities','select=*&order=created_at.desc'),sb('lead_follow_ups','select=*&order=due_date.asc,due_time.asc')]);allLeads=leads||[];allActivities=acts||[];allFollowUps=fus||[];
 /* Normalize stages: other BB systems (e.g. Command Centre) share this table and may
@@ -2711,6 +2715,9 @@ var BBF=(function(){
     error and nothing to grep for. */
  var KEEP='#sidebar';
  var lockedY=0, locked=false, lastFocus=null, histDepth=0, closing=false;
+ /* LEADS F1, 7 Oct 2026: true between adoptEntry() and the sheet it was called for opening; that
+    sheet takes the current history entry instead of pushing a second one. */
+ var adopted=false;
  try{if('scrollRestoration' in history)history.scrollRestoration='manual';}catch(e){}
 
  /* AN OVERLAY IS OPEN WHEN IT IS VISIBLE, never when it carries a class. All
@@ -2777,6 +2784,12 @@ var BBF=(function(){
   if(btn){btn.click();return true;}
   ov.classList.remove('open');return true;}
  window.addEventListener('popstate',function(){
+  /* LEADS F1, 7 Oct 2026: a fragment navigation to #lead=<id> (an alert tapped while the app is
+     open) fires popstate just before hashchange. It is an arrival, not a Back press: counting it
+     closed the open sheet and spent its history step, so the next Back landed on a dead entry.
+     openLeadFromHash accounts for that entry through adoptEntry. Leads clears #lead= entries the
+     moment it is signed in, so a real Back never lands on one while a sheet is open. */
+  if(/^#lead=\d+$/.test(location.hash))return;
   if(closing)return;                 /* this pop is the one our own close asked for */
   if(histDepth>0){histDepth--;closeTop();}});
  window.addEventListener('keydown',function(e){
@@ -2792,7 +2805,7 @@ var BBF=(function(){
  function syncBody(){
   var ov=anyOpen();
   if(ov&&!locked){lock();shield(ov);takeFocus(ov);
-   histDepth++;try{history.pushState({bbSheet:1},'');}catch(e){}}
+   histDepth++;if(adopted)adopted=false;else{try{history.pushState({bbSheet:1},'');}catch(e){}}}
   else if(!ov&&locked){release();giveBackFocus();
    /* Unlock synchronously, always. Deferring it behind a timer left the body
       pinned for whatever ran next. That could then not scroll at all. */
@@ -2800,6 +2813,18 @@ var BBF=(function(){
    if(histDepth>0){histDepth--;closing=true;
     try{history.back();}catch(e){}
     setTimeout(function(){closing=false;},0);}}}
+
+ /* LEADS F1, 7 Oct 2026. A phone alert tapped while the app is open arrives as a fragment
+    navigation to #lead=<id>, and that navigation has ALREADY pushed one history entry. The sheet
+    then pushed a second, so Back once closed the sheet and Back twice landed on the leftover
+    entry and did nothing. The caller hands that entry over here instead: a sheet about to open
+    (opening true) adopts it, an open sheet counts it as one more step so its close steps back over
+    it too; when nothing will open it is stepped back over at once. Call it only for an entry
+    a fragment navigation pushed, never for a cold load, which pushed nothing. */
+ function adoptEntry(opening){
+  if(!locked&&!opening){try{history.back();}catch(e){}return;}
+  try{history.replaceState({bbSheet:1},'');}catch(e){}
+  if(locked)histDepth++;else adopted=true;}
 
  /* ONE observer, never N edited open functions. The body observer's job is
     spotting NEW overlays, so it only schedules when it actually saw one. */
@@ -2834,7 +2859,7 @@ var BBF=(function(){
 
  /* The check asks the module for its selector. A hand written selector inside a
     check is a selector that can be pointed at nothing and pass on silence. */
- return {start:start,hintKeyboards:hintKeyboards,anyOpen:anyOpen,sync:sync,
+ return {start:start,hintKeyboards:hintKeyboards,anyOpen:anyOpen,sync:sync,adoptEntry:adoptEntry,
          ovs:OVS,
          overlaySelector:function(){return OVS;},
          keepSelector:function(){return KEEP;},
