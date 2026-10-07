@@ -1406,11 +1406,19 @@ async function showApp(){document.getElementById('loginScreen').style.display='n
 /* Decision 104, 7 Oct 2026: a phone alert from bb_leads_* opens the app at #lead=<id>. The row is read
    fresh (the alert may be newer than this page), the hash is cleared so a second alert for the same lead
    still fires hashchange. A lead outside this person's list says so instead of opening nothing. */
-/* LEADS F1, 7 Oct 2026: true while the current history entry was pushed by a #lead= fragment navigation (an alert
-   tapped while the app was open). It survives the sign-in screen and is handed to the sheet guard (BBF.adoptEntry)
-   when the lead opens, so Back once closes the sheet and Back twice leaves. A cold load pushed nothing and never sets it. */
-let leadAlertEntry=false;
-async function openLeadFromHash(ev){/* the event's own newURL, because a sheet closing calls history.back() a tick later and can change location.hash first */let h=location.hash||'';try{if(ev&&ev.newURL)h=new URL(ev.newURL).hash;}catch(e){}const m=/^#lead=(\d+)$/.exec(h);if(!m){if(ev)leadAlertEntry=false;return;}if(ev)leadAlertEntry=true;if(!currentUser)return;const pushed=leadAlertEntry;leadAlertEntry=false;const id=+m[1];try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}if(!isDemoMode){const rows=await sb('pipeline','select=*&id=eq.'+id);if(rows&&rows[0]){const i=allLeads.findIndex(l=>l.id===id);if(i>-1)allLeads[i]=rows[0];else allLeads.unshift(rows[0]);}}const found=allLeads.some(l=>l.id===id);/* LEADS F1 review, 7 Oct 2026: a form, the command palette or the phone drawer left open sat ON TOP of the lead the alert opened. Close it through its own close control first, synchronously, before adoptEntry counts the steps. A lead outside the list leaves it open. */if(found&&typeof BBF!=='undefined'&&BBF.closeAllBut)BBF.closeAllBut(document.getElementById('detailOverlay'));if(pushed&&typeof BBF!=='undefined'&&BBF.adoptEntry)BBF.adoptEntry(found);if(found)openDetail(id);else toast('That lead is not in your list','error');}
+/* LEADS F1, 7 Oct 2026: a #lead= fragment navigation (an alert tapped while the app is open) pushed one history
+   entry. It is handed to the sheet guard (BBF.adoptEntry) when the lead opens, so Back once closes the sheet and
+   Back twice leaves. A cold load pushed nothing.
+   LEADS F1 review round 2, 7 Oct 2026: the fragment is stripped THE MOMENT IT ARRIVES (signed in or not) and at
+   boot for a cold load. The lead waits in pendingLead ({id, pushed}) and showApp's openLeadFromHash() reads it.
+   Before, the sign-in screen kept #lead= in the URL. The guard's pushState copied it onto the Privacy sheet's entry,
+   so a real Back or Escape landed on #lead= and was swallowed as an arrival; the X then left the app and the alert's
+   lead was lost. Signed out, nothing opens yet: the arrival's entry is stepped back over at once (or counted into the
+   open sheet), so the lead opens after sign-in with its own entry. No history entry keeps #lead= past its arrival. */
+let pendingLead=null;
+function takeLeadHash(h,pushed){const m=/^#lead=(\d+)$/.exec(h||'');if(!m)return false;if(/^#lead=/.test(location.hash))try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}pendingLead={id:+m[1],pushed:pushed};return true;}
+takeLeadHash(location.hash,false);
+async function openLeadFromHash(ev){if(ev){/* the event's own newURL, because a sheet closing calls history.back() a tick later and can change location.hash first */let h=location.hash||'';try{if(ev.newURL)h=new URL(ev.newURL).hash;}catch(e){}/* LEADS F1 review round 2, 7 Oct 2026: the arrival's entry is only ours to adopt or step over while it is still the current one. When a sheet's close history.back() lands in the same tick it has already moved off it; adopting then marked the entry BELOW as the sheet's, so the sheet's X left the app (probe-leads-104). */const here=location.hash===h;if(!takeLeadHash(h,!!currentUser&&here))return;if(!currentUser){if(here&&typeof BBF!=='undefined'&&BBF.adoptEntry)BBF.adoptEntry(false);return;}}if(!currentUser||!pendingLead)return;const id=pendingLead.id,pushed=pendingLead.pushed;pendingLead=null;if(!isDemoMode){const rows=await sb('pipeline','select=*&id=eq.'+id);if(rows&&rows[0]){const i=allLeads.findIndex(l=>l.id===id);if(i>-1)allLeads[i]=rows[0];else allLeads.unshift(rows[0]);}}const found=allLeads.some(l=>l.id===id);/* LEADS F1 review, 7 Oct 2026: a form, the command palette or the phone drawer left open sat ON TOP of the lead the alert opened. Close it through its own close control first, synchronously, before adoptEntry counts the steps. A lead outside the list leaves it open. */if(found&&typeof BBF!=='undefined'&&BBF.closeAllBut)BBF.closeAllBut(document.getElementById('detailOverlay'));if(pushed&&typeof BBF!=='undefined'&&BBF.adoptEntry)BBF.adoptEntry(found);if(found)openDetail(id);else toast('That lead is not in your list','error');}
 window.addEventListener('hashchange',openLeadFromHash);
 async function loadAllData(){if(isDemoMode){const demo=generateDemoData();allLeads=demo.leads;allActivities=demo.activities;allFollowUps=demo.followUps;todayActCount=2;updateFUBadge();return;}const readFailsBefore=sbReadFails;const[leads,acts,fus]=await Promise.all([sb('pipeline','select=*&order=created_at.desc'),sb('lead_activities','select=*&order=created_at.desc'),sb('lead_follow_ups','select=*&order=due_date.asc,due_time.asc')]);allLeads=leads||[];allActivities=acts||[];allFollowUps=fus||[];
 /* Normalize stages: other BB systems (e.g. Command Centre) share this table and may
@@ -2804,13 +2812,17 @@ var BBF=(function(){
     next sync still finds an overlay and the steps already counted pass to it. */
  function closeAllBut(keep){var n=document.querySelectorAll(OVS),i;
   for(i=0;i<n.length;i++)if(n[i]!==keep&&isOpen(n[i]))closeOv(n[i]);}
- window.addEventListener('popstate',function(){
+ window.addEventListener('popstate',function(e){
   /* LEADS F1, 7 Oct 2026: a fragment navigation to #lead=<id> (an alert tapped while the app is
      open) fires popstate just before hashchange. It is an arrival, not a Back press: counting it
      closed the open sheet and spent its history step, so the next Back landed on a dead entry.
-     openLeadFromHash accounts for that entry through adoptEntry. Leads clears #lead= entries the
-     moment it is signed in, so a real Back never lands on one while a sheet is open. */
-  if(/^#lead=\d+$/.test(location.hash))return;
+     openLeadFromHash accounts for that entry through adoptEntry.
+     LEADS F1 review round 2, 7 Oct 2026: two tests, not the hash alone. Leads strips #lead= the
+     moment it arrives (signed in or not) and at boot for a cold load, so no entry keeps it for a
+     Back to land on. An arrival's entry is also brand new, so its state is null; every entry this
+     guard pushed or adopted carries {bbSheet:1}. Before, the sign-in screen kept #lead= and a real
+     Back or Escape over Privacy landed on it and was swallowed here. */
+  if(/^#lead=\d+$/.test(location.hash)&&!(e&&e.state))return;
   if(closing)return;                 /* this pop is the one our own close asked for */
   if(histDepth>0){histDepth--;closeTop();}});
  window.addEventListener('keydown',function(e){
