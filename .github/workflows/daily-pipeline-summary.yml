@@ -1,7 +1,8 @@
 name: Daily Pipeline Summary Agent
 on:
-  schedule:
-    - cron: '30 3 * * 1-5'  # 9:00 AM IST weekdays
+  # Decision 104, 7 Oct 2026: manual only. Replaced by the database function public.bb_leads_daily_summary(p_dry)
+  # on pg_cron job bb-leads-summary-0830, 08:30 Colombo weekdays, which pushes each lead's alert to its owner's phone.
+  # SQL and undo: ~/bb-systems/leads-agents/
   workflow_dispatch:
 
 jobs:

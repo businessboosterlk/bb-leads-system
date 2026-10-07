@@ -1,7 +1,8 @@
 name: Stale Lead Alert Agent
 on:
-  schedule:
-    - cron: '0 3 * * *'  # 8:30 AM IST daily
+  # Decision 104, 7 Oct 2026: manual only. Replaced by the database function public.bb_leads_stale(p_dry)
+  # on pg_cron job bb-leads-stale-0800, 08:00 Colombo weekdays, which pushes each lead's alert to its owner's phone.
+  # SQL and undo: ~/bb-systems/leads-agents/
   workflow_dispatch:
 
 jobs:
