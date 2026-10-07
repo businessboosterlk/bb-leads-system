@@ -2651,6 +2651,16 @@ button,label,.sb-link,.btn,.modal-close,.tab,.stage-head,[role="button"]{
    sidebar already pads the safe area, so 68px keeps Sign Out 12px clear of the pill on
    desk and in the phone drawer. The canon block itself stays untouched for parity.sh. */
 .sb-footer{padding-bottom:68px}
+/* Decision 104 second repair, 7 Oct 2026: the pill also sat on Cancel in the phone
+   sheets (Add Lead, Log Activity, Schedule follow-up) and a missed tap there asks
+   for alert permission, which iPhone never asks twice once refused. Hide the pill
+   while any sheet is open and lift the phone toast clear of it (pill 44px plus
+   12px below plus 12px gap). Outside the push block so parity.sh stays PASS.
+   The hidden toast is only faded and moved down 80px, so once lifted it would sit
+   over the sheet buttons on a notched phone and swallow taps: hidden means no taps. */
+body:has(.modal-overlay.open) #bbpush-pill{display:none!important}
+@media(max-width:768px){.toast{bottom:calc(68px + var(--sab))}}
+.toast:not(.show){pointer-events:none}
 
 /* 5 · vh is measured against the TALLEST the viewport ever gets, so a sheet at
       90vh pushes its own close button off the bottom the moment the address
