@@ -1481,7 +1481,9 @@ function pickLeadForActivity(){closeCmd();const leads=activeLeads().sort((a,b)=>
 
 /* ===== HELPERS ===== */
 function daysSince(d){return Math.floor((Date.now()-new Date(d).getTime())/(864e5));}
-function daysSinceContact(l){if(l.last_contact_at)return daysSince(l.last_contact_at);const a=allActivities.find(x=>x.pipeline_id===l.id);return a?daysSince(a.created_at):daysSince(l.created_at);}
+/* Fresh start (Thulaib 8 Nov 2026): silent days count from Mon 9 Nov, the start of Bounce Back selling. Display only, the call history is unchanged. */
+const SILENT_FROM=Date.parse('2026-11-09T00:00:00+05:30');
+function daysSinceContact(l){let t;if(l.last_contact_at)t=l.last_contact_at;else{const a=allActivities.find(x=>x.pipeline_id===l.id);t=a?a.created_at:l.created_at;}return Math.max(0,daysSince(Math.max(new Date(t).getTime()||0,SILENT_FROM)));}
 function stageInfo(k){return ALL_STAGES.find(s=>s.key===k)||ALL_STAGES[0];}
 function stageBadge(k){const s=stageInfo(k);return `<span class="badge badge-${s.dot}">${s.label}</span>`;}
 function sourceBadge(s){return `<span class="badge badge-grey">${SOURCES[s]||s||'?'}</span>`;}
