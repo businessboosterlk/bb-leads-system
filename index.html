@@ -1054,9 +1054,15 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 
 <!-- FOLLOW-UP MODAL -->
 <div class="modal-overlay" id="followUpModal"><div class="modal" style="width:420px">
-<div class="modal-head"><h3>Schedule Follow-Up</h3><button class="modal-close" onclick="closeModal('followUpModal')">✕</button></div>
-<div class="modal-body"><div class="form-row" id="fuLeadInfo"></div><div class="form-row2"><div class="form-row"><label>Date *</label><input type="date" id="fu_date"></div><div class="form-row"><label>Time</label><input type="time" id="fu_time"></div></div><div class="form-row"><label>Priority</label><select id="fu_priority"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select></div><div class="form-row"><label>What to do</label><textarea id="fu_note" rows="2"></textarea></div></div>
-<div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('followUpModal')">Cancel</button><button class="btn btn-primary" onclick="saveFollowUp()">Schedule</button></div>
+<div class="modal-head"><h3 id="fuTitle">Schedule Follow-Up</h3><button class="modal-close" onclick="closeModal('followUpModal')" aria-label="Close">✕</button></div>
+<div class="modal-body"><div class="form-row" id="fuLeadInfo"></div>
+<div class="form-row"><label>When</label><div class="fu-chips" id="fuDateChips"><button type="button" class="fu-chip" data-k="today" onclick="fuPick('today')">Today</button><button type="button" class="fu-chip" data-k="tomorrow" onclick="fuPick('tomorrow')">Tomorrow</button><button type="button" class="fu-chip" data-k="3" onclick="fuPick('3')">In 3 days</button><button type="button" class="fu-chip" data-k="week" onclick="fuPick('week')">Next week</button></div></div>
+<div class="form-row2"><div class="form-row"><label for="fu_date">Date *</label><input type="date" id="fu_date" oninput="fuSync()"></div><div class="form-row"><label for="fu_time">Time</label><input type="time" id="fu_time" oninput="fuSync()"></div></div>
+<div class="fu-chips" id="fuTimeChips" style="margin:-4px 0 12px"><button type="button" class="fu-chip" data-t="10:00" onclick="fuTime('10:00')">10:00</button><button type="button" class="fu-chip" data-t="14:00" onclick="fuTime('14:00')">14:00</button><button type="button" class="fu-chip" data-t="16:00" onclick="fuTime('16:00')">16:00</button></div>
+<div class="fu-summary" id="fuSummary"></div>
+<div class="form-row"><label for="fu_note">What to do <span class="fu-opt">optional</span></label><textarea id="fu_note" rows="2" placeholder="e.g. Ask if the board has seen the proposal"></textarea></div>
+<div class="form-row"><label>Priority</label><div class="fu-chips" id="fuPrioChips"><button type="button" class="fu-chip" data-p="normal" onclick="fuPrio('normal')">Normal</button><button type="button" class="fu-chip" data-p="high" onclick="fuPrio('high')">High</button><button type="button" class="fu-chip" data-p="urgent" onclick="fuPrio('urgent')">Urgent</button></div><select id="fu_priority" hidden aria-hidden="true"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select></div></div>
+<div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('followUpModal')">Cancel</button><button class="btn btn-primary" id="fuSave" onclick="saveFollowUp()">Schedule</button></div>
 </div></div>
 
 <!-- MEETING BOOKED (6 Nov 2026, decision 1451): the day, the time and where, then the WhatsApp confirmation -->
@@ -1736,19 +1742,36 @@ function setMonthTarget(){const cur=parseInt(localStorage.getItem('bb_month_targ
 async function completeFU(id){if(demoGuard())return;const res=await sbPatch('lead_follow_ups',id,{is_done:true,completed_at:new Date().toISOString()});if(!res){/* the helper already reported the real reason */0;return;}const i=allFollowUps.findIndex(f=>f.id===id);if(i>=0)allFollowUps[i].is_done=true;toast('Follow-up done ✓');updateFUBadge();const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);}
 
 /* ===== PIPELINE BOARD ===== */
+/* 23 Nov 2026 rebuild. Three things changed together because they share one render:
+   1. Select mode: tick tiles (or a whole column, or the whole board) and move them to a stage in one go.
+   2. Board and List are one switch over the same filtered leads (BB law: stages are a board AND a list).
+   3. The drag glitch. The old native drag re-drew the whole page on every drop, so the board snapped back to the
+      left edge, and the column highlight flickered 33 times while crossing one column. Drag is now a pointer drag
+      (mouse and touch), the page is never rewritten while a tile is held, and a re-draw keeps every scroll position. */
+let pipeSelectOn=false,pipeView='board',pipeSel=new Set(),pipeFilter={q:'',owner:'',source:''},pipeSuppressUntil=0;
+try{const v=localStorage.getItem('bb_pipe_view');if(v==='list'||v==='board')pipeView=v;}catch(e){}
+function pipeLeads(){const q=(pipeFilter.q||'').trim().toLowerCase();return visibleLeads().filter(l=>{if(q&&!(l.name||'').toLowerCase().includes(q)&&!(l.contact_name||'').toLowerCase().includes(q)&&!(l.industry||'').toLowerCase().includes(q))return false;if(pipeFilter.owner&&(l.owner||'').toLowerCase()!==pipeFilter.owner.toLowerCase())return false;if(pipeFilter.source&&l.source!==pipeFilter.source)return false;return true;});}
+function pipeScrollKeep(){const main=document.querySelector('.main');const b=document.querySelector('.pipeline-board');const cols={};document.querySelectorAll('.pipe-col-body[data-stage]').forEach(el=>{cols[el.dataset.stage]=el.scrollTop;});return{main:main?main.scrollTop:0,left:b?b.scrollLeft:0,cols};}
+function pipeScrollBack(k){const main=document.querySelector('.main');const b=document.querySelector('.pipeline-board');const prevM=main?main.style.scrollBehavior:'';if(main)main.style.scrollBehavior='auto';if(b){b.style.scrollSnapType='none';b.scrollLeft=k.left;}document.querySelectorAll('.pipe-col-body[data-stage]').forEach(el=>{if(k.cols[el.dataset.stage])el.scrollTop=k.cols[el.dataset.stage];});if(main)main.scrollTop=k.main;requestAnimationFrame(()=>{if(main)main.style.scrollBehavior=prevM;if(b)b.style.scrollSnapType='';});}
 function renderPipeline(){
 const pg=document.getElementById('page-pipeline');
-const allStgs=[...STAGES,...CLOSED_STAGES];
-const scoped=visibleLeads();
+const keep=pg.querySelector('#pipeBody')?pipeScrollKeep():null;
+const srcOpts=Object.entries(SOURCES).map(([k,v])=>`<option value="${k}"${pipeFilter.source===k?' selected':''}>${v}</option>`).join('');
+const owners=[['th','Thulaib'],['sh','Shiara'],['pv','Pavith'],['nv','Nirvana']];
 pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="page-label">Sales</div><h1>${isMaster()?'Pipeline Board':'My Pipeline'}</h1></div><div style="display:flex;gap:8px"><button class="btn btn-secondary" onclick="openCSVImport()">${icon('import',14)} Import</button><button class="btn btn-primary" onclick="openAddLead()">+ Add Lead</button></div></div>
-<div class="pipeline-board">${allStgs.map(stg=>{
-const leads=scoped.filter(l=>l.stage===stg.key).sort((a,b)=>calcScore(b)-calcScore(a));
-const isClosed=['closed_won','closed_lost','on_hold'].includes(stg.key);
-return `<div class="pipe-col" ${isClosed?'style="opacity:.7"':''}>
-<div class="pipe-col-head"><div class="pipe-col-title"><span class="dot" style="background:${stg.color}"></span>${stg.label} <span style="font-size:10px;font-weight:500;color:var(--text-3);margin-left:2px">${WIN_PROB[stg.key]||0}%</span></div><span class="pipe-col-count">${leads.length}${leads.reduce((s,l)=>s+(l.estimated_value||0),0)?` · ${fmtValue(Math.round(leads.reduce((s,l)=>s+(l.estimated_value||0)*(WIN_PROB[stg.key]||0)/100,0)))}`:''}  </span></div>
-<div class="pipe-col-body" data-stage="${stg.key}" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropCard(event,'${stg.key}')">
-${leads.map(l=>{const sc=calcScore(l);const dsc=daysSinceContact(l);const stale=!isClosed&&dsc>=5;const fu=allFollowUps.find(f=>f.pipeline_id===l.id&&!f.is_done);
-return `<div class="pipe-card" draggable="true" ondragstart="dragCard(event,${l.id})" onclick="openDetail(${l.id})">
+<div class="leads-toolbar pipe-toolbar"><div class="search-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search leads..." id="pipeSearch" value="${esc(pipeFilter.q)}" oninput="pipeFilter.q=this.value;renderPipeBody()"></div>
+${isMaster()?`<select id="pipeOwner" aria-label="Owner" onchange="pipeFilter.owner=this.value;renderPipeBody()"><option value="">All Owners</option>${owners.map(o=>`<option value="${o[0]}"${pipeFilter.owner===o[0]?' selected':''}>${o[1]}</option>`).join('')}</select>`:''}
+<select id="pipeSource" aria-label="Source" onchange="pipeFilter.source=this.value;renderPipeBody()"><option value="">All Sources</option>${srcOpts}</select>
+<div class="pipe-seg" role="group" aria-label="View"><button id="pipeSegBoard" class="${pipeView==='board'?'on':''}" onclick="pipeSetView('board')">Board</button><button id="pipeSegList" class="${pipeView==='list'?'on':''}" onclick="pipeSetView('list')">List</button></div>
+<button id="pipeSelectBtn" class="btn btn-secondary pipe-selbtn${pipeSelectOn?' on':''}" aria-pressed="${pipeSelectOn}" onclick="pipeToggleSelect()">${icon('check',14)} Select</button></div>
+<div id="pipeBody"></div><div class="bulkbar" id="pipeBulk" role="region" aria-label="Move selected leads"></div>`;
+renderPipeBody(keep);
+}
+function pipeSetView(v){if(pipeView===v)return;pipeView=v;try{localStorage.setItem('bb_pipe_view',v);}catch(e){}document.getElementById('pipeSegBoard')?.classList.toggle('on',v==='board');document.getElementById('pipeSegList')?.classList.toggle('on',v==='list');renderPipeBody();}
+function pipeToggleSelect(force){pipeSelectOn=typeof force==='boolean'?force:!pipeSelectOn;if(!pipeSelectOn)pipeSel.clear();const b=document.getElementById('pipeSelectBtn');if(b){b.classList.toggle('on',pipeSelectOn);b.setAttribute('aria-pressed',String(pipeSelectOn));}renderPipeBody();}
+function pipeCardHtml(l,isClosed){const sc=calcScore(l);const dsc=daysSinceContact(l);const stale=!isClosed&&dsc>=5;const fu=allFollowUps.find(f=>f.pipeline_id===l.id&&!f.is_done);const sel=pipeSel.has(l.id);
+return `<div class="pipe-card${sel?' selected':''}" data-id="${l.id}" role="button" tabindex="0" onclick="pipeCardClick(event,${l.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();pipeCardClick(event,${l.id});}">
+${pipeSelectOn?`<span class="pc-check${sel?' on':''}" role="checkbox" aria-checked="${sel}" aria-label="Select ${esc(l.name)}">${sel?icon('check',12):''}</span>`:''}
 ${l.is_hot?'<div class="pc-hot"></div>':''}
 <div class="pc-score ${scoreClass(sc)}">${sc}</div>
 <div class="pc-name">${esc(l.name)}</div>
@@ -1757,17 +1780,93 @@ ${l.is_hot?'<div class="pc-hot"></div>':''}
 ${stale?`<div class="pc-warn badge badge-${dsc>=10?'red':'amber'}">⚠ ${dsc}d silent</div>`:''}
 ${fu?`<div style="font-size:10px;color:var(--amber);margin-top:4px">${icon('clock',14)} ${fu.due_date<=today()?'Due TODAY':fu.due_date}</div>`:''}
 ${(l.tags||[]).length?`<div class="lead-tags">${l.tags.slice(0,3).map(t=>`<span class="lead-tag">${esc(t)}</span>`).join('')}</div>`:''}
-</div>`;}).join('')}
+</div>`;}
+function renderPipeBody(keep){
+const host=document.getElementById('pipeBody');if(!host)return;
+if(!keep&&host.firstChild)keep=pipeScrollKeep();
+const scoped=pipeLeads();const ids=new Set(allLeads.map(l=>l.id));[...pipeSel].forEach(i=>{if(!ids.has(i))pipeSel.delete(i);});
+const allStgs=[...STAGES,...CLOSED_STAGES];
+host.className=pipeSelectOn?'pipe-selecting':'';
+if(pipeView==='list'){
+const rows=scoped.slice().sort((a,b)=>allStgs.findIndex(s=>s.key===a.stage)-allStgs.findIndex(s=>s.key===b.stage)||calcScore(b)-calcScore(a));
+const allOn=rows.length&&rows.every(l=>pipeSel.has(l.id));
+host.innerHTML=rows.length?`<div class="section"><div class="section-body" style="overflow-x:auto"><table class="leads-table pipe-list"><thead><tr>${pipeSelectOn?`<th style="width:44px"><span class="pc-check${allOn?' on':''}" role="checkbox" aria-checked="${!!allOn}" aria-label="Select all leads" onclick="pipeSelectAll()">${allOn?icon('check',12):''}</span></th>`:''}<th>Lead</th><th>Stage</th><th>Value</th><th>Score</th><th>Owner</th><th>Days</th></tr></thead><tbody>${rows.map(l=>{const sc=calcScore(l);const dsc=daysSinceContact(l);const sel=pipeSel.has(l.id);return `<tr class="${sel?'selected':''}" data-id="${l.id}" onclick="pipeCardClick(event,${l.id})">${pipeSelectOn?`<td><span class="pc-check${sel?' on':''}" role="checkbox" aria-checked="${sel}" aria-label="Select ${esc(l.name)}">${sel?icon('check',12):''}</span></td>`:''}<td><div class="td-name">${l.is_hot?icon('fire',14)+' ':''}${esc(l.name)}</div><div class="td-phone">${esc(l.contact_name||'')}</div></td><td>${stageBadge(l.stage)}</td><td style="font-family:Poppins;font-weight:600;font-size:12px">${fmtValue(l.estimated_value)}</td><td><span class="badge ${scoreClass(sc)}">${sc}</span></td><td>${ownerAvatar(l.owner)}</td><td style="color:${dsc>=10?'var(--red)':dsc>=5?'var(--amber)':'var(--text-3)'};font-weight:${dsc>=5?'600':'400'}">${dsc}d</td></tr>`;}).join('')}</tbody></table></div></div>`:`<div class="section"><div class="section-empty">No leads match these filters</div></div>`;
+}else{
+host.innerHTML=`<div class="pipeline-board">${allStgs.map(stg=>{
+const leads=scoped.filter(l=>l.stage===stg.key).sort((a,b)=>calcScore(b)-calcScore(a));
+const isClosed=['closed_won','closed_lost','on_hold'].includes(stg.key);
+const colOn=leads.length&&leads.every(l=>pipeSel.has(l.id));
+return `<div class="pipe-col" data-stage="${stg.key}" ${isClosed?'style="opacity:.7"':''}>
+<div class="pipe-col-head"><div class="pipe-col-title"><span class="dot" style="background:${stg.color}"></span>${stg.label} <span style="font-size:10px;font-weight:500;color:var(--text-3);margin-left:2px">${WIN_PROB[stg.key]||0}%</span></div><span class="pipe-col-count">${leads.length}${leads.reduce((s,l)=>s+(l.estimated_value||0),0)?` · ${fmtValue(Math.round(leads.reduce((s,l)=>s+(l.estimated_value||0)*(WIN_PROB[stg.key]||0)/100,0)))}`:''}  </span></div>
+${pipeSelectOn&&leads.length?`<button class="pipe-colsel${colOn?' on':''}" onclick="pipeSelectAll('${stg.key}')">${colOn?'Clear column':'Select all '+leads.length}</button>`:''}
+<div class="pipe-col-body" data-stage="${stg.key}">
+${leads.map(l=>pipeCardHtml(l,isClosed)).join('')}
 ${!leads.length?'<div class="section-empty" style="padding:20px;font-size:11px">Empty</div>':''}
 </div></div>`;}).join('')}</div>`;
 }
-let draggedId=null;
-function dragCard(e,id){draggedId=id;e.target.classList.add('dragging');e.target.addEventListener('dragend',()=>{e.target.classList.remove('dragging');draggedId=null;},{once:true});}
-const AUTO_FU_DAYS={contacted:1,discovery:2,proposal_sent:2,negotiation:1};
-async function dropCard(e,stage){e.preventDefault();e.currentTarget.classList.remove('drag-over');if(demoGuard())return;if(!draggedId)return;const did=draggedId;draggedId=null;if(stage==='closed_won'){openConvert(did);return;}if(stage==='closed_lost'){openMarkLost(did);return;}const l=allLeads.find(x=>x.id===did);const oldStage=l?.stage;const res=await sbPatch('pipeline',did,{stage,stage_changed_at:new Date().toISOString()});if(!res){/* LEADS-3, 6 Oct 2026: a generic toast here painted over the reason sbPatch had just shown */return;}if(l){l.stage=stage;l.stage_changed_at=new Date().toISOString();}
+if(keep)pipeScrollBack(keep);
+pipeBulkSync();
+}
+function pipeCardClick(e,id){if(Date.now()<pipeSuppressUntil){e.preventDefault();return;}if(pipeSelectOn){pipeToggle(id);return;}openDetail(id);}
+function pipeToggle(id){if(pipeSel.has(id))pipeSel.delete(id);else pipeSel.add(id);renderPipeBody();}
+/* Select all: with a stage it takes that column (or clears it when it is all ticked), with none it takes every lead the filters show. */
+function pipeSelectAll(stage){const vis=pipeLeads().filter(l=>!stage||l.stage===stage);const all=vis.length&&vis.every(l=>pipeSel.has(l.id));vis.forEach(l=>{if(all)pipeSel.delete(l.id);else pipeSel.add(l.id);});renderPipeBody();}
+function pipeBulkSync(){const bar=document.getElementById('pipeBulk');if(!bar)return;const n=pipeSel.size;const vis=pipeLeads();const allOn=vis.length&&vis.every(l=>pipeSel.has(l.id));
+if(!pipeSelectOn){bar.classList.remove('show');bar.innerHTML='';return;}
+const prev=document.getElementById('pipeMoveTo')?.value||'';
+const opts=[...STAGES,...CLOSED_STAGES].filter(s=>!['closed_won','closed_lost'].includes(s.key));
+bar.innerHTML=`<div class="bb-row"><div class="bb-count"><b>${n}</b> selected</div><button class="btn btn-sm btn-secondary bb-all" onclick="pipeSelectAll()">${allOn?'Clear all':'Select all '+vis.length}</button><button class="btn btn-sm btn-secondary bb-done" onclick="pipeToggleSelect(false)">Done</button></div><div class="bb-row"><select id="pipeMoveTo" aria-label="Move to stage" onchange="pipeBulkSync()"><option value="">Move to stage...</option>${opts.map(s=>`<option value="${s.key}"${prev===s.key?' selected':''}>${s.label}</option>`).join('')}</select><button class="btn btn-sm btn-primary" id="pipeMoveGo" ${n&&prev?'':'disabled'} onclick="pipeBulkMove()">Move${n?' '+n:''}</button></div>`;
+bar.classList.add('show');}
+/* One stage change, shared by the drag, the list and the bulk bar. Returns {ok,fu}. Closed Won and Closed Lost need the
+   convert and lost sheets, which take one lead at a time, so they are never moved from here. */
+async function moveLeadStage(did,stage,quiet){if(stage==='closed_won'){openConvert(did);return{ok:false,fu:false};}if(stage==='closed_lost'){openMarkLost(did);return{ok:false,fu:false};}
+const l=allLeads.find(x=>x.id===did);if(!l)return{ok:false,fu:false};const oldStage=l.stage;if(oldStage===stage)return{ok:false,fu:false};
+const nowIso=new Date().toISOString();const res=await sbPatch('pipeline',did,{stage,stage_changed_at:nowIso});if(!res){/* LEADS-3, 6 Oct 2026: a generic toast here painted over the reason sbPatch had just shown */return{ok:false,fu:false};}
+l.stage=stage;l.stage_changed_at=nowIso;
 /* 7 Oct 2026: a drag added a follow-up even when the lead already had one, so 8 of 20 open follow-ups were duplicates. */const hasOpenFU=allFollowUps.some(f=>f.pipeline_id===did&&!f.is_done);
-if(AUTO_FU_DAYS[stage]&&oldStage!==stage&&!hasOpenFU){const fuDate=new Date();fuDate.setDate(fuDate.getDate()+AUTO_FU_DAYS[stage]);const fuData={pipeline_id:did,due_date:localDateStr(fuDate),due_time:'10:00',note:`Follow up after moving to ${stageInfo(stage).label}`,created_by:currentUser?.name?.toUpperCase()};const fr=await sbPost('lead_follow_ups',fuData);if(fr&&fr[0]){allFollowUps.push(fr[0]);updateFUBadge();}}
-auditLog('MOVE_STAGE',`Lead ID:${did} → ${stageInfo(stage).label}`);toast('Moved to '+stageInfo(stage).label+(AUTO_FU_DAYS[stage]&&!hasOpenFU?' · Follow-up scheduled':''));renderPipeline();}
+let fu=false;
+if(AUTO_FU_DAYS[stage]&&oldStage!==stage&&!hasOpenFU){const fuDate=new Date();fuDate.setDate(fuDate.getDate()+AUTO_FU_DAYS[stage]);const fuData={pipeline_id:did,due_date:localDateStr(fuDate),due_time:'10:00',note:`Follow up after moving to ${stageInfo(stage).label}`,created_by:currentUser?.name?.toUpperCase()};const fr=await sbPost('lead_follow_ups',fuData);if(fr&&fr[0]){allFollowUps.push(fr[0]);fu=true;}}
+auditLog('MOVE_STAGE',`Lead ID:${did} → ${stageInfo(stage).label}`);
+if(!quiet){updateFUBadge();toast('Moved to '+stageInfo(stage).label+(fu?' · Follow-up scheduled':''));renderPipeBody();}
+return{ok:true,fu};}
+async function pipeBulkMove(){if(demoGuard())return;const stage=document.getElementById('pipeMoveTo')?.value;if(!stage||!pipeSel.size)return;const go=document.getElementById('pipeMoveGo');if(go)go.disabled=true;
+const ids=[...pipeSel];let moved=0,fus=0,skipped=0;
+for(const id of ids){const l=allLeads.find(x=>x.id===id);if(l&&l.stage===stage){skipped++;pipeSel.delete(id);continue;}const r=await moveLeadStage(id,stage,true);if(r.ok){moved++;if(r.fu)fus++;pipeSel.delete(id);}}
+updateFUBadge();
+toast((moved?`Moved ${moved} lead${moved===1?'':'s'} to ${stageInfo(stage).label}`+(fus?` · ${fus} follow-up${fus===1?'':'s'} scheduled`:''):'Nothing moved')+(skipped?` · ${skipped} already there`:'')+(ids.length-moved-skipped>0?` · ${ids.length-moved-skipped} failed, still selected`:''),moved?'success':'error');
+renderPipeBody();}
+/* ---- Pointer drag (mouse and touch) ---- */
+let draggedId=null;
+const AUTO_FU_DAYS={contacted:1,discovery:2,proposal_sent:2,negotiation:1};
+async function dropCard(stage,id){return moveLeadStage(id,stage);}
+(function pipeDragWire(){
+let st=null;
+const THRESH=6,HOLD=260,EDGE=64;
+function scroller(el){while(el&&el!==document.body){const cs=getComputedStyle(el);if(/(auto|scroll)/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+2)return el;el=el.parentElement;}return document.scrollingElement;}
+function colAt(x,y){const els=document.elementsFromPoint(x,y);for(const el of els){const c=el.closest&&el.closest('.pipe-col');if(c)return c;}return null;}
+function clearHover(){document.querySelectorAll('.pipe-col.drop-target').forEach(c=>c.classList.remove('drop-target'));}
+function begin(){if(!st||st.active)return;st.active=true;draggedId=st.id;const r=st.card.getBoundingClientRect();st.dx=st.x-r.left;st.dy=st.y-r.top;const g=st.card.cloneNode(true);g.classList.add('pipe-ghost');g.removeAttribute('onclick');g.style.width=r.width+'px';g.style.left='0';g.style.top='0';document.body.appendChild(g);st.ghost=g;st.card.classList.add('dragging');document.body.classList.add('pipe-dragging');st.board=document.querySelector('.pipeline-board');st.scr=scroller(st.board);place();loop();}
+function place(){if(!st||!st.ghost)return;st.ghost.style.transform=`translate(${st.x-st.dx}px,${st.y-st.dy}px) rotate(2deg)`;const c=colAt(st.x,st.y);const stage=c?c.dataset.stage:null;if(stage!==st.over){clearHover();st.over=stage;if(c&&stage!==st.from)c.classList.add('drop-target');}}
+function loop(){if(!st||!st.active)return;const b=st.board;if(b){const r=b.getBoundingClientRect();let vx=0;if(st.x<r.left+EDGE)vx=-Math.ceil((r.left+EDGE-st.x)/4);else if(st.x>r.right-EDGE)vx=Math.ceil((st.x-(r.right-EDGE))/4);if(vx){b.scrollLeft+=Math.max(-24,Math.min(24,vx));place();}}
+const s=st.scr;if(s){const r=s===document.scrollingElement?{top:0,bottom:innerHeight}:s.getBoundingClientRect();let vy=0;if(st.y<r.top+EDGE)vy=-Math.ceil((r.top+EDGE-st.y)/4);else if(st.y>r.bottom-EDGE)vy=Math.ceil((st.y-(r.bottom-EDGE))/4);if(vy){s.scrollTop+=Math.max(-24,Math.min(24,vy));place();}}
+st.raf=requestAnimationFrame(loop);}
+function end(commit){if(!st)return;const s=st;st=null;clearTimeout(s.timer);cancelAnimationFrame(s.raf);document.removeEventListener('pointermove',onMove,true);document.removeEventListener('pointerup',onUp,true);document.removeEventListener('pointercancel',onCancel,true);document.removeEventListener('keydown',onKey,true);
+if(!s.active)return;
+const target=commit?s.over:null;clearHover();if(s.ghost)s.ghost.remove();s.card.classList.remove('dragging');document.body.classList.remove('pipe-dragging');document.body.classList.add('pipe-nosnap');draggedId=null;pipeSuppressUntil=Date.now()+400;
+if(target&&target!==s.from&&!demoGuard())moveLeadStage(s.id,target);}
+function onMove(e){if(!st||e.pointerId!==st.pid)return;st.x=e.clientX;st.y=e.clientY;if(!st.active){const mv=Math.hypot(st.x-st.x0,st.y-st.y0);if(st.touch){if(mv>THRESH){clearTimeout(st.timer);end(false);}return;}if(mv>THRESH)begin();return;}e.preventDefault();place();}
+function onUp(e){if(!st||e.pointerId!==st.pid)return;st.x=e.clientX;st.y=e.clientY;if(st.active)place();end(true);}
+function onCancel(e){if(!st||e.pointerId!==st.pid)return;end(false);}
+function onKey(e){if(e.key==='Escape'&&st&&st.active){e.preventDefault();end(false);}}
+document.addEventListener('pointerdown',e=>{if(st)return;if(e.button>0||pipeSelectOn||pipeView!=='board')return;const card=e.target.closest&&e.target.closest('#pipeBody .pipe-card');if(!card)return;const col=card.closest('.pipe-col');
+st={id:+card.dataset.id,card,from:col?col.dataset.stage:null,x0:e.clientX,y0:e.clientY,x:e.clientX,y:e.clientY,pid:e.pointerId,touch:e.pointerType==='touch'||e.pointerType==='pen',active:false,over:null};
+document.addEventListener('pointermove',onMove,true);document.addEventListener('pointerup',onUp,true);document.addEventListener('pointercancel',onCancel,true);document.addEventListener('keydown',onKey,true);
+if(st.touch)st.timer=setTimeout(()=>{if(st&&!st.active)begin();},HOLD);},true);
+/* While a tile is held on a touch screen the finger must not scroll the page. Registered once, non passive, before any touch starts. */
+document.addEventListener('touchmove',e=>{if(st&&st.active&&e.cancelable)e.preventDefault();else if(!(st&&st.active))document.body.classList.remove('pipe-nosnap');},{passive:false});
+document.addEventListener('contextmenu',e=>{if(st&&st.active||(e.target.closest&&e.target.closest('#pipeBody .pipe-card')&&st&&st.touch))e.preventDefault();});
+window.__pipeDrag={get active(){return !!(st&&st.active);}};
+})();
 
 /* ===== ALL LEADS TABLE ===== */
 function renderLeads(){
@@ -1799,61 +1898,84 @@ document.getElementById('leadsBody').innerHTML=filtered.map(l=>{const sc=calcSco
 function toggleMoreMenu(e){e.stopPropagation();const m=document.getElementById('dpMoreMenu');if(m)m.classList.toggle('open');}
 function closeMoreMenu(){const m=document.getElementById('dpMoreMenu');if(m)m.classList.remove('open');}
 document.addEventListener('click',function(e){const m=document.getElementById('dpMoreMenu');if(m&&m.classList.contains('open')&&!e.target.closest('.dp-more-wrap'))m.classList.remove('open');});
+/* 23 Nov 2026 drawer redesign. Thulaib: "a lot, confusing, even putting in a follow-up is confusing". Same functions, new order:
+   header (who and how to reach them) > Next follow-up card (set it in one tap) > four tabs > one sticky action bar.
+   Nothing was removed: the game plan, packages link, score breakdown and tags moved into folds or the Details tab. */
+let dpTab='tab-prep';
+function fuWhen(f){const d=f.due_date;const t=today();const tm=new Date();tm.setDate(tm.getDate()+1);let w;if(d===t)w='Today';else if(d===localDateStr(tm))w='Tomorrow';else w=new Date(d+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});return w+(f.due_time?' at '+String(f.due_time).slice(0,5):'');}
+function nextUpCard(id,fus){const open=fus.filter(f=>!f.is_done).sort((a,b)=>(a.due_date+(a.due_time||'')).localeCompare(b.due_date+(b.due_time||'')));const f=open[0];
+if(f){const over=f.due_date<today();const late=over?Math.max(1,Math.round((new Date(today()+'T12:00:00')-new Date(f.due_date+'T12:00:00'))/864e5)):0;
+return `<div class="dp-next ${over?'late':f.due_date===today()?'due':''}"><div class="dn-main"><div class="dn-label">Next follow-up${open.length>1?` · ${open.length} open`:''}</div><div class="dn-when">${esc(fuWhen(f))}${over?` <span class="badge badge-red">${late}d overdue</span>`:f.due_date===today()?' <span class="badge badge-amber">Due today</span>':''}</div>${f.note?`<div class="dn-note">${esc(f.note)}</div>`:''}</div><div class="dn-btns"><button class="btn btn-sm btn-success" onclick="completeFU(${f.id}).then(()=>openDetail(${id}))">${icon('check',12)} Done</button><button class="btn btn-sm btn-secondary" onclick="openScheduleFU(${id},${f.id})">Reschedule</button></div></div>`;}
+return `<div class="dp-next none"><div class="dn-main"><div class="dn-label">Next follow-up</div><div class="dn-when">None set. When shall we chase?</div></div><div class="dn-chips" role="group" aria-label="Set a follow-up">${[['today','Today'],['tomorrow','Tomorrow'],['3','In 3 days'],['week','Next week']].map(c=>`<button class="fu-chip" onclick="quickFollowUp(${id},'${c[0]}')">${c[1]}</button>`).join('')}<button class="fu-chip more" onclick="openScheduleFU(${id})">Pick date...</button></div></div>`;}
+function fuChipDate(k){const d=new Date();if(k==='tomorrow')d.setDate(d.getDate()+1);else if(k==='3')d.setDate(d.getDate()+3);else if(k==='week')d.setDate(d.getDate()+7);return localDateStr(d);}
+async function quickFollowUp(id,k){if(demoGuard())return;const data={pipeline_id:id,due_date:fuChipDate(k),due_time:'10:00',priority:'normal',note:null,created_by:currentUser?.name?.toUpperCase()};const r=await sbPost('lead_follow_ups',data);if(r&&r[0]){allFollowUps.push(r[0]);updateFUBadge();toast('Follow-up set for '+fuWhen(r[0]));if(currentDetailId===id)openDetail(id);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg==='dashboard')renderDashboard();}}
+function dpFold(title,sub,body,open){return `<details class="dp-fold"${open?' open':''}><summary><span class="df-t">${title}</span>${sub?`<span class="df-s">${sub}</span>`:''}<span class="df-c" aria-hidden="true"></span></summary><div class="df-body">${body}</div></details>`;}
 async function openDetail(id){
+const ov=document.getElementById('detailOverlay');const same=currentDetailId===id&&ov.classList.contains('open');
 currentDetailId=id;const lead=allLeads.find(l=>l.id===id);if(!lead)return;
+if(!same)dpTab='tab-prep';
 const acts=allActivities.filter(a=>a.pipeline_id===id).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
 const fus=allFollowUps.filter(f=>f.pipeline_id===id).sort((a,b)=>new Date(b.due_date)-new Date(a.due_date));
 const sc=calcScore(lead);const si=stageInfo(lead.stage);const lastAct=acts[0];const dsc=daysSinceContact(lead);
-const panel=document.getElementById('detailPanel');
+const closed=['closed_won','closed_lost'].includes(lead.stage);
+const panel=document.getElementById('detailPanel');const keepTop=same?panel.scrollTop:0;
+const hasPhone=!!lead.contact_phone;if(dpTab==='tab-msg'&&!hasPhone)dpTab='tab-prep';
+const tabs=[['tab-prep','Call'],['tab-hist',`History${acts.length+fus.length?' ('+(acts.length+fus.length)+')':''}`],...(hasPhone?[['tab-msg','Messages']]:[]),['tab-intel','Details']];
+/* a pack that was opened in the last day is the one thing on the Packages fold that must show without a tap */
+let pkgOpen=false,pkgSub='';if(isMaster()){const rows=pkgRowsFor(lead);if(rows.length){pkgSub='<span class="badge badge-green">Opened</span>';pkgOpen=!!(pkgFresh(pkgMerge(rows))&&!closed);}}
 /* LEADS-4, 6 Oct 2026: a tag went into removeTag as a quoted JS string inside onclick, so an apostrophe broke it and a crafted tag could run script; it rides in data-tag now. tel: and mailto: carried the raw database value and are escaped. */
 panel.innerHTML=`
-<div class="dp-header"><button class="dp-close" onclick="closeDetail()">✕</button>
+<div class="dp-header"><button class="dp-close" onclick="closeDetail()" aria-label="Close">✕</button>
 <div class="dp-name">${lead.is_hot?icon('fire',14)+' ':''}${esc(lead.name)}</div>
 <div class="dp-company">${esc(lead.contact_name||'')}${lead.industry?' · '+esc(lead.industry):''}${lead.decision_maker?' · DM: '+esc(lead.decision_maker):''}</div>
-<div class="dp-badges">${stageBadge(lead.stage)} ${sourceBadge(lead.source)} <span class="badge ${scoreClass(sc)}">${sc}pts</span> <span class="badge badge-grey">${WIN_PROB[lead.stage]||0}% win</span> ${lead.estimated_value?`<span class="badge badge-green">${fmtValue(lead.estimated_value)}</span>`:''} ${lead.package_interest?`<span class="badge badge-accent">${esc(lead.package_interest)}</span>`:''} ${dsc>=5?`<span class="badge badge-red">${dsc}d silent</span>`:''} ${(lead.tags||[]).map(t=>`<span class="lead-tag">${esc(t)} <span class="tag-x" data-tag="${esc(t)}" onclick="event.stopPropagation();removeTag(${id},this.dataset.tag)">✕</span></span>`).join('')}</div>
-${lead.stage_changed_at?`<div class="stage-duration">${icon('clock',11)} In ${stageInfo(lead.stage).label} for ${daysSince(lead.stage_changed_at)}d</div>`:''}
-<div class="dp-contact">${lead.contact_phone?`<span>${icon('phone',12)} <a href="tel:${esc(lead.contact_phone)}">${esc(lead.contact_phone)}</a> · <a href="${waLink(lead.contact_phone)}" target="_blank" style="color:#25D366">WhatsApp</a></span>`:''} ${lead.contact_email?`<span>${icon('email',12)} <a href="mailto:${esc(lead.contact_email)}">${esc(lead.contact_email)}</a></span>`:''} <span>${icon('users',12)} ${ownerLabel(lead.owner)}</span> <span>${icon('note',12)} ${fmtDate(lead.created_at)}</span></div>
+<div class="dp-badges">${stageBadge(lead.stage)} <span class="badge badge-grey">${WIN_PROB[lead.stage]||0}% win</span> ${lead.estimated_value?`<span class="badge badge-green">${fmtValue(lead.estimated_value)}</span>`:''} ${dsc>=5?`<span class="badge badge-red">${dsc}d silent</span>`:''}${lead.stage_changed_at?`<span class="stage-duration">${daysSince(lead.stage_changed_at)}d in stage</span>`:''}</div>
+<div class="dp-reach">${hasPhone?`<a class="dp-reach-btn ph" href="tel:${esc(lead.contact_phone)}">${icon('phone',13)} ${esc(lead.contact_phone)}</a><a class="dp-reach-btn wa" href="${waLink(lead.contact_phone)}" target="_blank" rel="noopener">${icon('message',13)} WhatsApp</a>`:'<span class="dp-reach-none">No phone number yet. Add one under Details, then More, Edit Lead.</span>'}${lead.contact_email?`<a class="dp-reach-btn" href="mailto:${esc(lead.contact_email)}">${icon('email',13)} Email</a>`:''}</div>
 </div>
-<div class="dp-actions">
-<button class="dp-action primary" onclick="openLogActivity(${id})">${icon('phone',13)} Log Activity</button>
-<button class="dp-action" onclick="openScheduleFU(${id})">${icon('clock',13)} Follow-Up</button>
-${lead.contact_phone?`<a class="dp-action" href="${waLink(lead.contact_phone)}" target="_blank" style="color:#25D366;text-decoration:none">${icon('message',13)} WhatsApp</a>`:''}
-${!['closed_won','closed_lost'].includes(lead.stage)?`<button class="dp-action" onclick="openConvert(${id})">${icon('trophy',13)} Convert</button>`:''}
-<div class="dp-more-wrap" style="margin-left:auto">
-<button class="dp-action" onclick="toggleMoreMenu(event)">More ▾</button>
-<div class="dp-more-menu" id="dpMoreMenu">
-<button onclick="closeMoreMenu();toggleHot(${id})">${lead.is_hot?'Unmark Hot':'Mark as Hot'}</button>
-${!['closed_won','closed_lost'].includes(lead.stage)?`<button onclick="closeMoreMenu();openMarkLost(${id})">Mark as Lost</button>`:''}
-<button onclick="closeMoreMenu();editLead(${id})">Edit Lead</button>
-<button onclick="closeMoreMenu();exportLeadData(${id})">Export</button>
-${lead.archived_at?`<button onclick="closeMoreMenu();restoreLead(${id})">Restore</button>`:`<button onclick="closeMoreMenu();archiveLead(${id})">Archive</button>`}
-${isMaster()?`<button class="danger" onclick="closeMoreMenu();deleteLead(${id})">Delete</button>`:''}
-</div>
-</div>
-</div>
-${!['closed_won','closed_lost'].includes(lead.stage)?`<div class="dp-quick" role="group" aria-label="Call outcome"><span>After the call</span><button class="dp-action" onclick="quickOutcome(${id},'noanswer')">No answer</button><button class="dp-action" onclick="quickOutcome(${id},'callback')">Call back</button><button class="dp-action" onclick="quickOutcome(${id},'packages')">Packages sent</button><button class="dp-action" onclick="quickOutcome(${id},'report')">Report booked</button><button class="dp-action" onclick="openMeeting(${id})">Meeting booked</button><button class="dp-action danger" onclick="openMarkLost(${id},'no_need',1)">Not interested</button></div>`:''}
-<div class="dp-tabs"><div class="dp-tab active" onclick="switchTab(this,'tab-prep')">Call Prep</div><div class="dp-tab" onclick="switchTab(this,'tab-activity')">Activity (${acts.length})</div><div class="dp-tab" onclick="switchTab(this,'tab-fu')">Follow-Ups (${fus.filter(f=>!f.is_done).length})</div><div class="dp-tab" onclick="switchTab(this,'tab-intel')">Intel</div>${lead.contact_phone?`<div class="dp-tab" onclick="switchTab(this,'tab-wa')">WhatsApp</div>`:''}</div>
+${nextUpCard(id,fus)}
+<div class="dp-tabs" role="tablist">${tabs.map(t=>`<div class="dp-tab${dpTab===t[0]?' active':''}" role="tab" onclick="switchTab(this,'${t[0]}')">${t[1]}</div>`).join('')}</div>
 <div class="dp-tab-content">
-<div class="dp-tab-pane active" id="tab-prep">
-${pkgBlock(lead)}
+<div class="dp-tab-pane${dpTab==='tab-prep'?' active':''}" id="tab-prep">
 <div class="call-prep"><h4>${icon('clipboard',14)} Call Preparation</h4>
 ${lastAct?`<div class="cp-row"><div class="cp-label">Last interaction</div><div class="cp-val">${esc(lastAct.summary)}</div></div>`:''}
 ${lastAct?.next_step?`<div class="cp-row"><div class="cp-label">Next step</div><div class="cp-val">${esc(lastAct.next_step)}</div></div>`:''}
 ${lead.pain_points?`<div class="cp-row"><div class="cp-label">Their pain points</div><div class="cp-val">${esc(lead.pain_points)}</div></div>`:''}
 ${lead.objections?`<div class="cp-row"><div class="cp-label">Objections to address</div><div class="cp-val">${esc(lead.objections)}</div></div>`:''}
 ${lastAct?.talking_points?`<div class="cp-row"><div class="cp-label">Talking points from last call</div><div class="cp-val">${esc(lastAct.talking_points)}</div></div>`:''}
-${(!lastAct&&!lead.pain_points&&!lead.objections)?`<div class="cp-empty">Nothing logged yet - start with "Log Activity", or add details in the Intel tab.</div>`:''}
+${(!lastAct&&!lead.pain_points&&!lead.objections)?`<div class="cp-empty">Nothing logged yet. Start with "Log Activity", or add details under Details.</div>`:''}
 </div>
-${buildCallGamePlan(lead,lastAct)}
+${!closed?`<div class="dp-quick" role="group" aria-label="Call outcome"><span>After the call</span><button class="dp-action" onclick="quickOutcome(${id},'noanswer')">No answer</button><button class="dp-action" onclick="quickOutcome(${id},'callback')">Call back</button><button class="dp-action" onclick="quickOutcome(${id},'packages')">Packages sent</button><button class="dp-action" onclick="quickOutcome(${id},'report')">Report booked</button><button class="dp-action" onclick="openMeeting(${id})">Meeting booked</button><button class="dp-action danger" onclick="openMarkLost(${id},'no_need',1)">Not interested</button></div>`:''}
+${dpFold('Call game plan','Opening, questions, objections',buildCallGamePlan(lead,lastAct),false)}
+${dpFold('Packages link',pkgSub,pkgBlock(lead),pkgOpen)}
 </div>
-<div class="dp-tab-pane" id="tab-activity">${acts.length?`<div class="timeline">${acts.map(a=>`<div class="tl-item"><div class="tl-dot ${a.type}"></div><div class="tl-card"><div class="tl-head"><div class="tl-type">${ACT_ICONS[a.type]||icon('note',15)} ${a.type}</div><div class="tl-time">${fmtDateTime(a.created_at)} · ${ownerLabel(a.logged_by)}</div></div><div class="tl-sum">${esc(a.summary)}</div>${a.outcome?`<span class="badge badge-${a.outcome==='positive'?'green':a.outcome==='negative'?'red':'amber'}" style="margin-top:6px">${a.outcome}</span>`:''} ${a.talking_points?`<div style="font-size:11px;color:var(--text-3);margin-top:6px"><strong>Talking:</strong> ${esc(a.talking_points)}</div>`:''} ${a.pain_points_discovered?`<div style="font-size:11px;color:var(--text-3);margin-top:4px"><strong>Pain:</strong> ${esc(a.pain_points_discovered)}</div>`:''} ${a.objections_raised?`<div style="font-size:11px;color:var(--text-3);margin-top:4px"><strong>Objections:</strong> ${esc(a.objections_raised)}</div>`:''} ${a.next_step?`<div class="tl-next">→ ${esc(a.next_step)}</div>`:''}</div></div>`).join('')}</div>`:'<div class="section-empty">No activity yet</div>'}</div>
-<div class="dp-tab-pane" id="tab-fu"><div style="margin-bottom:12px"><button class="btn btn-sm btn-primary" onclick="openScheduleFU(${id})">+ Schedule</button></div>${fus.length?fus.map(f=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)"><div style="width:8px;height:8px;border-radius:50%;background:${f.is_done?'var(--green)':f.due_date<today()?'var(--red)':'var(--amber)'}"></div><div style="flex:1"><div style="font-size:13px;font-weight:${f.is_done?'400':'600'};${f.is_done?'text-decoration:line-through;color:var(--text-3)':''}">${f.due_date} ${f.due_time||''}</div><div style="font-size:12px;color:var(--text-2)">${esc(f.note||'')}</div></div>${f.is_done?'<span class="badge badge-green">Done</span>':f.due_date<today()?'<span class="badge badge-red">Overdue</span>':'<span class="badge badge-amber">Pending</span>'} ${!f.is_done?`<button class="btn btn-sm btn-success" onclick="completeFU(${f.id});openDetail(${id})">✓</button>`:''}</div>`).join(''):'<div class="section-empty">No follow-ups</div>'}</div>
-<div class="dp-tab-pane" id="tab-intel"><div class="intel-grid"><div class="intel-card"><div class="ic-label">Pain Points</div><div class="ic-val ${lead.pain_points?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'pain_points',this.textContent)">${esc(lead.pain_points||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Objections</div><div class="ic-val ${lead.objections?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'objections',this.textContent)">${esc(lead.objections||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Decision Maker</div><div class="ic-val ${lead.decision_maker?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'decision_maker',this.textContent)">${esc(lead.decision_maker||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Notes</div><div class="ic-val ${lead.notes?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'notes',this.textContent)">${esc(lead.notes||'Click to add...')}</div></div></div>
-<h4 style="font-size:12px;margin:16px 0 10px">Score Breakdown</h4><div style="font-size:11px;color:var(--text-2);line-height:2.2">${lead.contact_phone?icon('check',11):icon('xcircle',11)} Phone (10) · ${lead.contact_email?icon('check',11):icon('xcircle',11)} Email (10) · ${lead.contact_name?icon('check',11):icon('xcircle',11)} Contact (5) · Acts: ${Math.min(acts.length*5,30)}/30 · Positive: ${acts.filter(a=>a.outcome==='positive').length}×10 · ${lead.estimated_value>0?icon('check',11):icon('xcircle',11)} Value (10) · ${lead.pain_points?icon('check',11):icon('xcircle',11)} Pain (5) · ${lead.is_hot?icon('check',11):icon('xcircle',11)} Hot (15)</div></div>
-${lead.contact_phone?`<div class="dp-tab-pane" id="tab-wa"><div style="font-size:13px;font-weight:600;margin-bottom:10px">Quick Message Templates</div><div class="wa-templates">${getWATemplates(lead).map(t=>`<a class="wa-tpl" href="${waLink(lead.contact_phone)}?text=${encodeURIComponent(t.msg)}" target="_blank"><span class="tpl-icon">${t.icon}</span><div><div style="font-weight:600;font-size:12px;color:var(--text);margin-bottom:2px">${t.label}</div><div style="font-size:11px;opacity:.7">${esc(t.msg.substring(0,80))}...</div></div></a>`).join('')}</div>
-</div>`:''}
-</div>`;
-document.getElementById('detailOverlay').classList.add('open');
+<div class="dp-tab-pane${dpTab==='tab-hist'?' active':''}" id="tab-hist">
+<div class="dp-sub">Follow-ups <button class="btn btn-sm btn-secondary" onclick="openScheduleFU(${id})">+ Schedule</button></div>
+${fus.length?fus.map(f=>`<div class="fu-row"><div class="fu-dot" style="background:${f.is_done?'var(--green)':f.due_date<today()?'var(--red)':'var(--amber)'}"></div><div style="flex:1"><div class="fu-when${f.is_done?' done':''}">${esc(fuWhen(f))}</div><div class="fu-note">${esc(f.note||'')}</div></div>${f.is_done?'<span class="badge badge-green">Done</span>':f.due_date<today()?'<span class="badge badge-red">Overdue</span>':'<span class="badge badge-amber">Pending</span>'} ${!f.is_done?`<button class="btn btn-sm btn-success" onclick="completeFU(${f.id}).then(()=>openDetail(${id}))" aria-label="Mark done">✓</button>`:''}</div>`).join(''):'<div class="section-empty">No follow-ups</div>'}
+<div class="dp-sub">Activity</div>
+${acts.length?`<div class="timeline">${acts.map(a=>`<div class="tl-item"><div class="tl-dot ${a.type}"></div><div class="tl-card"><div class="tl-head"><div class="tl-type">${ACT_ICONS[a.type]||icon('note',15)} ${a.type}</div><div class="tl-time">${fmtDateTime(a.created_at)} · ${ownerLabel(a.logged_by)}</div></div><div class="tl-sum">${esc(a.summary)}</div>${a.outcome?`<span class="badge badge-${a.outcome==='positive'?'green':a.outcome==='negative'?'red':'amber'}" style="margin-top:6px">${a.outcome}</span>`:''} ${a.talking_points?`<div style="font-size:11px;color:var(--text-3);margin-top:6px"><strong>Talking:</strong> ${esc(a.talking_points)}</div>`:''} ${a.pain_points_discovered?`<div style="font-size:11px;color:var(--text-3);margin-top:4px"><strong>Pain:</strong> ${esc(a.pain_points_discovered)}</div>`:''} ${a.objections_raised?`<div style="font-size:11px;color:var(--text-3);margin-top:4px"><strong>Objections:</strong> ${esc(a.objections_raised)}</div>`:''} ${a.next_step?`<div class="tl-next">→ ${esc(a.next_step)}</div>`:''}</div></div>`).join('')}</div>`:'<div class="section-empty">No activity yet</div>'}
+</div>
+${hasPhone?`<div class="dp-tab-pane${dpTab==='tab-msg'?' active':''}" id="tab-msg"><div style="font-size:13px;font-weight:600;margin-bottom:10px">Quick Message Templates</div><div class="wa-templates">${getWATemplates(lead).map(t=>`<a class="wa-tpl" href="${waLink(lead.contact_phone)}?text=${encodeURIComponent(t.msg)}" target="_blank" rel="noopener"><span class="tpl-icon">${t.icon}</span><div><div style="font-weight:600;font-size:12px;color:var(--text);margin-bottom:2px">${t.label}</div><div style="font-size:11px;opacity:.7">${esc(t.msg.substring(0,80))}...</div></div></a>`).join('')}</div></div>`:''}
+<div class="dp-tab-pane${dpTab==='tab-intel'?' active':''}" id="tab-intel"><div class="intel-grid"><div class="intel-card"><div class="ic-label">Pain Points</div><div class="ic-val ${lead.pain_points?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'pain_points',this.textContent)">${esc(lead.pain_points||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Objections</div><div class="ic-val ${lead.objections?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'objections',this.textContent)">${esc(lead.objections||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Decision Maker</div><div class="ic-val ${lead.decision_maker?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'decision_maker',this.textContent)">${esc(lead.decision_maker||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Notes</div><div class="ic-val ${lead.notes?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'notes',this.textContent)">${esc(lead.notes||'Click to add...')}</div></div></div>
+<div class="dp-sub">About this lead</div>
+<div class="dp-facts"><div><span>Source</span>${sourceBadge(lead.source)}</div><div><span>Score</span><span class="badge ${scoreClass(sc)}">${sc}pts</span></div><div><span>Owner</span>${ownerLabel(lead.owner)}</div><div><span>Added</span>${fmtDate(lead.created_at)}</div>${lead.package_interest?`<div><span>Package</span><span class="badge badge-accent">${esc(lead.package_interest)}</span></div>`:''}${lead.contact_email?`<div><span>Email</span>${esc(lead.contact_email)}</div>`:''}</div>
+${(lead.tags||[]).length?`<div class="dp-sub">Tags</div><div class="dp-badges">${(lead.tags||[]).map(t=>`<span class="lead-tag">${esc(t)} <span class="tag-x" data-tag="${esc(t)}" onclick="event.stopPropagation();removeTag(${id},this.dataset.tag)">✕</span></span>`).join('')}</div>`:''}
+<div class="dp-sub">Score breakdown</div><div style="font-size:11px;color:var(--text-2);line-height:2.2">${lead.contact_phone?icon('check',11):icon('xcircle',11)} Phone (10) · ${lead.contact_email?icon('check',11):icon('xcircle',11)} Email (10) · ${lead.contact_name?icon('check',11):icon('xcircle',11)} Contact (5) · Acts: ${Math.min(acts.length*5,30)}/30 · Positive: ${acts.filter(a=>a.outcome==='positive').length}×10 · ${lead.estimated_value>0?icon('check',11):icon('xcircle',11)} Value (10) · ${lead.pain_points?icon('check',11):icon('xcircle',11)} Pain (5) · ${lead.is_hot?icon('check',11):icon('xcircle',11)} Hot (15)</div></div>
+</div>
+<div class="dp-bar" role="toolbar" aria-label="Lead actions">
+<button class="dp-action primary" onclick="openLogActivity(${id})">${icon('phone',13)} Log Activity</button>
+<button class="dp-action" onclick="openScheduleFU(${id})">${icon('clock',13)} Follow-up</button>
+${!closed?`<button class="dp-action" onclick="openConvert(${id})">${icon('trophy',13)} Convert</button>`:''}
+<div class="dp-more-wrap">
+<button class="dp-action" onclick="toggleMoreMenu(event)" aria-haspopup="true">More ▴</button>
+<div class="dp-more-menu" id="dpMoreMenu">
+<button onclick="closeMoreMenu();toggleHot(${id})">${lead.is_hot?'Unmark Hot':'Mark as Hot'}</button>
+${!closed?`<button onclick="closeMoreMenu();openMarkLost(${id})">Mark as Lost</button>`:''}
+<button onclick="closeMoreMenu();editLead(${id})">Edit Lead</button>
+<button onclick="closeMoreMenu();exportLeadData(${id})">Export</button>
+${lead.archived_at?`<button onclick="closeMoreMenu();restoreLead(${id})">Restore</button>`:`<button onclick="closeMoreMenu();archiveLead(${id})">Archive</button>`}
+${isMaster()?`<button class="danger" onclick="closeMoreMenu();deleteLead(${id})">Delete</button>`:''}
+</div></div></div>`;
+ov.classList.add('open');
+if(keepTop)panel.scrollTop=keepTop;
 }
 function closeDetail(){document.getElementById('detailOverlay').classList.remove('open');currentDetailId=null;}
 
@@ -1886,7 +2008,7 @@ function exportLeadData(id){const lead=allLeads.find(l=>l.id===id);if(!lead)retu
 const data={lead:{...lead},activities:acts,follow_ups:fus,exported_at:new Date().toISOString(),exported_by:currentUser?.name};
 const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`lead-${lead.name.replace(/[^a-zA-Z0-9]/g,'-')}-${today()}.json`;a.click();URL.revokeObjectURL(url);
 auditLog('EXPORT_LEAD',`${lead.name} (ID:${id})`);toast('Lead data exported as JSON');}
-function switchTab(el,id){el.parentElement.querySelectorAll('.dp-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');el.closest('.detail-panel').querySelectorAll('.dp-tab-pane').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function switchTab(el,id){dpTab=id;el.parentElement.querySelectorAll('.dp-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');el.closest('.detail-panel').querySelectorAll('.dp-tab-pane').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
 async function saveIntel(id,f,v){/* LEADS-3, 6 Oct 2026: no demo guard and the result was ignored, so the lead in memory changed while the database did not. */if(demoGuard())return;const d={};const val=v.trim();d[f]=val===''||val==='Click to add...'?null:val;const res=await sbPatch('pipeline',id,d);if(!res)return;const l=allLeads.find(x=>x.id===id);if(l)l[f]=d[f];}
 document.addEventListener('focusin',e=>{if(e.target.classList?.contains('ic-val')&&e.target.textContent.trim()==='Click to add...'){e.target.textContent='';e.target.classList.remove('empty');}});
 document.addEventListener('focusout',e=>{if(e.target.classList?.contains('ic-val')&&!e.target.textContent.trim()){e.target.textContent='Click to add...';e.target.classList.add('empty');}});
@@ -1973,7 +2095,21 @@ closeModal('activityModal');toast('Activity logged ✓');auditLog('LOG_ACTIVITY'
 const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg)nav(pg);if(currentDetailId===activityLeadId)openDetail(activityLeadId);}
 
 /* ===== FOLLOW-UP ===== */
-function openScheduleFU(id){fuLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('fuLeadInfo').innerHTML=`<div style="font-size:14px;font-weight:700">${esc(l.name)}</div>`;const tom=new Date();tom.setDate(tom.getDate()+1);document.getElementById('fu_date').value=localDateStr(tom);document.getElementById('fu_time').value='10:00';document.getElementById('fu_priority').value='normal';document.getElementById('fu_note').value='';openModal('followUpModal');}
+let fuEditId=null;
+function openScheduleFU(id,editId){fuLeadId=id;fuEditId=editId||null;const l=allLeads.find(x=>x.id===id);if(!l)return;const f=fuEditId?allFollowUps.find(x=>x.id===fuEditId):null;if(fuEditId&&!f)fuEditId=null;
+document.getElementById('fuLeadInfo').innerHTML=`<div style="font-size:14px;font-weight:700">${esc(l.name)}</div>`;
+document.getElementById('fuTitle').textContent=fuEditId?'Reschedule Follow-Up':'Schedule Follow-Up';document.getElementById('fuSave').textContent=fuEditId?'Save':'Schedule';
+document.getElementById('fu_date').value=f?f.due_date:fuChipDate('tomorrow');document.getElementById('fu_time').value=f?(f.due_time?String(f.due_time).slice(0,5):''):'10:00';document.getElementById('fu_priority').value=f?(f.priority||'normal'):'normal';document.getElementById('fu_note').value=f?(f.note||''):'';
+fuSync();openModal('followUpModal');}
+function fuPick(k){document.getElementById('fu_date').value=fuChipDate(k);fuSync();}
+function fuTime(t){document.getElementById('fu_time').value=t;fuSync();}
+function fuPrio(v){document.getElementById('fu_priority').value=v;fuSync();}
+function fuSync(){const d=document.getElementById('fu_date').value,t=document.getElementById('fu_time').value,p=document.getElementById('fu_priority').value;
+document.querySelectorAll('#fuDateChips .fu-chip').forEach(b=>b.classList.toggle('on',!!d&&fuChipDate(b.dataset.k)===d));
+document.querySelectorAll('#fuTimeChips .fu-chip').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+document.querySelectorAll('#fuPrioChips .fu-chip').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
+const s=document.getElementById('fuSummary');if(!d){s.className='fu-summary warn';s.textContent='Pick a date';return;}
+const past=d<today();s.className='fu-summary'+(past?' warn':'');s.textContent=past?'That date has passed. Pick today or later.':'Reminder for '+fuWhen({due_date:d,due_time:t});}
 const QUICK={
  noanswer:{type:'call',outcome:'no_answer',sum:'No answer',stage:null,next:'Call again',days:1,fu:'Call again'},
  callback:{type:'call',outcome:'neutral',sum:'Spoke briefly, asked to be called back',stage:'contacted',next:'Call back',days:0,fu:'Call back'},
@@ -2039,7 +2175,11 @@ async function saveMeeting(){if(demoGuard())return;if(meetSaving||!meetLeadId)re
  if(lead.contact_phone){const name=lead.contact_name||lead.name;const msg=`Hi ${name}, this is ${currentUser?.name} from Business Booster. Confirming our meeting on ${md.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})} at ${meetTime12(time)}${where?', '+where:''}. Could you send me the link to your page before then? Speak soon.`;window.open(waLink(lead.contact_phone)+'?text='+encodeURIComponent(msg),'_blank','noopener');}
  openDetail(id);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg&&pg!=='leads')nav(pg);
  }finally{meetSaving=false;btn.disabled=false;btn.textContent='Book it';}}
-async function saveFollowUp(){if(demoGuard())return;if(!fuLeadId)return;const d=document.getElementById('fu_date').value;if(!d){toast('Date required','error');return;}const data={pipeline_id:fuLeadId,due_date:d,due_time:document.getElementById('fu_time').value||null,priority:document.getElementById('fu_priority').value,note:document.getElementById('fu_note').value.trim()||null,created_by:currentUser?.name?.toUpperCase()};const r=await sbPost('lead_follow_ups',data);if(r){allFollowUps.push(r[0]);closeModal('followUpModal');toast('Follow-up scheduled');updateFUBadge();if(currentDetailId===fuLeadId)openDetail(fuLeadId);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg==='dashboard')renderDashboard();}}
+async function saveFollowUp(){if(demoGuard())return;if(!fuLeadId)return;const d=document.getElementById('fu_date').value;if(!d){toast('Date required','error');return;}if(d<today()){toast('That date has passed. Pick today or later.','error');return;}
+const data={due_date:d,due_time:document.getElementById('fu_time').value||null,priority:document.getElementById('fu_priority').value,note:document.getElementById('fu_note').value.trim()||null};
+let r;if(fuEditId){r=await sbPatch('lead_follow_ups',fuEditId,data);if(r){const i=allFollowUps.findIndex(x=>x.id===fuEditId);if(i>=0)Object.assign(allFollowUps[i],data);}}
+else{r=await sbPost('lead_follow_ups',{pipeline_id:fuLeadId,...data,created_by:currentUser?.name?.toUpperCase()});if(r&&r[0])allFollowUps.push(r[0]);}
+if(r){closeModal('followUpModal');toast(fuEditId?'Follow-up moved to '+fuWhen(data):'Follow-up set for '+fuWhen(data));updateFUBadge();if(currentDetailId===fuLeadId)openDetail(fuLeadId);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg==='dashboard')renderDashboard();else if(pg==='pipeline')renderPipeBody();}}
 
 /* ===== CONVERT ===== */
 function openConvert(id){convertLeadId=id;const l=allLeads.find(x=>x.id===id);if(!l)return;document.getElementById('cv_name').value=l.name;document.getElementById('cv_industry').value=l.industry||'';document.getElementById('cv_contact').value=l.contact_name||l.contact_phone||'';document.getElementById('cv_start').value=today();let p=l.package_interest?.split(' (')[0]||'Studio';if(!PKG_VALUES[p])p='Studio';document.getElementById('cv_package').value=p;document.getElementById('cv_mrr').value=PKG_VALUES[p]||90000;openModal('convertModal');}
@@ -2738,6 +2878,138 @@ body:has(.modal-overlay.open) #bbpush-pill{display:none!important}
       reason a half-scrolled pipeline survives opening a lead. */
 body.sheet-open{position:fixed;left:0;right:0;width:100%}
 </style>
+<style id="v3drawer">
+/* 23 Nov 2026: drawer redesign, pipeline select mode and the drag fix. Rollback is deleting this block, restoring the old
+   openDetail, renderPipeline and dragCard from the backup, and the matching markup. */
+/* ---- pipeline toolbar, view switch, select mode ---- */
+.pipe-toolbar{align-items:center}
+.pipe-seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:3px;gap:2px;flex-shrink:0}
+.pipe-seg button{border:none;background:none;color:var(--text-2);font-family:inherit;font-size:12px;font-weight:600;padding:0 14px;min-height:34px;border-radius:8px;cursor:pointer}
+.pipe-seg button.on{background:var(--accent);color:#fff}
+.pipe-selbtn{display:inline-flex;align-items:center;gap:6px;flex-shrink:0}
+.pipe-selbtn.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.pipe-toolbar .btn{width:auto}
+.pc-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--border-strong);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;background:transparent;cursor:pointer}
+.pc-check.on{background:var(--accent);border-color:var(--accent)}
+.pipe-card .pc-check{position:absolute;top:10px;left:10px}
+.pipe-selecting .pipe-card{cursor:pointer;padding-left:40px}
+.pipe-card.selected,.pipe-list tr.selected{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;background:var(--accent-soft)}
+.pipe-list tr.selected td{background:var(--accent-soft)}
+.pipe-colsel{margin:8px 8px 0;padding:7px 10px;border-radius:8px;border:1px dashed var(--border-strong);background:none;color:var(--text-2);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;min-height:36px}
+.pipe-colsel.on,.pipe-colsel:hover{border-color:var(--accent);color:var(--accent)}
+.pipe-card{touch-action:pan-x pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.pipe-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* the drag. The old highlight added a 2px border to the column body, which moved the tiles and made the pointer cross in and out of it. An outline moves nothing. */
+.pipe-col{position:relative}
+.pipe-col.drop-target{outline:2px dashed var(--accent);outline-offset:-2px;background:rgba(249,115,22,0.10)}
+.pipe-col.drop-target .pipe-col-body{background:transparent}
+.pipe-card.dragging{opacity:.35;transform:none;box-shadow:none}
+.pipe-card:hover{transform:none}
+.pipe-ghost{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;margin:0;opacity:.96;box-shadow:0 14px 36px rgba(0,0,0,.45);border-color:var(--accent);cursor:grabbing;will-change:transform}
+body.pipe-dragging{cursor:grabbing;-webkit-user-select:none;user-select:none}
+body.pipe-dragging .main{scroll-behavior:auto!important}
+body.pipe-dragging .pipeline-board{scroll-snap-type:none!important;scroll-behavior:auto!important}
+body.pipe-dragging .pipe-card{cursor:grabbing}
+/* the floating action bar */
+.bulkbar{position:fixed;left:50%;bottom:calc(18px + var(--sab));transform:translate(-50%,24px);z-index:120;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 24px);padding:10px 14px;background:var(--surface);border:1px solid var(--accent);border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .18s,transform .18s}
+.bulkbar.show{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
+.bulkbar .bb-count{font-size:13px;color:var(--text-2);white-space:nowrap;padding-right:4px}.bulkbar .bb-count b{color:var(--text);font-size:15px}
+.bulkbar .btn{width:auto;min-height:38px;padding:0 14px}
+.bulkbar .bb-row{display:contents}.bulkbar .bb-count{order:1}.bulkbar .bb-all{order:2}.bulkbar select{order:3}.bulkbar #pipeMoveGo{order:4}.bulkbar .bb-done{order:5}
+body.pipe-nosnap .pipeline-board{scroll-snap-type:none!important}
+.pipe-selecting{padding-bottom:150px}
+.bulkbar select{width:auto;min-width:150px;min-height:38px}
+.bulkbar .btn[disabled]{opacity:.45;pointer-events:none}
+.pipe-selecting+.bulkbar{}
+@media(min-width:769px){.bulkbar{left:calc(50% + 120px)}}
+body:has(.detail-overlay.open) .bulkbar,body:has(.modal-overlay.open) .bulkbar{opacity:0;pointer-events:none}
+body:has(.bulkbar.show) #bbpush-pill,body:has(.detail-overlay.open) #bbpush-pill{display:none!important}
+body:has(.bulkbar.show) .toast{bottom:calc(86px + var(--sab))}
+@media(max-width:768px){
+ .pipe-toolbar .search-box{min-width:100%}.pipe-toolbar select{width:100%}
+ .pipe-toolbar .pipe-seg{width:100%}.pipe-toolbar .pipe-seg button{flex:1}
+ .pipe-toolbar .pipe-selbtn{width:100%;justify-content:center;min-height:44px}
+ .bulkbar{left:12px;right:12px;max-width:none;transform:translateY(24px);bottom:calc(12px + var(--sab));justify-content:space-between}
+ .bulkbar.show{transform:none}
+ .bulkbar{gap:8px;flex-direction:column;align-items:stretch}
+ .bulkbar .bb-row{display:flex;gap:8px;align-items:center;width:100%}
+ .bulkbar .bb-count{flex:1;order:0}.bulkbar .bb-all,.bulkbar .bb-done,.bulkbar select,.bulkbar #pipeMoveGo{order:0}
+ .bulkbar select{flex:1;min-width:0}
+}
+/* ---- drawer ---- */
+.dp-header{padding:16px 20px 14px}
+.dp-name{font-size:20px;margin-bottom:2px}
+.dp-company{margin-bottom:10px}
+.dp-badges{margin-bottom:12px;align-items:center}
+.dp-badges .stage-duration{margin:0 0 0 4px;font-size:11px}
+.dp-reach{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.dp-reach-btn{display:inline-flex;align-items:center;gap:6px;padding:0 14px;min-height:38px;border-radius:10px;background:var(--surface);border:1px solid var(--border-strong);color:var(--text)!important;font-size:13px;font-weight:600;text-decoration:none}
+.dp-reach-btn:hover{border-color:var(--accent)}
+.dp-reach-btn{white-space:nowrap}
+.dp-reach-btn.wa{color:#25D366!important}
+.dp-reach-none{font-size:12px;color:var(--text-3)}
+.dp-next{margin:14px 20px 0;padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--border);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.dp-next.late{border-color:var(--red);background:var(--red-soft)}.dp-next.due{border-color:var(--amber);background:var(--amber-soft)}
+.dp-next .dn-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);margin-bottom:3px}
+.dp-next .dn-when{font-size:14px;font-weight:700;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.dp-next .dn-note{font-size:12px;color:var(--text-2);margin-top:3px}
+.dp-next .dn-btns{display:flex;gap:8px}
+.dp-next .btn{width:auto;min-height:36px;padding:0 14px}
+.dp-next.none{flex-direction:column;align-items:stretch;gap:10px}
+.dn-chips,.fu-chips{display:flex;gap:8px;flex-wrap:wrap}
+.fu-chip{border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);font-family:inherit;font-size:13px;font-weight:600;padding:0 14px;min-height:38px;border-radius:19px;cursor:pointer;transition:all .12s}
+.fu-chip:hover{border-color:var(--accent);color:var(--accent)}
+.fu-chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.fu-chip.more{border-style:dashed;color:var(--text-2)}
+.fu-summary{margin:0 0 14px;padding:10px 12px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:600}
+.fu-summary.warn{background:var(--red-soft);color:var(--red)}
+.fu-opt{text-transform:none;letter-spacing:0;font-weight:400;color:var(--text-3);margin-left:4px}
+.dp-tabs{margin-top:14px;padding:0 12px}
+.dp-tab{flex:1;text-align:center;padding:12px 8px;min-height:44px}
+.dp-tab-content{padding:16px 20px 24px}
+.dp-quick{padding:12px 0 4px;border:none;margin:0 0 6px}
+.dp-fold{border:1px solid var(--border);border-radius:14px;background:var(--surface);margin:12px 0 0;overflow:hidden}
+.dp-fold>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:0 14px;min-height:48px;cursor:pointer;font-size:13px;font-weight:700}
+.dp-fold>summary::-webkit-details-marker{display:none}
+.dp-fold .df-s{font-size:12px;font-weight:500;color:var(--text-3);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dp-fold .df-t{flex-shrink:0}
+.dp-fold .df-c{margin-left:auto;width:8px;height:8px;border-right:2px solid var(--text-3);border-bottom:2px solid var(--text-3);transform:rotate(45deg);transition:transform .15s;flex-shrink:0;margin-top:-3px}
+.dp-fold[open] .df-c{transform:rotate(-135deg);margin-top:3px}
+.dp-fold .df-body{padding:0 14px 14px}
+.dp-fold .call-prep{margin:0;border:none;background:none;padding:0}.dp-fold .call-prep::before{display:none}
+.dp-fold .pk-block{margin:0}
+.dp-sub{display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);margin:18px 0 10px}
+.dp-sub:first-child{margin-top:0}
+.dp-sub .btn{width:auto;min-height:32px}
+.fu-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.fu-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.fu-when{font-size:13px;font-weight:600}.fu-when.done{font-weight:400;text-decoration:line-through;color:var(--text-3)}
+.fu-note{font-size:12px;color:var(--text-2)}
+.dp-facts{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;font-size:13px}
+.dp-facts>div{display:flex;flex-direction:column;gap:3px;min-width:0;overflow-wrap:anywhere}
+.dp-facts>div>span:first-child{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-3)}
+.detail-panel{display:flex;flex-direction:column}.detail-panel>*{flex-shrink:0}.dp-tab-content{flex:1 0 auto}
+.dp-bar{position:sticky;bottom:0;z-index:3;display:flex;gap:8px;align-items:center;padding:12px 20px calc(12px + var(--sab));background:var(--bg);border-top:1px solid var(--border-strong);box-shadow:0 -10px 24px rgba(0,0,0,.25)}
+.dp-bar .dp-action{min-height:44px;justify-content:center;padding:0 16px;font-size:13px;flex-shrink:0}
+.dp-bar .dp-action.primary{flex:1}
+.dp-bar .dp-more-wrap{margin-left:0}
+.dp-bar .dp-more-menu{top:auto;bottom:calc(100% + 8px)}
+.dp-more-menu{z-index:6}
+@media(max-width:768px){
+ .dp-header{position:static;padding:14px 16px 12px}
+ .dp-next{margin:12px 16px 0}
+ .dp-tabs{margin-top:12px;position:sticky;top:0;z-index:2;background:var(--bg)}
+ .dp-tab-content{padding:14px 16px 20px}
+ .dp-bar{padding:10px 12px calc(10px + var(--sab));gap:6px}
+ .dp-bar .dp-action{padding:0 12px;font-size:12px}
+ .dp-bar .dp-action svg{display:none}
+ .dp-next .dn-btns{width:100%}.dp-next .dn-btns .btn{flex:1}
+ .dp-reach-btn{flex:1;justify-content:center}
+ .dp-reach-btn.ph{flex:1 1 100%}
+ .fu-chip{min-height:44px}
+}
+</style>
+
 
 <script>
 /* The shell tool copies a service worker and never registers it, so the app
@@ -3035,7 +3307,7 @@ async function runSelfTest(){
        {created_at:now,type:'call',outcome:'negative',summary:'Lost: no_need'},
        {created_at:old,type:'call',outcome:'positive',summary:'Meeting booked for Mon 1 Jan at 10:00'}]);return w.meetings===1&&w.forgot===1&&w.calls===3;})(),'1 meeting, 1 forgot, 3 answered calls');
   ok('Loss chart: a reason code reads in words',lostLabel('forgot_form')==='Did not remember the form'&&lostLabel('Budget')==='Budget',lostLabel('forgot_form'));
-  ok('Drag: no second follow-up when one is already open',String(dropCard).includes('hasOpenFU'),'guarded');
+  ok('Drag: no second follow-up when one is already open',String(moveLeadStage).includes('hasOpenFU'),'guarded');
   ok('Lost: closing a lead closes its follow-ups',String(markLost).includes("sbPatch('lead_follow_ups'"),'closes them');
   ok('Boot: zero console errors since load',(window.__ST_LOG||[]).length===0,
      (window.__ST_LOG||[]).length?window.__ST_LOG[0].kind+': '+window.__ST_LOG[0].msg:'clean');
