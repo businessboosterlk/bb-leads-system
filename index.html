@@ -290,6 +290,8 @@ select{cursor:pointer}
 .leads-toolbar .search-box .search-clear svg{position:static;transform:none;color:inherit}
 .search-clear:hover,.search-clear:focus-visible{color:var(--text);background:var(--surface-2)}
 .search-box input:placeholder-shown~.search-clear{display:none}
+/* 25 Nov 2026: the quick search gets the same cross. Esc first clears the text, a second Esc closes the box. */
+.cmd-search{position:relative}.cmd-search .cmd-input{padding-right:52px}.cmd-search .search-clear{right:10px}
 @media (pointer:coarse){.search-clear{width:40px;height:40px;border-radius:20px;right:2px}.leads-toolbar .search-box input{padding-right:46px}}
 .leads-toolbar select{width:auto;min-width:120px}
 .leads-table{width:100%;border-collapse:collapse}
@@ -1020,7 +1022,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);background:va
 
 <!-- COMMAND PALETTE -->
 <div class="cmd-overlay" id="cmdOverlay" onclick="if(event.target===this)closeCmd()">
-<div class="cmd-box"><input class="cmd-input" id="cmdInput" placeholder="Search leads, log activity, add lead..." oninput="renderCmd()"><div class="cmd-results" id="cmdResults"></div></div>
+<div class="cmd-box"><div class="cmd-search search-box"><input class="cmd-input" id="cmdInput" placeholder="Search leads, log activity, add lead..." oninput="renderCmd()"><button type="button" class="search-clear" onclick="searchClear(this)" aria-label="Clear search" title="Clear search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div><div class="cmd-results" id="cmdResults"></div></div>
 </div>
 
 <!-- DETAIL PANEL -->
