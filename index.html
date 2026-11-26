@@ -55,7 +55,7 @@ window.__ST_LOG=[];
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://yyviiwnqgphyklcoijyd.supabase.co; img-src 'self' data:;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://yyviiwnqgphyklcoijyd.supabase.co https://businessbooster.vercel.app; img-src 'self' data:;">
 <title>BB Leads System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -1679,6 +1679,97 @@ function pfDemo(){const t=Date.now(),H=36e5,iso=x=>new Date(x).toISOString();ret
 function tempDot(l){const t=l.temperature==='hot'?'green':l.temperature==='warm'?'orange':'red';const lab={green:'Green, hot',orange:'Orange, warm',red:'Red, cold'}[t];return `<span class="t-dot t-${t}" role="img" aria-label="${lab}" title="${lab}"></span>`;}
 function tempPick(lead){const cur=lead.temperature||'cold';return `<div class="t-pick" role="group" aria-label="Colour"><span>Colour</span>${[['hot','green','Green'],['warm','orange','Orange'],['cold','red','Red']].map(([v,c,t])=>`<button type="button" aria-pressed="${cur===v}" onclick="setTemp(${lead.id},'${v}')"><span class="t-dot t-${c}"></span>${t}</button>`).join('')}</div>`;}
 async function setTemp(id,t){if(demoGuard())return;const l=allLeads.find(x=>x.id===id);if(!l)return;const tags=[...new Set([...(l.tags||[]),PF_HAND_TAG])];const res=await sbPatch('pipeline',id,{temperature:t,tags});if(!res)return;l.temperature=t;l.tags=tags;toast('Colour saved');openDetail(id);}
+/* Quote, 26 Nov 2026. Thulaib: "If you think I need anything else, even a [quote] builder, I would want it into the system."
+   The same quote the portfolio /link page makes: the three blank quotes, quote-slots.json and the Inter files are read from
+   businessbooster.vercel.app/quote/ (made by ~/bb-consultancy/presence-proposals/build.py --templates), and the stamping below
+   is ~/bb-websites/bb-portfolio/src/components/quote.js line for line, with pdf-lib and fontkit loaded from jsdelivr at the
+   same versions and hashes. So prices live in ONE place. Nothing is written to the database. */
+const Q_DIR='https://businessbooster.vercel.app/quote/';
+const Q_PLANS=[['presence','Presence'],['demand','Demand'],['switch','Presence, then Demand']];
+const Q_LINE='I have also attached our quote so you have an idea of the packages and what each one includes.';
+const Q_LIBS=[['https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js','sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI','PDFLib'],
+ ['https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js','sha384-2p6U+1mmqF10USehFeRiyG2ESG9FwIqN+jxULn5w9jjQIihSn9Pt13dVCn/Hawjn','fontkit']];
+const Q_TZ='Asia/Colombo';
+let qPlan={},qLibs=null;const qGot=new Map(),qCache=new Map();
+function qLoadLibs(){return qLibs||(qLibs=Promise.all(Q_LIBS.map(([src,sri,g])=>window[g]?Promise.resolve():new Promise((ok,no)=>{const el=document.createElement('script');el.src=src;el.integrity=sri;el.crossOrigin='anonymous';el.onload=ok;el.onerror=()=>no(new Error('library'));document.head.appendChild(el);}))).catch(e=>{qLibs=null;throw e;}));}
+function qLoad(n){if(!qGot.has(n)){const pr=fetch(Q_DIR+n,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(n+' '+r.status);return r.arrayBuffer();}).then(b=>new Uint8Array(b));pr.catch(()=>qGot.delete(n));qGot.set(n,pr);}return qGot.get(n);}
+function qWarm(){qLoadLibs().catch(()=>{});['quote-slots.json','Inter-400.ttf','Inter-700.ttf'].forEach(n=>qLoad(n).catch(()=>{}));}
+const qLongDate=(d,tz)=>new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:tz}).format(d);
+function qFacts(business,person,now=new Date()){
+ const pt=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{year:'numeric',month:'2-digit',day:'2-digit',timeZone:Q_TZ}).formatToParts(now).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
+ const key=`${pt.year}${pt.month}${pt.day}`;
+ const valid=qLongDate(new Date(Date.UTC(+pt.year,+pt.month-1,+pt.day+14,12)),'UTC');
+ const two=business.toUpperCase().split(/\s+/).filter(Boolean).slice(0,2).join(' ').replace(/[^A-Z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+ const ref=`BB-QUOTE-${two||'CLIENT'}-${key}`;
+ const file=`BB-Quote-${business.replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'Client'}.pdf`;
+ return {business,prepared:person||business,date:qLongDate(now,Q_TZ),key,valid,ref,file};}
+async function qMake({plan='presence',business,person='',now=new Date()}){
+ if(!Q_PLANS.some(x=>x[0]===plan))throw new Error('unknown plan '+plan);
+ await qLoadLibs();const {PDFDocument,rgb,setCharacterSpacing}=window.PDFLib;
+ const [tpl,slotsRaw,reg,bold]=await Promise.all([qLoad(`quote-${plan}.pdf`),qLoad('quote-slots.json'),qLoad('Inter-400.ttf'),qLoad('Inter-700.ttf')]);
+ const slots=JSON.parse(new TextDecoder().decode(slotsRaw)).plans[plan];
+ const doc=await PDFDocument.load(tpl);doc.registerFontkit(window.fontkit);
+ const F={400:await doc.embedFont(reg,{subset:true}),700:await doc.embedFont(bold,{subset:true})};
+ const can=(f,t)=>[...t].every(ch=>ch===' '||f.embedder.font.hasGlyphForCodePoint(ch.codePointAt(0)));
+ const strip=ch=>ch.normalize('NFKD').replace(/[̀-ͯ]/g,'');
+ const safe=(f,t)=>[...String(t).replace(/\s+/g,' ').trim()].map(ch=>can(f,ch)?ch:(can(f,strip(ch))?strip(ch):'')).join('').replace(/\s+/g,' ').trim();
+ const b=safe(F[700],business)||'Client';
+ const facts=qFacts(b,safe(F[400],person),now);
+ const text={name:b,prepared:facts.prepared,date:facts.date,ref:facts.ref,valid:facts.valid,
+  title2:`Quote for ${b}`,date2:facts.date,foot2:`Business Booster · Quote ${facts.ref}`,
+  title3:`Quote for ${b}`,date3:facts.date,foot3:`Business Booster · Quote ${facts.ref}`};
+ const pages=doc.getPages();
+ const colour=c=>{const m=String(c).match(/[\d.]+/g)||[0,0,0];return rgb(m[0]/255,m[1]/255,m[2]/255);};
+ const drawn=[];
+ for(const [id,sl] of Object.entries(slots)){
+  const f=F[sl.weight>=600?700:400],pg=pages[sl.page],H=pg.getHeight();
+  const lsAt=size=>(sl.letterSpacing/sl.size)*size;
+  const width=(t,size)=>f.widthOfTextAtSize(t,size)+lsAt(size)*Math.max(0,[...t].length-1);
+  const max=id.startsWith('foot')?Math.min(sl.maxWidth,480):sl.maxWidth-1;
+  const t=safe(f,text[id]);
+  let lines=[t],size=sl.size;
+  const floor=id==='name'?30:id==='prepared'?9.5:Math.min(sl.size,7);
+  while(width(t,size)>max&&size>floor)size=Math.max(floor,size-0.5);
+  if(width(t,size)>max&&(id==='name'||id==='prepared')){
+   const w=t.split(' ');let best=null;
+   for(let i=1;i<w.length;i++){const a=w.slice(0,i).join(' '),c=w.slice(i).join(' ');const m=Math.max(width(a,10),width(c,10));if(!best||m<best.m)best={m,l:[a,c]};}
+   if(best){lines=best.l;size=id==='name'?24:sl.size;while(Math.max(...lines.map(x=>width(x,size)))>max&&size>7)size-=0.5;}}
+  const lh=id==='name'?size*1.04:sl.lineHeight||size*1.5;
+  lines.forEach((ln,i)=>{const y=id==='name'?sl.y-(lines.length-1-i)*lh:sl.y+i*lh;const x=sl.align==='right'?sl.x-width(ln,size):sl.x;const ls=lsAt(size);
+   if(ls)pg.pushOperators(setCharacterSpacing(ls));pg.drawText(ln,{x,y:H-y,size,font:f,color:colour(sl.color)});if(ls)pg.pushOperators(setCharacterSpacing(0));});
+  drawn.push({id,size,lines});}
+ doc.setTitle(`Quote for ${b}`);doc.setAuthor('Business Booster');doc.setSubject(`${(Q_PLANS.find(x=>x[0]===plan)||[])[1]} quote, ${facts.ref}`);doc.setCreator('Business Booster Leads System');doc.setProducer('Business Booster');
+ const bytes=await doc.save();return {bytes,file:facts.file,facts,drawn};}
+function qFor(plan,business,person){const day=new Intl.DateTimeFormat('en-CA',{timeZone:Q_TZ}).format(new Date());const k=`${day}|${plan}|${business}|${person}`;
+ if(!qCache.has(k)){const pr=qMake({plan,business,person});pr.catch(()=>qCache.delete(k));qCache.set(k,pr);}return qCache.get(k);}
+function qCanShare(){try{const f=new File([new Uint8Array([37])],'x.pdf',{type:'application/pdf'});return matchMedia('(pointer: coarse)').matches&&!!(navigator.share&&navigator.canShare&&navigator.canShare({files:[f]}));}catch(e){return false;}}
+function qPhone(lead){let ph=String(lead.contact_phone||'').replace(/\D/g,'');if(ph.length===10&&ph[0]==='0')ph='94'+ph.slice(1);return ph.length>=9?ph:'';}
+// the message: with a live portfolio link it is that link's message plus the quote line; without one, a short quote message
+function qMsg(lead){const r=pfFor(lead).find(pfLive);
+ if(r){const t=pfMsg(r),u=pfUrl(r.code);return t.replace(u,u+'\n\n'+Q_LINE);}
+ const h=new Date().getHours();const hi=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+(lead.contact_name?' '+String(lead.contact_name).trim():'');
+ return `${hi}, it was nice talking to you.\n\nAs promised, here is our quote so you have an idea of the packages and what each one includes.\n\nWe'll give you a follow-up call in the next 2 to 3 days.`;}
+function qLabel(){return qCanShare()?'Share quote and message':'Download quote PDF';}
+function qBlock(lead){const id=lead.id,pl=qPlan[id]||'presence';
+ return `<div id="qBlock" class="pf-make"><div class="pk-label">The quote recommends</div><div class="pf-seg" role="group" aria-label="Which package the quote recommends">${Q_PLANS.map(([k,t])=>`<button type="button" aria-pressed="${pl===k}" onclick="qPick(${id},'${k}',this)">${t}</button>`).join('')}</div>
+<div class="pk-muted">Made for ${esc(lead.name||'')}${lead.contact_name?', prepared for '+esc(lead.contact_name):''}. Valid for 14 days from today.${pfFor(lead).some(pfLive)?' The message also carries the portfolio link.':''}</div>
+<div class="pk-actions"><button class="btn btn-primary" id="qGo-${id}" onclick="qSend(${id})">${qLabel()}</button></div><div id="qHint-${id}" hidden></div></div>`;}
+function qPick(id,k,btn){qPlan[id]=k;btn.parentElement.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===btn)));qWarm();}
+function qDownload(v){const u=URL.createObjectURL(new Blob([v.bytes],{type:'application/pdf'})),a=document.createElement('a');a.href=u;a.download=v.file;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);}
+async function qSend(id){const lead=allLeads.find(x=>x.id===id);if(!lead)return;const btn=document.getElementById('qGo-'+id),hint=document.getElementById('qHint-'+id);
+ const pl=qPlan[id]||'presence',text=qMsg(lead);
+ if(btn){btn.disabled=true;btn.textContent='Preparing the quote';}
+ try{const v=await qFor(pl,String(lead.name||'').trim(),String(lead.contact_name||'').trim());
+  let how='downloaded';const f=new File([v.bytes],v.file,{type:'application/pdf'});
+  if(qCanShare()){try{await navigator.clipboard.writeText(text);}catch(e){}
+   try{await navigator.share({files:[f],text});how='shared';}catch(e){how=e.name==='AbortError'?'cancelled':e.name==='NotAllowedError'?'again':'';if(!how)throw e;}}
+  else qDownload(v);
+  if(btn){btn.disabled=false;btn.textContent=how==='again'?'Tap again to share':qLabel();}
+  const ph=qPhone(lead);
+  if(hint&&how==='shared'){hint.innerHTML='<div class="pk-muted">The message is copied too. If WhatsApp drops it, paste it under the PDF.</div>';hint.hidden=false;}
+  if(hint&&how==='downloaded'){hint.innerHTML=`<div class="pk-muted">Saved as ${esc(v.file)}. Attach it to the message.</div><div class="pk-actions" style="margin-top:8px">${ph?`<a class="btn btn-secondary" href="https://wa.me/${ph}?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">Open the message on WhatsApp</a>`:''}<button class="btn btn-secondary" data-t="${esc(text)}" onclick="pkgCopy(this.dataset.t,this)">Copy the message</button></div>`;hint.hidden=false;}
+  if(how==='shared'||how==='downloaded'){if(!isDemoMode&&typeof auditLog==='function')try{auditLog('QUOTE_MADE',`lead ${id} ${pl}`);}catch(e){}}
+ }catch(e){if(btn){btn.disabled=false;btn.textContent='Try the quote again';}toast('The quote could not be made. Check the connection and try again.','error');}}
 function renderPkgLinks(){const pg=document.getElementById('page-pkglinks');pg.innerHTML=`<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px"><div><div class="page-label">Sales</div><h1>Package Links</h1><div class="pk-sub">Make a packages link for a client and see who opened it. Visits are matched to leads by the name on the link.</div></div><button class="btn btn-secondary" id="pkRefresh" onclick="pkgViewsState='loading';renderPkgList();loadPkgViews()">Refresh</button></div>
 <div class="section pk-maker"><div class="section-head"><h3>Make a link for a client</h3></div><div class="pk-maker-body"><label class="pk-label" for="pkName">Client or business name</label><input id="pkName" type="text" autocomplete="off" placeholder="For example Sunrise Cabs" oninput="pkgMakerUpdate()"><div class="pk-linkrow"><span class="pk-url" id="pkOut">${PKG_BASE}</span></div><div class="pk-actions"><button class="btn btn-primary" onclick="pkgCopy(pkgLinkFor(document.getElementById('pkName').value),this)">Copy link</button><button class="btn btn-secondary" onclick="pkgMakerWA()">Send on WhatsApp</button><button class="btn btn-secondary" onclick="window.open(pkgLinkFor(document.getElementById('pkName').value)+(pkgClean(document.getElementById('pkName').value)?'&':'?')+'preview=1','_blank','noopener')">See it as the client does</button></div><div class="pk-note">Your own preview is never counted as a visit.</div></div></div>
 <div class="leads-toolbar"><div class="search-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search names..." id="pkSearch" oninput="renderPkgList()"><button type="button" class="search-clear" onclick="searchClear(this)" aria-label="Clear search" title="Clear search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div><div class="pk-chips" role="group" aria-label="Show">${[['all','All'],['fresh','Last day'],['matched','In the sales system'],['unmatched','Not in the system']].map(([k,v])=>`<button class="pk-chip${pkgFilter===k?' on':''}" data-f="${k}" aria-pressed="${pkgFilter===k}" onclick="pkgFilter='${k}';document.querySelectorAll('.pk-chip').forEach(c=>{const on=c.dataset.f===pkgFilter;c.classList.toggle('on',on);c.setAttribute('aria-pressed',on)});renderPkgList()">${v}</button>`).join('')}</div></div>
@@ -2072,6 +2163,7 @@ ${(!lastAct&&!lead.pain_points&&!lead.objections)?`<div class="cp-empty">Nothing
 ${!closed?`<div class="dp-quick" role="group" aria-label="Call outcome"><span>After the call</span><button class="dp-action" onclick="quickOutcome(${id},'noanswer')">No answer</button><button class="dp-action" onclick="quickOutcome(${id},'callback')">Call back</button><button class="dp-action" onclick="quickOutcome(${id},'packages')">Packages sent</button><button class="dp-action" onclick="quickOutcome(${id},'report')">Report booked</button><button class="dp-action" onclick="openMeeting(${id})">Meeting booked</button><button class="dp-action danger" onclick="openMarkLost(${id},'no_need',1)">Not interested</button></div>`:''}
 ${dpFold('Call game plan','Opening, questions, objections',buildCallGamePlan(lead,lastAct),false)}
 ${dpFold('Portfolio link',pfSub(lead),pfBlock(lead),pfOpen(lead))}
+${dpFold('Quote','Presence, Demand or both, as a PDF',qBlock(lead),false)}
 ${dpFold('Packages link',pkgSub,pkgBlock(lead),pkgOpen)}
 </div>
 <div class="dp-tab-pane${dpTab==='tab-hist'?' active':''}" id="tab-hist">
