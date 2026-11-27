@@ -1681,7 +1681,14 @@ function pfDemo(){const t=Date.now(),H=36e5,iso=x=>new Date(x).toISOString();ret
  {code:'demoG7h8I9',lead:null,for:'Harbour Gems',name:'',industry:'',hours:48,phone:'',made_by:'',created_at:iso(t-80*H),expires_at:iso(t-32*H),opens:0,visits:[]}];}
 /* the colour dot: hot green, warm orange, cold red. A colour picked by hand stays until the tag is removed. */
 function tempDot(l){const t=l.temperature==='hot'?'green':l.temperature==='warm'?'orange':'red';const lab={green:'Green, hot',orange:'Orange, warm',red:'Red, cold'}[t];return `<span class="t-dot t-${t}" role="img" aria-label="${lab}" title="${lab}"></span>`;}
-function tempPick(lead){const cur=lead.temperature||'cold';return `<div class="t-pick" role="group" aria-label="Colour"><span>Colour</span>${[['hot','green','Green'],['warm','orange','Orange'],['cold','red','Red']].map(([v,c,t])=>`<button type="button" aria-pressed="${cur===v}" onclick="setTemp(${lead.id},'${v}')"><span class="t-dot t-${c}"></span>${t}</button>`).join('')}</div>`;}
+/* 27 Nov 2026: the Colour row (Green, Orange, Red) sat tight against the call button, so the dot itself is the picker now.
+   Thulaib: "the color green, orange, red, that is like hitting that the call box". Tap the dot, pick, done. */
+function tempBtn(lead){const cur=lead.temperature||'cold';const c={hot:'green',warm:'orange'}[cur]||'red';const lab={green:'Green, hot',orange:'Orange, warm',red:'Red, cold'}[c];
+ return `<span class="t-wrap"><button type="button" class="t-btn" aria-haspopup="true" aria-expanded="false" aria-label="Colour: ${lab}. Tap to change" title="Change colour" onclick="tempMenu(this)"><span class="t-dot t-${c}"></span></button><span class="t-menu" role="menu" hidden>${[['hot','green','Green'],['warm','orange','Orange'],['cold','red','Red']].map(([v,cc,t])=>`<button type="button" role="menuitemradio" aria-checked="${cur===v}" onclick="tempMenuClose();setTemp(${lead.id},'${v}')"><span class="t-dot t-${cc}"></span>${t}</button>`).join('')}</span></span>`;}
+function tempMenu(b){const m=b.nextElementSibling;const show=m.hidden;tempMenuClose();if(show){m.hidden=false;b.setAttribute('aria-expanded','true');}}
+function tempMenuClose(){document.querySelectorAll('.t-menu').forEach(m=>{if(!m.hidden){m.hidden=true;const b=m.previousElementSibling;if(b)b.setAttribute('aria-expanded','false');}});}
+document.addEventListener('click',e=>{if(!e.target.closest('.t-wrap'))tempMenuClose();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelector('.t-menu:not([hidden])')){e.preventDefault();e.stopImmediatePropagation();tempMenuClose();}},true);
 async function setTemp(id,t){if(demoGuard())return;const l=allLeads.find(x=>x.id===id);if(!l)return;const tags=[...new Set([...(l.tags||[]),PF_HAND_TAG])];const res=await sbPatch('pipeline',id,{temperature:t,tags});if(!res)return;l.temperature=t;l.tags=tags;toast('Colour saved');openDetail(id);}
 /* Quote, 26 Nov 2026. Thulaib: "If you think I need anything else, even a [quote] builder, I would want it into the system."
    The same quote the portfolio /link page makes: the three blank quotes, quote-slots.json and the Inter files are read from
@@ -2144,7 +2151,7 @@ function blFind(k,lead){const n=(lead.name||'').trim();const q=encodeURIComponen
  return 'https://www.google.com/search?q='+q(n+' Sri Lanka'+(k==='instagram_url'?' instagram':k==='facebook_url'?' facebook':''));}
 function blSaved(lead){return BL.filter(b=>blHref(b[0],lead[b[0]]));}
 function blChips(lead){const s=blSaved(lead);
- return `<div class="dp-links" aria-label="Business links">${s.map(b=>`<a class="dp-link" href="${esc(blHref(b[0],lead[b[0]]))}" target="_blank" rel="noopener noreferrer"><span class="${b[3]}">${icon(b[2],14)}</span>${b[1]}</a>`).join('')}${s.length?'':`<button type="button" class="dp-link add" onclick="blOpen()">+ Add their Instagram, website and links</button>`}</div>`;}
+ return `<div class="dp-links" aria-label="Business links">${s.map(b=>`<a class="dp-link" href="${esc(blHref(b[0],lead[b[0]]))}" target="_blank" rel="noopener noreferrer" aria-label="${b[1]}" title="${b[1]}"><span class="${b[3]}">${icon(b[2],17)}</span><span class="vh">${b[1]}</span></a>`).join('')}${s.length?'':`<button type="button" class="dp-link add" onclick="blOpen()">+ Add links</button>`}</div>`;}
 function blSub(lead){const s=blSaved(lead);return s.length?s.map(b=>b[1]).join(', '):'None saved yet';}
 function blBlock(lead){return `<div id="blBlock"><p class="bl-hint">Find opens a Google search for ${esc(lead.name||'the business')}. Copy their link, paste it here and press Save.</p>${BL.map(b=>`<div class="bl-row"><label for="bl-${b[0]}">${b[1]}</label><div class="bl-in"><input id="bl-${b[0]}" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${b[4]}" value="${esc(lead[b[0]]||'')}"><a class="btn btn-sm btn-secondary" href="${esc(blFind(b[0],lead))}" target="_blank" rel="noopener noreferrer">Find</a></div></div>`).join('')}<div class="pk-actions"><button class="btn btn-primary" id="blGo" onclick="blSave(${lead.id})">Save links</button></div></div>`;}
 function blOpen(){const b=document.getElementById('blBlock');if(!b)return;const d=b.closest('details');if(d)d.open=true;b.scrollIntoView({behavior:'smooth',block:'start'});const i=document.getElementById('bl-instagram_url');if(i)setTimeout(()=>i.focus({preventScroll:true}),300);}
@@ -2172,12 +2179,10 @@ let pkgOpen=false,pkgSub='';if(isMaster()){const rows=pkgRowsFor(lead);if(rows.l
 /* LEADS-4, 6 Oct 2026: a tag went into removeTag as a quoted JS string inside onclick, so an apostrophe broke it and a crafted tag could run script; it rides in data-tag now. tel: and mailto: carried the raw database value and are escaped. */
 panel.innerHTML=`
 <div class="dp-header"><button class="dp-close" onclick="closeDetail()" aria-label="Close">✕</button>
-<div class="dp-name">${tempDot(lead)}${lead.is_hot?icon('fire',14)+' ':''}${esc(lead.name)}</div>
+<div class="dp-name">${tempBtn(lead)}${lead.is_hot?icon('fire',14)+' ':''}${esc(lead.name)}</div>
 <div class="dp-company">${esc(lead.contact_name||'')}${lead.industry?' · '+esc(lead.industry):''}${lead.decision_maker?' · DM: '+esc(lead.decision_maker):''}</div>
-<div class="dp-badges">${stageBadge(lead.stage)} <span class="badge badge-grey">${WIN_PROB[lead.stage]||0}% win</span> ${lead.estimated_value?`<span class="badge badge-green">${fmtValue(lead.estimated_value)}</span>`:''} ${dsc>=5?`<span class="badge badge-red">${dsc}d silent</span>`:''}${lead.stage_changed_at?`<span class="stage-duration">${daysSince(lead.stage_changed_at)}d in stage</span>`:''}</div>
-${tempPick(lead)}
-<div class="dp-reach">${hasPhone?`<a class="dp-reach-btn ph" href="tel:${esc(lead.contact_phone)}">${icon('phone',13)} ${esc(lead.contact_phone)}</a><a class="dp-reach-btn wa" href="${waLink(lead.contact_phone)}" target="_blank" rel="noopener">${icon('message',13)} WhatsApp</a>`:'<span class="dp-reach-none">No phone number yet. Add one under Details, then More, Edit Lead.</span>'}${lead.contact_email?`<a class="dp-reach-btn" href="mailto:${esc(lead.contact_email)}">${icon('email',13)} Email</a>`:''}</div>
-${blChips(lead)}
+<div class="dp-badges">${stageBadge(lead.stage)}${lead.estimated_value?` <span class="badge badge-green">${fmtValue(lead.estimated_value)}</span>`:''}${dsc>=5?` <span class="badge badge-red">${dsc}d silent</span>`:''}</div>
+<div class="dp-reach">${hasPhone?`<a class="dp-reach-btn ph" href="tel:${esc(lead.contact_phone)}">${icon('phone',15)} ${esc(lead.contact_phone)}</a><a class="dp-ico wa" href="${waLink(lead.contact_phone)}" target="_blank" rel="noopener" aria-label="WhatsApp" title="WhatsApp">${icon('message',18)}</a>`:'<span class="dp-reach-none">No phone number yet. Add one under Details, then More, Edit Lead.</span>'}${lead.contact_email?`<a class="dp-ico" href="mailto:${esc(lead.contact_email)}" aria-label="Email ${esc(lead.contact_email)}" title="Email">${icon('email',18)}</a>`:''}${blChips(lead)}</div>
 </div>
 ${nextUpCard(id,fus)}
 <div class="dp-tabs" role="tablist">${tabs.map(t=>`<div class="dp-tab${dpTab===t[0]?' active':''}" role="tab" onclick="switchTab(this,'${t[0]}')">${t[1]}</div>`).join('')}</div>
@@ -2207,7 +2212,7 @@ ${acts.length?`<div class="timeline">${acts.map(a=>`<div class="tl-item"><div cl
 ${hasPhone?`<div class="dp-tab-pane${dpTab==='tab-msg'?' active':''}" id="tab-msg"><div style="font-size:13px;font-weight:600;margin-bottom:10px">Quick Message Templates</div><div class="wa-templates">${getWATemplates(lead).map(t=>`<a class="wa-tpl" href="${waLink(lead.contact_phone)}?text=${encodeURIComponent(t.msg)}" target="_blank" rel="noopener"><span class="tpl-icon">${t.icon}</span><div><div style="font-weight:600;font-size:12px;color:var(--text);margin-bottom:2px">${t.label}</div><div style="font-size:11px;opacity:.7">${esc(t.msg.substring(0,80))}...</div></div></a>`).join('')}</div></div>`:''}
 <div class="dp-tab-pane${dpTab==='tab-intel'?' active':''}" id="tab-intel"><div class="intel-grid"><div class="intel-card"><div class="ic-label">Pain Points</div><div class="ic-val ${lead.pain_points?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'pain_points',this.textContent)">${esc(lead.pain_points||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Objections</div><div class="ic-val ${lead.objections?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'objections',this.textContent)">${esc(lead.objections||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Decision Maker</div><div class="ic-val ${lead.decision_maker?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'decision_maker',this.textContent)">${esc(lead.decision_maker||'Click to add...')}</div></div><div class="intel-card"><div class="ic-label">Notes</div><div class="ic-val ${lead.notes?'':'empty'}" contenteditable="true" onblur="saveIntel(${id},'notes',this.textContent)">${esc(lead.notes||'Click to add...')}</div></div></div>
 <div class="dp-sub">About this lead</div>
-<div class="dp-facts"><div><span>Source</span>${sourceBadge(lead.source)}</div><div><span>Score</span><span class="badge ${scoreClass(sc)}">${sc}pts</span></div><div><span>Owner</span>${ownerLabel(lead.owner)}</div><div><span>Added</span>${fmtDate(lead.created_at)}</div>${lead.package_interest?`<div><span>Package</span><span class="badge badge-accent">${esc(lead.package_interest)}</span></div>`:''}${lead.contact_email?`<div><span>Email</span>${esc(lead.contact_email)}</div>`:''}</div>
+<div class="dp-facts"><div><span>Source</span>${sourceBadge(lead.source)}</div><div><span>Score</span><span class="badge ${scoreClass(sc)}">${sc}pts</span></div><div><span>Win chance</span>${WIN_PROB[lead.stage]||0}%</div>${lead.stage_changed_at?`<div><span>In this stage</span>${daysSince(lead.stage_changed_at)} days</div>`:''}<div><span>Owner</span>${ownerLabel(lead.owner)}</div><div><span>Added</span>${fmtDate(lead.created_at)}</div>${lead.package_interest?`<div><span>Package</span><span class="badge badge-accent">${esc(lead.package_interest)}</span></div>`:''}${lead.contact_email?`<div><span>Email</span>${esc(lead.contact_email)}</div>`:''}</div>
 ${(lead.tags||[]).length?`<div class="dp-sub">Tags</div><div class="dp-badges">${(lead.tags||[]).map(t=>`<span class="lead-tag">${esc(t)} <span class="tag-x" data-tag="${esc(t)}" onclick="event.stopPropagation();removeTag(${id},this.dataset.tag)">✕</span></span>`).join('')}</div>`:''}
 <div class="dp-sub">Score breakdown</div><div style="font-size:11px;color:var(--text-2);line-height:2.2">${lead.contact_phone?icon('check',11):icon('xcircle',11)} Phone (10) · ${lead.contact_email?icon('check',11):icon('xcircle',11)} Email (10) · ${lead.contact_name?icon('check',11):icon('xcircle',11)} Contact (5) · Acts: ${Math.min(acts.length*5,30)}/30 · Positive: ${acts.filter(a=>a.outcome==='positive').length}×10 · ${lead.estimated_value>0?icon('check',11):icon('xcircle',11)} Value (10) · ${lead.pain_points?icon('check',11):icon('xcircle',11)} Pain (5) · ${lead.is_hot?icon('check',11):icon('xcircle',11)} Hot (15)</div></div>
 </div>
@@ -3220,17 +3225,35 @@ body:has(.bulkbar.show) .toast{bottom:calc(86px + var(--sab))}
 .dp-badges{margin-bottom:12px;align-items:center}
 .dp-badges .stage-duration{margin:0 0 0 4px;font-size:11px}
 .dp-reach{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.dp-reach-btn{display:inline-flex;align-items:center;gap:6px;padding:0 14px;min-height:38px;border-radius:10px;background:var(--surface);border:1px solid var(--border-strong);color:var(--text)!important;font-size:13px;font-weight:600;text-decoration:none}
+.dp-reach-btn{display:inline-flex;align-items:center;gap:8px;padding:0 16px;min-height:44px;border-radius:10px;background:var(--surface);border:1px solid var(--border-strong);color:var(--text)!important;font-size:13px;font-weight:600;text-decoration:none}
 .dp-reach-btn:hover{border-color:var(--accent)}
 .dp-reach-btn{white-space:nowrap}
 .dp-reach-btn.wa{color:#25D366!important}
 .dp-reach-none{font-size:12px;color:var(--text-3)}
 /* 27 Nov 2026: business links under the call buttons */
-.dp-links{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.dp-link{display:inline-flex;align-items:center;gap:6px;padding:0 12px;min-height:36px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border);color:var(--text)!important;font:inherit;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;white-space:nowrap}
-.dp-link:hover{border-color:var(--accent)}
+.dp-links{display:flex;gap:2px;align-items:center;margin-left:8px;padding-left:10px;border-left:1px solid var(--border)}
+.dp-link{display:inline-flex;align-items:center;justify-content:center;width:40px;height:44px;border-radius:10px;background:none;border:0;color:var(--text)!important;font:inherit;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;white-space:nowrap}
+.dp-link:hover{background:var(--surface-2)}
+/* 27 Nov 2026 declutter: WhatsApp and Email are icons beside the call button, links are bare icons after a hairline */
+.dp-ico{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;background:var(--surface);border:1px solid var(--border-strong);color:var(--text)!important;text-decoration:none;flex:none}
+.dp-ico:hover{border-color:var(--accent)}
+.dp-ico.wa{color:#25D366!important}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.dp-header .dp-company{margin-bottom:12px}
+.dp-header .dp-badges{margin-bottom:18px}
+.dp-header{padding-bottom:18px}
+.t-wrap{position:relative;display:inline-block;vertical-align:middle;margin:-10px -8px -10px -16px}
+.t-btn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:0;background:none;border-radius:50%;cursor:pointer;padding:0}
+.t-btn:hover{background:var(--surface-2)}
+.t-btn .t-dot{width:12px;height:12px;margin:0;top:0;box-shadow:0 0 0 3px var(--bg),0 0 0 4px var(--border-strong)}
+.t-menu{position:absolute;top:calc(100% + 2px);left:4px;z-index:6;display:flex;flex-direction:column;min-width:150px;padding:6px;background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.35)}
+.t-menu[hidden]{display:none}
+.t-menu button{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border:0;background:none;border-radius:8px;color:var(--text-2);font:inherit;font-size:14px;font-weight:600;cursor:pointer;text-align:left}
+.t-menu button .t-dot{margin:0}
+.t-menu button:hover{background:var(--surface-2);color:var(--text)}
+.t-menu button[aria-checked="true"]{background:var(--surface-2);color:var(--text)}
 .dp-link .bl-ig{color:#E1306C}.dp-link .bl-fb{color:#1877F2}.dp-link .bl-web{color:var(--accent)}.dp-link .bl-map{color:#34A853}
-.dp-link.add{border-style:dashed;background:none;color:var(--text-2)!important}
+.dp-link.add{width:auto;padding:0 10px;background:none;color:var(--text-3)!important;font-size:13px}.dp-link.add:hover{color:var(--text)!important}
 .bl-row{margin-bottom:12px}
 .bl-row label{display:block;font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
 .bl-in{display:flex;gap:6px;align-items:stretch}
@@ -3299,7 +3322,7 @@ body:has(.bulkbar.show) .toast{bottom:calc(86px + var(--sab))}
 .dp-bar .dp-more-menu{top:auto;bottom:calc(100% + 8px)}
 .dp-more-menu{z-index:6}
 @media(max-width:768px){
- .dp-header{position:static;padding:14px 16px 12px}
+ .dp-header{position:relative;padding:14px 16px 16px}
  .dp-next{margin:12px 16px 0}
  .dp-tabs{margin-top:12px;position:sticky;top:0;z-index:2;background:var(--bg)}
  .dp-tab-content{padding:14px 16px 20px}
@@ -3307,8 +3330,8 @@ body:has(.bulkbar.show) .toast{bottom:calc(86px + var(--sab))}
  .dp-bar .dp-action{padding:0 12px;font-size:12px}
  .dp-bar .dp-action svg{display:none}
  .dp-next .dn-btns{width:100%}.dp-next .dn-btns .btn{flex:1}
- .dp-reach-btn{flex:1;justify-content:center}
- .dp-reach-btn.ph{flex:1 1 100%}
+ .dp-reach-btn.ph{flex:1 1 auto;justify-content:center}
+ .dp-links{flex-basis:100%;margin:2px 0 -8px -10px;padding-left:0;border-left:0}
  .fu-chip{min-height:44px}
 }
 </style>
