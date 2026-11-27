@@ -1223,6 +1223,10 @@ const SOURCES={social_media:'SM',website:'Web',referral:'Ref',cold_call:'Cold',w
 
 /* ===== ICON SYSTEM ===== */
 function icon(n,s=16){const w=s,h=s;const icons={
+instagram:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg>`,
+facebook:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>`,
+globe:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
+mappin:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0116 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
 chevron:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`,
 phone:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.22 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>`,
 message:`<svg width="${w}" height="${h}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`,
@@ -1318,7 +1322,7 @@ const now=new Date();
 const d=(days)=>{const dt=new Date(now);dt.setDate(dt.getDate()-days);return dt.toISOString();};
 const dDate=(days)=>{const dt=new Date(now);dt.setDate(dt.getDate()+days);return localDateStr(dt);};
 const demoLeads=[
-{id:9001,name:'Sunrise Café',contact_name:'Amal Perera',contact_phone:'+94 77 123 4567',contact_email:'amal@sunrise.lk',industry:'Food & Beverage',source:'social_media',stage:'negotiation',status:'active',estimated_value:230000,package_interest:'Blaze (230K)',owner:'th',pain_points:'Low social media reach, no website',objections:'Budget concern',notes:'Very interested in full package',lead_score:85,is_hot:true,created_at:d(18),updated_at:d(2),last_contact_at:d(2)},
+{id:9001,name:'Sunrise Café',contact_name:'Amal Perera',contact_phone:'+94 77 123 4567',contact_email:'amal@sunrise.lk',industry:'Food & Beverage',source:'social_media',stage:'negotiation',status:'active',estimated_value:230000,package_interest:'Blaze (230K)',owner:'th',pain_points:'Low social media reach, no website',objections:'Budget concern',notes:'Very interested in full package',instagram_url:'https://www.instagram.com/sunrisecafe/',website_url:'https://sunrise.lk/',lead_score:85,is_hot:true,created_at:d(18),updated_at:d(2),last_contact_at:d(2)},
 {id:9002,name:'Peak Fitness Studio',contact_name:'Dinesh Kumar',contact_phone:'+94 76 234 5678',contact_email:'dinesh@peakfit.lk',industry:'Fitness',source:'referral',stage:'proposal_sent',status:'active',estimated_value:150000,package_interest:'Ignite (150K)',owner:'sh',pain_points:'Competitors getting more bookings',objections:null,notes:'Referred by client Rashmi',lead_score:72,is_hot:false,created_at:d(12),updated_at:d(3),last_contact_at:d(3)},
 {id:9003,name:'Lanka Auto Parts',contact_name:'Ruwan Silva',contact_phone:'+94 71 345 6789',contact_email:'ruwan@lankauto.lk',industry:'Automotive',source:'cold_call',stage:'discovery',status:'active',estimated_value:150000,package_interest:'Ignite (150K)',owner:'pv',pain_points:'Old website, no online orders',objections:'Wants to see portfolio first',notes:'Has 3 branches',lead_score:55,is_hot:false,created_at:d(8),updated_at:d(4),last_contact_at:d(4)},
 {id:9004,name:'Emerald Gems',contact_name:'Priya Wickrama',contact_phone:'+94 70 456 7890',contact_email:'priya@emeraldgems.lk',industry:'Retail',source:'website',stage:'contacted',status:'active',estimated_value:90000,package_interest:'Spark (90K)',owner:'nv',pain_points:null,objections:null,notes:'Found us via Google',lead_score:35,is_hot:false,created_at:d(5),updated_at:d(5),last_contact_at:d(5)},
@@ -2098,7 +2102,7 @@ let leadSortCol='',leadSortDir='asc',leadsShowArchived=false;
 function sortLeadsTable(col){if(leadSortCol===col){leadSortDir=leadSortDir==='asc'?'desc':'asc';}else{leadSortCol=col;leadSortDir='asc';}document.querySelectorAll('.leads-table th').forEach(th=>{th.classList.remove('sorted-asc','sorted-desc');});const th=document.querySelector(`.leads-table th[data-sort="${col}"]`);if(th)th.classList.add('sorted-'+leadSortDir);filterLeadsTable();}
 /* 26 Nov 2026: one search for every lead search box (Thulaib: "search with the business name, or search with the number").
    Words match business name, contact, industry or email. A number matches the phone whatever way it was typed: 0771234567, 771234567, +94 77 123 4567. */
-function leadMatch(l,q){q=String(q||'').trim().toLowerCase();if(!q)return true;if([l.name,l.contact_name,l.industry,l.contact_email].some(v=>String(v||'').toLowerCase().includes(q)))return true;const d=q.replace(/\D/g,'');if(d.length<3||!/^[\d\s+().-]+$/.test(q))return false;const p=String(l.contact_phone||'').replace(/\D/g,'');if(!p)return false;const core=p.replace(/^94/,'').replace(/^0/,'');return ('0'+core).includes(d)||('94'+core).includes(d)||p.includes(d);}
+function leadMatch(l,q){q=String(q||'').trim().toLowerCase();if(!q)return true;if([l.name,l.contact_name,l.industry,l.contact_email,l.instagram_url,l.facebook_url,l.website_url].some(v=>String(v||'').toLowerCase().includes(q)))return true;const d=q.replace(/\D/g,'');if(d.length<3||!/^[\d\s+().-]+$/.test(q))return false;const p=String(l.contact_phone||'').replace(/\D/g,'');if(!p)return false;const core=p.replace(/^94/,'').replace(/^0/,'');return ('0'+core).includes(d)||('94'+core).includes(d)||p.includes(d);}
 function filterLeadsTable(){
 const q=(document.getElementById('leadSearch')?.value||'').toLowerCase();
 const fs=document.getElementById('filterStage')?.value||'';
@@ -2125,6 +2129,32 @@ return `<div class="dp-next ${over?'late':f.due_date===today()?'due':''}"><div c
 return `<div class="dp-next none"><div class="dn-main"><div class="dn-label">Next follow-up</div><div class="dn-when">None set. When shall we chase?</div></div><div class="dn-chips" role="group" aria-label="Set a follow-up">${[['today','Today'],['tomorrow','Tomorrow'],['3','In 3 days'],['week','Next week']].map(c=>`<button class="fu-chip" onclick="quickFollowUp(${id},'${c[0]}')">${c[1]}</button>`).join('')}<button class="fu-chip more" onclick="openScheduleFU(${id})">Pick date...</button></div></div>`;}
 function fuChipDate(k){const d=new Date();if(k==='tomorrow')d.setDate(d.getDate()+1);else if(k==='3')d.setDate(d.getDate()+3);else if(k==='week')d.setDate(d.getDate()+7);return localDateStr(d);}
 async function quickFollowUp(id,k){if(demoGuard())return;const data={pipeline_id:id,due_date:fuChipDate(k),due_time:'10:00',priority:'normal',note:null,created_by:currentUser?.name?.toUpperCase()};const r=await sbPost('lead_follow_ups',data);if(r&&r[0]){allFollowUps.push(r[0]);updateFUBadge();toast('Follow-up set for '+fuWhen(r[0]));if(currentDetailId===id)openDetail(id);const pg=document.querySelector('.page.active')?.id?.replace('page-','');if(pg==='dashboard')renderDashboard();}}
+/* 27 Nov 2026: Thulaib, "save the business Instagram link, the website link, all the links" so one tap in the lead shows
+   who they are before the call. Four columns on pipeline (sql/010_business_links.sql). A handle like @sunrisecafe becomes the
+   full link; only http and https links are ever put in an href. Find opens a Google search for the business name. */
+const BL=[['instagram_url','Instagram','instagram','bl-ig','@theirpage or paste the link'],['facebook_url','Facebook','facebook','bl-fb','facebook.com/theirpage'],['website_url','Website','globe','bl-web','theirsite.lk'],['maps_url','Google Maps','mappin','bl-map','Paste the Google Maps link']];
+function blHref(k,v){v=String(v||'').trim();if(!v)return '';
+ const h=v.replace(/^@/,'');
+ if((k==='instagram_url'||k==='facebook_url')&&/^[A-Za-z0-9._]+$/.test(h)&&(v[0]==='@'||!/\.(com|lk|net|org|co|me|io)$/i.test(h)))v=(k==='instagram_url'?'https://www.instagram.com/':'https://www.facebook.com/')+h+'/';
+ if(!/^[a-z][a-z0-9+.-]*:/i.test(v))v='https://'+v.replace(/^\/+/,'');
+ if(!/^https?:\/\//i.test(v))return '';
+ try{const u=new URL(v);if(!u.hostname.includes('.'))return '';[...u.searchParams.keys()].forEach(q=>{if(/^(utm_|igsh|igshid|fbclid|mibextid|si$)/i.test(q))u.searchParams.delete(q);});return u.toString();}catch(e){return '';}}
+function blFind(k,lead){const n=(lead.name||'').trim();const q=encodeURIComponent;
+ if(k==='maps_url')return 'https://www.google.com/maps/search/?api=1&query='+q(n+' Sri Lanka');
+ return 'https://www.google.com/search?q='+q(n+' Sri Lanka'+(k==='instagram_url'?' instagram':k==='facebook_url'?' facebook':''));}
+function blSaved(lead){return BL.filter(b=>blHref(b[0],lead[b[0]]));}
+function blChips(lead){const s=blSaved(lead);
+ return `<div class="dp-links" aria-label="Business links">${s.map(b=>`<a class="dp-link" href="${esc(blHref(b[0],lead[b[0]]))}" target="_blank" rel="noopener noreferrer"><span class="${b[3]}">${icon(b[2],14)}</span>${b[1]}</a>`).join('')}${s.length?'':`<button type="button" class="dp-link add" onclick="blOpen()">+ Add their Instagram, website and links</button>`}</div>`;}
+function blSub(lead){const s=blSaved(lead);return s.length?s.map(b=>b[1]).join(', '):'None saved yet';}
+function blBlock(lead){return `<div id="blBlock"><p class="bl-hint">Find opens a Google search for ${esc(lead.name||'the business')}. Copy their link, paste it here and press Save.</p>${BL.map(b=>`<div class="bl-row"><label for="bl-${b[0]}">${b[1]}</label><div class="bl-in"><input id="bl-${b[0]}" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${b[4]}" value="${esc(lead[b[0]]||'')}"><a class="btn btn-sm btn-secondary" href="${esc(blFind(b[0],lead))}" target="_blank" rel="noopener noreferrer">Find</a></div></div>`).join('')}<div class="pk-actions"><button class="btn btn-primary" id="blGo" onclick="blSave(${lead.id})">Save links</button></div></div>`;}
+function blOpen(){const b=document.getElementById('blBlock');if(!b)return;const d=b.closest('details');if(d)d.open=true;b.scrollIntoView({behavior:'smooth',block:'start'});const i=document.getElementById('bl-instagram_url');if(i)setTimeout(()=>i.focus({preventScroll:true}),300);}
+async function blSave(id){const l=allLeads.find(x=>x.id===id);if(!l)return;const data={};
+ for(const b of BL){const el=document.getElementById('bl-'+b[0]);const raw=el?el.value.trim():'';const h=blHref(b[0],raw);if(raw&&!h){toast('That '+b[1]+' link does not look right','error');if(el)el.focus();return;}data[b[0]]=h||null;}
+ if(BL.every(b=>(l[b[0]]||null)===data[b[0]])){toast('Nothing changed');return;}
+ const btn=document.getElementById('blGo');if(btn){btn.disabled=true;btn.textContent='Saving';}
+ if(isDemoMode){Object.assign(l,data);toast('Links saved (demo, nothing written)');openDetail(id);return;}
+ const res=await sbPatch('pipeline',id,data);if(!res){if(btn){btn.disabled=false;btn.textContent='Save links';}return;}
+ Object.assign(l,data);toast('Links saved');auditLog('UPDATE_LINKS',`${l.name} (ID:${id})`);openDetail(id);}
 function dpFold(title,sub,body,open){return `<details class="dp-fold"${open?' open':''}><summary><span class="df-t">${title}</span>${sub?`<span class="df-s">${sub}</span>`:''}<span class="df-c" aria-hidden="true"></span></summary><div class="df-body">${body}</div></details>`;}
 async function openDetail(id){
 const ov=document.getElementById('detailOverlay');const same=currentDetailId===id&&ov.classList.contains('open');
@@ -2147,6 +2177,7 @@ panel.innerHTML=`
 <div class="dp-badges">${stageBadge(lead.stage)} <span class="badge badge-grey">${WIN_PROB[lead.stage]||0}% win</span> ${lead.estimated_value?`<span class="badge badge-green">${fmtValue(lead.estimated_value)}</span>`:''} ${dsc>=5?`<span class="badge badge-red">${dsc}d silent</span>`:''}${lead.stage_changed_at?`<span class="stage-duration">${daysSince(lead.stage_changed_at)}d in stage</span>`:''}</div>
 ${tempPick(lead)}
 <div class="dp-reach">${hasPhone?`<a class="dp-reach-btn ph" href="tel:${esc(lead.contact_phone)}">${icon('phone',13)} ${esc(lead.contact_phone)}</a><a class="dp-reach-btn wa" href="${waLink(lead.contact_phone)}" target="_blank" rel="noopener">${icon('message',13)} WhatsApp</a>`:'<span class="dp-reach-none">No phone number yet. Add one under Details, then More, Edit Lead.</span>'}${lead.contact_email?`<a class="dp-reach-btn" href="mailto:${esc(lead.contact_email)}">${icon('email',13)} Email</a>`:''}</div>
+${blChips(lead)}
 </div>
 ${nextUpCard(id,fus)}
 <div class="dp-tabs" role="tablist">${tabs.map(t=>`<div class="dp-tab${dpTab===t[0]?' active':''}" role="tab" onclick="switchTab(this,'${t[0]}')">${t[1]}</div>`).join('')}</div>
@@ -2161,6 +2192,7 @@ ${lastAct?.talking_points?`<div class="cp-row"><div class="cp-label">Talking poi
 ${(!lastAct&&!lead.pain_points&&!lead.objections)?`<div class="cp-empty">Nothing logged yet. Start with "Log Activity", or add details under Details.</div>`:''}
 </div>
 ${!closed?`<div class="dp-quick" role="group" aria-label="Call outcome"><span>After the call</span><button class="dp-action" onclick="quickOutcome(${id},'noanswer')">No answer</button><button class="dp-action" onclick="quickOutcome(${id},'callback')">Call back</button><button class="dp-action" onclick="quickOutcome(${id},'packages')">Packages sent</button><button class="dp-action" onclick="quickOutcome(${id},'report')">Report booked</button><button class="dp-action" onclick="openMeeting(${id})">Meeting booked</button><button class="dp-action danger" onclick="openMarkLost(${id},'no_need',1)">Not interested</button></div>`:''}
+${dpFold('Business links',blSub(lead),blBlock(lead),false)}
 ${dpFold('Call game plan','Opening, questions, objections',buildCallGamePlan(lead,lastAct),false)}
 ${dpFold('Portfolio link',pfSub(lead),pfBlock(lead),pfOpen(lead))}
 ${dpFold('Quote','Presence, Demand or both, as a PDF',qBlock(lead),false)}
@@ -3193,6 +3225,18 @@ body:has(.bulkbar.show) .toast{bottom:calc(86px + var(--sab))}
 .dp-reach-btn{white-space:nowrap}
 .dp-reach-btn.wa{color:#25D366!important}
 .dp-reach-none{font-size:12px;color:var(--text-3)}
+/* 27 Nov 2026: business links under the call buttons */
+.dp-links{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.dp-link{display:inline-flex;align-items:center;gap:6px;padding:0 12px;min-height:36px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border);color:var(--text)!important;font:inherit;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;white-space:nowrap}
+.dp-link:hover{border-color:var(--accent)}
+.dp-link .bl-ig{color:#E1306C}.dp-link .bl-fb{color:#1877F2}.dp-link .bl-web{color:var(--accent)}.dp-link .bl-map{color:#34A853}
+.dp-link.add{border-style:dashed;background:none;color:var(--text-2)!important}
+.bl-row{margin-bottom:12px}
+.bl-row label{display:block;font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.bl-in{display:flex;gap:6px;align-items:stretch}
+#blBlock .bl-in input{flex:1 1 auto;width:auto;min-width:0;min-height:40px;font-size:16px;padding:8px 10px;border-radius:10px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text)}
+#blBlock .bl-in .btn{flex:0 0 auto;width:auto;min-width:64px;min-height:40px;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.bl-hint{font-size:12px;color:var(--text-3);margin:0 0 12px;line-height:1.5}
 .dp-next{margin:14px 20px 0;padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--border);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .dp-next.late{border-color:var(--red);background:var(--red-soft)}.dp-next.due{border-color:var(--amber);background:var(--amber-soft)}
 .dp-next .dn-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);margin-bottom:3px}
